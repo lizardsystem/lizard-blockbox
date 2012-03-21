@@ -1,0 +1,19 @@
+{% extends "lizard_map/wms.html" %}
+
+{% block css %}
+  {{ block.super }}
+  <link rel="stylesheet"
+        href="{{ STATIC_URL }}lizard_blockbox/lizard_blockbox.less"
+        type="text/less"
+        media="screen, projection" />
+{% endblock css %}
+
+{% block content %}
+  <div id="blockbox">
+	<div id="lizard-blockbox-graph">
+      {% block lizard-blockbox-graph %}
+      {% endblock %}
+	</div>
+    {{ block.super }}
+  </div>
+{% endblock %}
