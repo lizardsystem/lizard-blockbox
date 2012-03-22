@@ -7,7 +7,7 @@ from lizard_shape import models as shape_models
 class BlockboxShape(shape_models.Shape):
     """Abstract class for adding data to shapefiles.
 
-    Abstract for now
+    Abstract for now because it's probably not needed.
     """
     data_file = models.FileField(upload_to=shape_models.UPLOAD_TO,
                                  blank=True)
