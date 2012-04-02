@@ -13,6 +13,7 @@ class BlockboxHome(MapView):
     template_name = "lizard_blockbox/homepage.html"
 
 
-class RiverChoiceView(UiView):
-    """Show choice of rivers."""
+class ReachChoiceView(UiView):
+    """Show choice of river reaches (NL: *riviertakken*)."""
+    template_name = "lizard_blockbox/reach_choice.html"
     reaches = Reach.objects.all()
