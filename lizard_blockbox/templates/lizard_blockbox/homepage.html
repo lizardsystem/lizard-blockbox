@@ -1,6 +1,12 @@
 {% extends "lizard_map/wms.html" %}
 
 {% block map-javascript %}
+    <script type="text/javascript"
+    		   src="{{ STATIC_URL }}lizard_blockbox/underscore.js">
+    </script>
+    <script type="text/javascript"
+    		   src="{{ STATIC_URL }}lizard_blockbox/blokkendoos.js">
+    </script>
    <script type="text/javascript"
 		   src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.js">
    </script>
@@ -80,6 +86,10 @@
          );
      });
 
+     $().ready(function() {
+         setFlotSeries();
+     });
+     
 
    </script>
 
@@ -95,10 +105,10 @@
 
 {% block content %}
   <div id="blockbox">
-	<!--div id="lizard-blockbox-graph">
+    <div id="lizard-blockbox-graph">
       {% block lizard-blockbox-graph %}
       {% endblock %}
-	</div-->
+    </div
     {{ block.super }}
   </div>
 {% endblock %}
