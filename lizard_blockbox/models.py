@@ -7,28 +7,28 @@ class RiverSegment(models.Model):
     location = models.IntegerField()
 
     def __unicode__(self):
-        return self.location
+        return '%i' % self.location
 
 
 class Scenario(models.Model):
     name = models.CharField(max_length=100)
 
     def __unicode__(self):
-        return self.name
+        return u'%s' % self.name
 
 
 class Year(models.Model):
     year = models.IntegerField()
 
     def __unicode__(self):
-        return self.year
+        return u'%i' % self.year
 
 
 class FloodingChance(models.Model):
     name = models.CharField(max_length=10)
 
     def __unicode__(self):
-        return self.name
+        return u'%s' % self.name
 
 
 class Measure(models.Model):
@@ -36,7 +36,8 @@ class Measure(models.Model):
     short_name = models.CharField(max_length=100, blank=True, null=True)
 
     def __unicode__(self):
-        return self.name
+        name = self.name or self.short_name
+        return u'%s' % name
 
 
 class Delta(models.Model):
@@ -49,7 +50,7 @@ class Delta(models.Model):
     delta = models.DecimalField(max_digits=6, decimal_places=4)
 
     def __unicode__(self):
-        return '%s %s %s %s Referenc: %s Delta: %s' % (
+        return '%s %s %s %s Reference: %s Delta: %s' % (
             self.riversegment, self.measure, self.scenario,
             self.year, self.flooding_chance, self.delta)
 
@@ -64,6 +65,6 @@ class ReferenceValue(models.Model):
     target = models.DecimalField(max_digits=6, decimal_places=4)
 
     def __unicode__(self):
-        return '%s %s %s %s Referenc: %s Delta: %s' % (
-            self.riversegment, self.measure, self.scenario,
-            self.year, self.flooding_chance, self.delta)
+        return '%s %s %s Reference: %s' % (
+            self.riversegment, self.scenario,
+            self.year, self.flooding_chance)
