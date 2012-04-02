@@ -202,7 +202,7 @@ refreshGraph = (data) ->
     
     
 window.setFlotSeries = (url) ->
-    data = undefined
+    # data = undefined
     $.ajax
         type: "POST"
         url: url
