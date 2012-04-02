@@ -87,7 +87,7 @@
      });
 
      $().ready(function() {
-         setFlotSeries();
+         window.setFlotSeries();
      });
      
 
@@ -107,6 +107,9 @@
   <div id="blockbox">
     <div id="lizard-blockbox-graph">
       {% block lizard-blockbox-graph %}
+      <div id="labeler" style="width:800px;height:20px;marging:0px;font-size:8pt"></div>
+      <div id="placeholder_top" style="width:800px;height:120px;marging:0px;font-size:8pt"></div>
+      <div id="placeholder" style="width:800px;height:100px;marging:0px;font-size:8pt;"></div>
       {% endblock %}
     </div
     {{ block.super }}

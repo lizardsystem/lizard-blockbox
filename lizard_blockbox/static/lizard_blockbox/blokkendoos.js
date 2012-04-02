@@ -200,8 +200,6 @@
   };
 
   window.setFlotSeries = function(url) {
-    var data;
-    data = void 0;
     $.ajax({
       type: "POST",
       url: url,
