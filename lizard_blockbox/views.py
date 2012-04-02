@@ -5,15 +5,15 @@ from lizard_ui.views import UiView
 from lizard_blockbox.models import Reach
 
 
-class BlockboxHome(MapView):
-    """
-    Test homepage for blockbox.
-    """
-
-    template_name = "lizard_blockbox/homepage.html"
-
-
 class ReachChoiceView(UiView):
     """Show choice of river reaches (NL: *riviertakken*)."""
     template_name = "lizard_blockbox/reach_choice.html"
     reaches = Reach.objects.all()
+
+
+class ReachView(MapView):
+    """Show reach including pointers to relevant data URLs."""
+    template_name = "lizard_blockbox/reach.html"
+
+
+
