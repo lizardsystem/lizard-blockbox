@@ -2,6 +2,18 @@
 from django.db import models
 
 
+class Reach(models.Model):
+    """A reach of a river.
+
+    Dutch: *riviertak*.
+
+    """
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(
+        blank=False,
+        help_text=u"Slug will be automatically generated from the name.")
+
+
 class RiverSegment(models.Model):
     #branch = models.CharField(max_length=100)
     location = models.IntegerField()
