@@ -4,4 +4,5 @@ from lizard_map.views import MapView
 
 class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
-    template_name = "lizard_blockbox/blockbox.html"
+    template_name = 'lizard_blockbox/blockbox.html'
+    edit_link = '/admin/lizard_blockbox/'
