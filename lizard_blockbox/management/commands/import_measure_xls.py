@@ -1,5 +1,6 @@
-import xlrd
+import sys
 
+import xlrd
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -11,6 +12,9 @@ class Command(BaseCommand):
     help = "Imports the measure excelfile."
 
     def handle(self, *args, **options):
+        if len(args) == 0:
+            print "Pass excel files as arguments."
+            sys.exit(1)
         map(self.parse, (i for i in args))
 
     def parse(self, excel):
@@ -49,10 +53,10 @@ class Command(BaseCommand):
                 #target is -1 to just have a target that's different from
                 #the reference value.
                 models.ReferenceValue.objects.get_or_create(
-                    reference=row[chance[1]],
-                    target=row[chance[1]] - 1,
+                    reference=str(row[chance[1]]),
+                    target=str(row[chance[1]] - 1),
                     **d)
                 d['measure'] = measure
                 models.Delta.objects.create(
-                    delta=row[chance[2]],
+                    delta=str(row[chance[2]]),
                     **d)
