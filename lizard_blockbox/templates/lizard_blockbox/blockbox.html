@@ -5,12 +5,15 @@
     		   src="{{ STATIC_URL }}lizard_blockbox/underscore.js">
     </script>
     <script type="text/javascript"
+    		   src="{{ STATIC_URL }}lizard_blockbox/backbone.js">
+    </script>    
+    <script type="text/javascript"
     		   src="{{ STATIC_URL }}lizard_blockbox/blokkendoos.js">
     </script>
    <script type="text/javascript"
 		   src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.js">
    </script>
-   {{ block.super }}
+
    <script type="text/javascript">
 	 var selectControl, selectedFeature;
 
@@ -21,53 +24,49 @@
 	     vector_layer.addFeatures(geojson_format.read(json));
 	 }
 
-
     function onPopupClose(evt) {
-            selectControl.unselect(selectedFeature);
-        }
+        selectControl.unselect(selectedFeature);
+    }
 
-	 function onFeatureHighlight(feature){
-	     selectedFeature = feature;
-	     ff = feature.feature
-         popup = new OpenLayers.Popup.FramedCloud("chicken",
-                     ff.geometry.getBounds().getCenterLonLat(),
-                     null,
-                     "<div style='font-size:.8em'>" + ff.data.titel +
-	                     "</div>",
-                      null, false, false);
-          feature.feature.popup = popup;
-          map.addPopup(popup);
-        }
-
-
-     function onFeatureUnhighlight(feature) {
-            map.removePopup(feature.feature.popup);
-            feature.feature.popup.destroy();
-            feature.feature.popup = null;
-        }
+    function onFeatureHighlight(feature){
+        selectedFeature = feature;
+        ff = feature.feature
+        popup = new OpenLayers.Popup.FramedCloud("chicken",
+            ff.geometry.getBounds().getCenterLonLat(),
+            null,
+            "<div style='font-size:.8em'>" + ff.data.titel + "</div>",
+            null, false, false);
+        feature.feature.popup = popup;
+        map.addPopup(popup);
+    }
 
 
-
-  	 function JSONTooltip(name, json){
-	     var geojson_format = new OpenLayers.Format.GeoJSON();
-         var vector_layer = new OpenLayers.Layer.Vector(name);
-         map.addLayer(vector_layer);
-	     vector_layer.addFeatures(geojson_format.read(json));
-
- 	     var highlightCtrl = new OpenLayers.Control.SelectFeature(vector_layer, {
-             hover: true,
-             highlightOnly: true,
-             renderIntent: "temporary",
-             eventListeners: {
-                    featurehighlighted: onFeatureHighlight,
-                    featureunhighlighted: onFeatureUnhighlight
-             }
-         });
+    function onFeatureUnhighlight(feature) {
+        map.removePopup(feature.feature.popup);
+        feature.feature.popup.destroy();
+        feature.feature.popup = null;
+    }
 
 
-         map.addControl(highlightCtrl);
-         highlightCtrl.activate();
-	 }
+
+    function JSONTooltip(name, json) {
+        var geojson_format = new OpenLayers.Format.GeoJSON();
+        var vector_layer = new OpenLayers.Layer.Vector(name);
+        map.addLayer(vector_layer);
+        vector_layer.addFeatures(geojson_format.read(json));
+
+        var highlightCtrl = new OpenLayers.Control.SelectFeature(vector_layer, {
+            hover: true,
+            highlightOnly: true,
+            renderIntent: "temporary",
+            eventListeners: {
+                featurehighlighted: onFeatureHighlight,
+                featureunhighlighted: onFeatureUnhighlight
+            }
+        });
+        map.addControl(highlightCtrl);
+        highlightCtrl.activate();
+    }
 
 
 	 $().ready(function() {
@@ -76,23 +75,16 @@
                  JSONTooltip('IVM deel 1', json);
              }
          );
-     });
-
-	 $().ready(function() {
          $.getJSON("{{ STATIC_URL }}lizard_blockbox/rijntakken.json",
              function(json){
                  JSONLayer('Rijntak', json);
              }
          );
+         window.setFlotSeries();         
      });
-
-     $().ready(function() {
-         window.setFlotSeries();
-     });
-     
 
    </script>
-
+   {{ block.super }}
 {% endblock %}
 
 {% block css %}
@@ -102,6 +94,10 @@
         type="text/less"
         media="screen, projection" />
 {% endblock css %}
+
+{% block sidebar %}
+    
+{% endblock %}
 
 {% block content %}
   <div id="blockbox">

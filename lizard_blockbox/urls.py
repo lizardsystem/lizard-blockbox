@@ -12,5 +12,8 @@ urlpatterns = patterns(
         BlockboxView.as_view(),
         {},
         name='lizard_blockbox.home'),
+    url(r'^api/reference/',
+        'lizard_blockbox.views.reference_json',
+        name="reference_json"),
     )
 urlpatterns += debugmode_urlpatterns()

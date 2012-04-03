@@ -1,6 +1,31 @@
 (function() {
   var FLOT_URL, JSON_COMBINATIONS_URL, all_selected_measure_ids, available_measure_labels, blockedByList, blockedList, clicked, current_reach_measure_ids, current_reach_measure_ids_clicked, current_reach_measure_ids_unclicked, diffArray, draw_point, getIndicesForCombinations, getTicks, processCompleted, refreshGraph, remove_item_from_array, result_ids, selected_measure_ids, setPlaceholderControl, setPlaceholderTop, setupIfAllDataReady, showTooltip;
 
+  window.Reach = Backbone.Model.extend({
+    defaults: {
+      name: "No name"
+    },
+    initialize: function() {
+      return this;
+    }
+  });
+
+  window.Reaches = Backbone.Collection.extend({
+    model: Reach,
+    url: "/static_media/lizard_blockbox/sample.json"
+  });
+
+  window.MeasureView = Backbone.View.extend({
+    tagName: "li",
+    template: _.template(),
+    events: {
+      "click": "selectMeasure"
+    },
+    selectMeasure: function() {
+      return this;
+    }
+  });
+
   FLOT_URL = "/";
 
   JSON_COMBINATIONS_URL = "/";
@@ -200,6 +225,8 @@
   };
 
   window.setFlotSeries = function(url) {
+    var data;
+    data = void 0;
     $.ajax({
       type: "POST",
       url: url,
