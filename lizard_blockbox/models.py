@@ -2,6 +2,18 @@
 from django.db import models
 
 
+class Reach(models.Model):
+    """A reach of a river.
+
+    Dutch: *riviertak*.
+
+    """
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(
+        blank=False,
+        help_text=u"Slug will be automatically generated from the name.")
+
+
 class RiverSegment(models.Model):
     #branch = models.CharField(max_length=100)
     location = models.IntegerField()
@@ -38,6 +50,11 @@ class Measure(models.Model):
     def __unicode__(self):
         name = self.name or self.short_name
         return u'%s' % name
+
+    class Meta:
+        permissions = (("can_view_blockbox", "Can view blockbox"),)
+        # ^^^ Note: just a generic blockbox permission. Just needs to be on a
+        # model, not specifically *this* model.
 
 
 class Delta(models.Model):
