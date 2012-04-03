@@ -9,4 +9,4 @@ class ReachAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Reach, ReachAdmin)
 admin.site.register(models.Measure)
-#admin.site.register(models.Delta)
+admin.site.register(models.Delta)
