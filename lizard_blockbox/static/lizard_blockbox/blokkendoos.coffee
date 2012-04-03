@@ -1,3 +1,37 @@
+# Models
+window.Reach = Backbone.Model.extend
+    defaults:
+        name: "No name"
+    
+    initialize: ->
+        @
+
+
+# Collections
+window.Reaches = Backbone.Collection.extend
+    model: Reach
+    url: "/static_media/lizard_blockbox/sample.json"
+    
+
+# Views
+window.MeasureView = Backbone.View.extend
+    tagName: "li"
+    template: _.template()
+
+    events: 
+        "click": "selectMeasure"
+
+    selectMeasure: ->
+        @
+
+
+
+
+
+
+
+
+
 # Constants
 FLOT_URL = "/"
 JSON_COMBINATIONS_URL = "/"
@@ -202,7 +236,7 @@ refreshGraph = (data) ->
     
     
 window.setFlotSeries = (url) ->
-    # data = undefined
+    data = undefined
     $.ajax
         type: "POST"
         url: url
