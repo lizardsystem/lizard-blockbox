@@ -51,6 +51,11 @@ class Measure(models.Model):
         name = self.name or self.short_name
         return u'%s' % name
 
+    class Meta:
+        permissions = (("can_view_blockbox", "Can view blockbox"),)
+        # ^^^ Note: just a generic blockbox permission. Just needs to be on a
+        # model, not specifically *this* model.
+
 
 class Delta(models.Model):
     riversegment = models.ForeignKey(RiverSegment)

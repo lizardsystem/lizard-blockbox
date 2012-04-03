@@ -3,18 +3,14 @@ from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
 
 from lizard_ui.urls import debugmode_urlpatterns
-from lizard_blockbox.views import ReachView
-from lizard_blockbox.views import ReachChoiceView
+from lizard_blockbox.views import BlockboxView
 
 
 urlpatterns = patterns(
     '',
-    url(r'^raai/some_slug/$',
-        ReachView.as_view(),
-        {},
-        name='lizard_blockbox.reach'),
     url(r'^$',
-        ReachChoiceView.as_view(),
-        name='lizard_blockbox.reach_choice'),
+        BlockboxView.as_view(),
+        {},
+        name='lizard_blockbox.home'),
     )
 urlpatterns += debugmode_urlpatterns()
