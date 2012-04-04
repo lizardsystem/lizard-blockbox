@@ -58,7 +58,7 @@ def calculated_measures_json(request):
 def list_measures_json(request):
     """Return a list with all known measures."""
 
-    measures = models.Measures.objects.all().values('name', 'short_name')
+    measures = models.Measure.objects.all().values('name', 'short_name')
     response = HttpResponse(mimetype='application/json')
     json.dump([i for i in measures], response)
     return response
