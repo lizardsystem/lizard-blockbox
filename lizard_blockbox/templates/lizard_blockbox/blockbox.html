@@ -70,20 +70,25 @@
 
 
 	 $().ready(function() {
-         $.getJSON("{{ STATIC_URL }}lizard_blockbox/IVM_deel1.json",
-             function(json){
-                 JSONTooltip('IVM deel 1', json);
-             }
-         );
-         $.getJSON("{{ STATIC_URL }}lizard_blockbox/rijntakken.json",
-             function(json){
-                 JSONLayer('Rijntak', json);
-             }
-         );
-         window.setFlotSeries();         
+         // $.getJSON("{{ STATIC_URL }}lizard_blockbox/IVM_deel1.json",
+         //     function(json){
+         //         JSONTooltip('IVM deel 1', json);
+         //     }
+         // );
+         // $.getJSON("{{ STATIC_URL }}lizard_blockbox/rijntakken.json",
+         //     function(json){
+         //         JSONLayer('Rijntak', json);
+         //     }
+         // );
+         // window.setFlotSeries(); 
      });
 
    </script>
+   
+   <script type="text/template" id="measure-template">
+        <strong>Measure</strong>
+   </script>
+   
    {{ block.super }}
 {% endblock %}
 
@@ -96,7 +101,8 @@
 {% endblock css %}
 
 {% block sidebar %}
-    
+<h3>Maatregelen</h3>
+<ul id="measures-list" class="without-bullets" />
 {% endblock %}
 
 {% block content %}
