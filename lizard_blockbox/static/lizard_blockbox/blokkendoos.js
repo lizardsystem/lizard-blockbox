@@ -18,8 +18,6 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      console.log("MeasureView.render()");
-      console.log("model.view.el:", this.el);
       this.$el.html("<a href=\"#\" class=\"padded-sidebar-item workspace-acceptable has_popover\" data-content=\"" + (this.model.toJSON().description) + "\"'>\n    " + (this.model.toJSON().name) + "\n</a>");
       return this;
     }
@@ -30,16 +28,12 @@
     id: 'measures-view',
     addOne: function(measure) {
       var view;
-      console.log("MeasureListView.addOne()");
       view = new MeasureView({
         model: measure
       });
-      this.$el.append(view.render().el);
-      console.log(this);
-      return console.log("--->", this.$el);
+      return this.$el.append(view.render().el);
     },
     addAll: function() {
-      measure_list.fetch();
       return measure_list.each(this.addOne);
     },
     initialize: function() {
