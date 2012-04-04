@@ -229,6 +229,29 @@ $(document).ready ->
     
     
 
+
+$('.btn.collapse-sidebar').click ->
+    clearTimeout doit
+    doit = setTimeout(->
+        $('#placeholder_top_legend').empty()
+        $('#placeholder_top').empty()
+        $('#placeholder_control').empty()
+        $('#placeholder_control_legend').empty()
+
+        $('#placeholder_top_legend').css('width', '100%')
+        $('#placeholder_top').css('width', '100%')
+        $('#placeholder_control').css('width', '100%')
+        $('#placeholder_control_legend').css('width', '100%')
+
+        $('#placeholder_top_legend').css('height', '0px')
+        $('#placeholder_top').css('height', '150px')
+        $('#placeholder_control').css('height', '100px')
+        $('#placeholder_control_legend').css('height', '100px')
+    
+        setFlotSeries()
+    ,500)
+
+
 $('.btn.collapse-rightbar').click ->
     clearTimeout doit
     doit = setTimeout(->
