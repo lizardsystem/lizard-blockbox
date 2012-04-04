@@ -18,12 +18,15 @@ MeasureView = Backbone.View.extend
     
     initialize: ->
         @model.bind('change', @render, @)
-        # @model.bind('add', @render, @)
     
     render: ->
         console.log "MeasureView.render()"
         console.log "model.view.el:", @el
-        @$el.html "<a href='#' class='padded-sidebar-item workspace-acceptable has_popover' data-content='"+ @model. +"'>" + @model.toJSON().name + "</a>"
+        @$el.html """
+            <a href="#" class="padded-sidebar-item workspace-acceptable has_popover" data-content="#{@model.toJSON().description}"'>
+                #{@model.toJSON().name}
+            </a>
+        """
         # @$el.html(@template(@model.toJSON()))
         @
 

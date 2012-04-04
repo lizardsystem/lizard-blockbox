@@ -20,7 +20,7 @@
     render: function() {
       console.log("MeasureView.render()");
       console.log("model.view.el:", this.el);
-      this.$el.html("<a href='#' class='padded-sidebar-item workspace-acceptable has_popover'>" + this.model.toJSON().name + "</a>");
+      this.$el.html("<a href=\"#\" class=\"padded-sidebar-item workspace-acceptable has_popover\" data-content=\"" + (this.model.toJSON().description) + "\"'>\n    " + (this.model.toJSON().name) + "\n</a>");
       return this;
     }
   });
