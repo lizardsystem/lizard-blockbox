@@ -98,9 +98,9 @@ class ReferenceValue(models.Model):
     reference = models.FloatField()
     target = models.FloatField()
 
-    class Meta:
-        unique_together = ('riversegment', 'scenario', 'year',
-                           'flooding_chance')
+    # class Meta:
+    #     unique_together = ('riversegment', 'scenario', 'year',
+    #                        'flooding_chance')
 
     def __unicode__(self):
         return '%s %s %s Reference: %s' % (
