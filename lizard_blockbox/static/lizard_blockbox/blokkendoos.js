@@ -18,7 +18,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<a href=\"#\" class=\"padded-sidebar-item workspace-acceptable has_popover\" data-content=\"" + (this.model.toJSON().short_name) + "\"'>\n    " + (this.model.toJSON().short_name) + "\n</a>");
+      this.$el.html("<a href=\"#\" class=\"padded-sidebar-item workspace-acceptable has_popover\" data-content=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().short_name) + "</a>");
       return this;
     }
   });
@@ -53,24 +53,16 @@
 
   window.measureListView = new MeasureListView();
 
-  options = {
-    xaxis: {
-      position: "top"
-    },
-    grid: {
-      clickable: true,
-      borderWidth: 1
-    },
-    legend: {
-      show: true,
-      noColumns: 4,
-      container: $("#placeholder_top_legend"),
-      labelFormatter: function(label, series) {
-        var cb;
-        cb = label;
-        return cb;
-      }
-    }
+  showTooltip = function(x, y, contents) {
+    return $("<div id=\"tooltip\">" + contents + "</div>").css({
+      position: "absolute",
+      display: "none",
+      top: y - 35,
+      left: x + 5,
+      border: "1px solid #fdd",
+      padding: "2px",
+      backgroundcolor: "#fee"
+    }).appendTo("body").fadeIn(200);
   };
 
   setFlotSeries = function() {
@@ -83,7 +75,7 @@
   };
 
   setPlaceholderTop = function(basecase_data, result_data) {
-    var ed_data, pl_lines;
+    var ed_data, options, pl_lines;
     ed_data = [
       {
         data: json_data.basecase_data,
@@ -113,7 +105,9 @@
     options = {
       xaxis: {
         position: "top"
-      },
+      }
+    };
+    ({
       grid: {
         clickable: true,
         borderWidth: 1
@@ -128,12 +122,15 @@
           return cb;
         }
       }
-    };
+    });
     return pl_lines = $.plot($("#placeholder_top"), ed_data, options);
   };
 
   setPlaceholderControl = function(control_data) {
-    var measures_controls, pl_control;
+    var d4, d5, measures_controls, options, pl_control, pl_lines;
+    d4 = void 0;
+    d5 = void 0;
+    pl_lines = void 0;
     options = {
       xaxis: {
         position: "bottom"
@@ -203,16 +200,24 @@
     });
   };
 
-  showTooltip = function(x, y, contents) {
-    return $('<div id="tooltip">#{contents}</div>').css({
-      position: 'absolute',
-      display: 'none',
-      top: y - 35,
-      left: x + 5,
-      border: '1px solid #fdd',
-      padding: '2px',
-      backgroundcolor: '#fee'
-    }).appendTo("body").fadeIn(200);
+  options = {
+    xaxis: {
+      position: "top"
+    },
+    grid: {
+      clickable: true,
+      borderWidth: 1
+    },
+    legend: {
+      show: true,
+      noColumns: 4,
+      container: $("#placeholder_top_legend"),
+      labelFormatter: function(label, series) {
+        var cb;
+        cb = label;
+        return cb;
+      }
+    }
   };
 
   $(document).ready(function() {
