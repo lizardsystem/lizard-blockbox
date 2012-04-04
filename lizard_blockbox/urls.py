@@ -15,8 +15,11 @@ urlpatterns = patterns(
     url(r'^api/reference/',
         'lizard_blockbox.views.reference_json',
         name="reference_json"),
-    url(r'^api/measure/',
-        'lizard_blockbox.views.measure_json',
-        name="measure_json"),
+    url(r'^api/measures/calculated/',
+        'lizard_blockbox.views.calculated_measures_json',
+        name="calculated_measures_json"),
+    url(r'^api/measures/list/',
+        'lizard_blockbox.views.measure_list_json',
+        name="measure_list_json"),
     )
 urlpatterns += debugmode_urlpatterns()

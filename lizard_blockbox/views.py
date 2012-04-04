@@ -29,7 +29,7 @@ def reference_json(request):
     return response
 
 
-def measure_json(request):
+def calculated_measures_json(request):
     """Fetch dummy measure data and JSON it for a prelimnary frontpage graph.
     """
 
@@ -52,4 +52,13 @@ def measure_json(request):
                for i in wld],
               response)
 
+    return response
+
+
+def list_measures_json(request):
+    """Return a list with all known measures."""
+
+    measures = models.Measures.objects.all().values('name', 'short_name')
+    response = HttpResponse(mimetype='application/json')
+    json.dump([i for i in measures], response)
     return response
