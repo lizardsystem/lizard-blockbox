@@ -224,6 +224,26 @@
     return setFlotSeries();
   });
 
+  $('.btn.collapse-rightbar').click(function() {
+    var doit;
+    clearTimeout(doit);
+    return doit = setTimeout(function() {
+      $('#placeholder_top_legend').empty();
+      $('#placeholder_top').empty();
+      $('#placeholder_control').empty();
+      $('#placeholder_control_legend').empty();
+      $('#placeholder_top_legend').css('width', '100%');
+      $('#placeholder_top').css('width', '100%');
+      $('#placeholder_control').css('width', '100%');
+      $('#placeholder_control_legend').css('width', '100%');
+      $('#placeholder_top_legend').css('height', '0px');
+      $('#placeholder_top').css('height', '150px');
+      $('#placeholder_control').css('height', '100px');
+      $('#placeholder_control_legend').css('height', '100px');
+      return setFlotSeries();
+    }, 500);
+  });
+
   doit = void 0;
 
   $(window).resize(function() {
