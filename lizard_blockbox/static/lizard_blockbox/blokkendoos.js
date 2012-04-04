@@ -1,5 +1,5 @@
 (function() {
-  var Measure, MeasureList, MeasureListView, MeasureView, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+  var Measure, MeasureList, MeasureListView, MeasureView, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
 
   Measure = Backbone.Model.extend({
     defaults: {
@@ -222,6 +222,27 @@
 
   $(document).ready(function() {
     return setFlotSeries();
+  });
+
+  doit = void 0;
+
+  $(window).resize(function() {
+    clearTimeout(doit);
+    return doit = setTimeout(function() {
+      $('#placeholder_top_legend').empty();
+      $('#placeholder_top').empty();
+      $('#placeholder_control').empty();
+      $('#placeholder_control_legend').empty();
+      $('#placeholder_top_legend').css('width', '100%');
+      $('#placeholder_top').css('width', '100%');
+      $('#placeholder_control').css('width', '100%');
+      $('#placeholder_control_legend').css('width', '100%');
+      $('#placeholder_top_legend').css('height', '0px');
+      $('#placeholder_top').css('height', '150px');
+      $('#placeholder_control').css('height', '100px');
+      $('#placeholder_control_legend').css('height', '100px');
+      return setFlotSeries();
+    }, 100);
   });
 
 }).call(this);
