@@ -20,8 +20,6 @@ MeasureView = Backbone.View.extend
         @model.bind('change', @render, @)
     
     render: ->
-        console.log "MeasureView.render()"
-        console.log "model.view.el:", @el
         @$el.html """
             <a href="#" class="padded-sidebar-item workspace-acceptable has_popover" data-content="#{@model.toJSON().description}"'>
                 #{@model.toJSON().name}
@@ -38,28 +36,19 @@ MeasureListView = Backbone.View.extend
     id: 'measures-view'
 
     addOne: (measure) ->
-        console.log "MeasureListView.addOne()"
         view = new MeasureView(model:measure)
         @$el.append(view.render().el)
-        console.log @
-        console.log "--->", @$el
         
     addAll: ->
-        # console.log "MeasureListView.addAll()"
-        measure_list.fetch()
         measure_list.each @addOne
 
     initialize: ->
-        # console.log "MeasureListView.init()"
-        # console.log "@el:", @el
         measure_list.bind 'add', @addOne, @
         measure_list.bind 'reset', @addAll, @
         measure_list.fetch({add:true})
         @render()
 
     render: ->
-        # console.log "MeasureListView.render()"
-        # console.log "Hello from Backbone!"        
         @
 
 

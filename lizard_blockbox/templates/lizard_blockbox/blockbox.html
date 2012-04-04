@@ -10,9 +10,22 @@
     <script type="text/javascript"
     		   src="{{ STATIC_URL }}lizard_blockbox/blokkendoos.js">
     </script>
+    <script type="text/javascript"
+    		   src="{{ STATIC_URL }}lizard_blockbox/data.js">
+    </script>
+    
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/flot/excanvas.min.js"></script><![endif]-->
    <script type="text/javascript"
 		   src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.js">
    </script>
+   <script type="text/javascript"
+		   src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.symbol.js">
+   </script>
+   
+   <script type="text/javascript"
+   		   src="{{ STATIC_URL }}lizard_blockbox/graph_with_flot.js">
+   </script>
+   
 
    <script type="text/javascript">
 	 var selectControl, selectedFeature;
@@ -82,7 +95,7 @@
          // );
          // window.setFlotSeries(); 
      });
-
+    var FLOT_URL = "";
    </script>
    
    <script type="text/template" id="measure-template">
@@ -109,9 +122,10 @@
   <div id="blockbox">
     <div id="lizard-blockbox-graph">
       {% block lizard-blockbox-graph %}
-      <div id="labeler" style="width:800px;height:20px;marging:0px;font-size:8pt"></div>
-      <div id="placeholder_top" style="width:800px;height:120px;marging:0px;font-size:8pt"></div>
-      <div id="placeholder" style="width:800px;height:100px;marging:0px;font-size:8pt;"></div>
+      <div id="placeholder_top_legend" style="width:450px;height:50px;"></div>
+      <div id="placeholder_top" style="width:450px;height:150px;"></div>
+      <div id="placeholder_control" style="width:450px;height:100px;"></div>
+      <div id="placeholder_control_legend" style="width:450px;height:100px;"></div>
       {% endblock %}
     </div
     {{ block.super }}
