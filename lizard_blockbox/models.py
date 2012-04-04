@@ -15,6 +15,11 @@ class Reach(models.Model):
 
 
 class RiverSegment(models.Model):
+    """
+    A RiverSegement
+
+    """
+
     #branch = models.CharField(max_length=100)
     location = models.IntegerField()
 
@@ -23,6 +28,11 @@ class RiverSegment(models.Model):
 
 
 class Scenario(models.Model):
+    """
+    A Scenario for the BlockBox.
+
+    """
+
     name = models.CharField(max_length=100)
 
     def __unicode__(self):
@@ -30,6 +40,12 @@ class Scenario(models.Model):
 
 
 class Year(models.Model):
+    """A year for the blockbox
+
+    Corresponding values are calculated with respect to this year.
+
+    """
+
     year = models.IntegerField()
 
     def __unicode__(self):
@@ -37,6 +53,10 @@ class Year(models.Model):
 
 
 class FloodingChance(models.Model):
+    """The FloodingChance
+
+    """
+
     name = models.CharField(max_length=10)
 
     def __unicode__(self):
@@ -44,6 +64,13 @@ class FloodingChance(models.Model):
 
 
 class Measure(models.Model):
+    """A Measure
+
+    The name of the measure and the short name defined for reference
+    with the spreadsheets.
+
+    """
+
     name = models.CharField(max_length=100, blank=True, null=True)
     short_name = models.CharField(max_length=100, blank=True, null=True)
 
@@ -57,31 +84,49 @@ class Measure(models.Model):
         # model, not specifically *this* model.
 
 
-class Delta(models.Model):
-    riversegment = models.ForeignKey(RiverSegment)
-    measure = models.ForeignKey(Measure)
-    scenario = models.ForeignKey(Scenario)
-    year = models.ForeignKey(Year)
-    flooding_chance = models.ForeignKey(FloodingChance)
-
-    delta = models.DecimalField(max_digits=6, decimal_places=4)
-
-    def __unicode__(self):
-        return '%s %s %s %s Reference: %s Delta: %s' % (
-            self.riversegment, self.measure, self.scenario,
-            self.year, self.flooding_chance, self.delta)
-
-
 class ReferenceValue(models.Model):
+    """Reference Value for the water height
+
+    per Riversegment, Measure, Scenario, Year and Flooding Chance.
+
+    """
     riversegment = models.ForeignKey(RiverSegment)
     scenario = models.ForeignKey(Scenario)
     year = models.ForeignKey(Year)
     flooding_chance = models.ForeignKey(FloodingChance)
 
-    reference = models.DecimalField(max_digits=6, decimal_places=4)
-    target = models.DecimalField(max_digits=6, decimal_places=4)
+    reference = models.FloatField()
+    target = models.FloatField()
+
+    class Meta:
+        unique_together = ('riversegment', 'scenario', 'year',
+                           'flooding_chance')
 
     def __unicode__(self):
         return '%s %s %s Reference: %s' % (
             self.riversegment, self.scenario,
             self.year, self.flooding_chance)
+
+
+class WaterLevelDifference(models.Model):
+    """Water Level Difference
+
+    per Riversegment, Measure, Scenario, Year and Flooding Chance.
+
+    Dutch: *peilverschil*.
+
+    """
+
+    riversegment = models.ForeignKey(RiverSegment)
+    measure = models.ForeignKey(Measure)
+    scenario = models.ForeignKey(Scenario)
+    year = models.ForeignKey(Year)
+    flooding_chance = models.ForeignKey(FloodingChance)
+    reference_value = models.ForeignKey(ReferenceValue)
+
+    level_difference = models.FloatField()
+
+    def __unicode__(self):
+        return '%s %s %s %s Reference: %s Delta: %s' % (
+            self.riversegment, self.measure, self.scenario,
+            self.year, self.flooding_chance, self.level_difference)
