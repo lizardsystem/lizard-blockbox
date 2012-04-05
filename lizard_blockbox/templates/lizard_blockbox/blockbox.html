@@ -91,6 +91,12 @@
     }
 
 	 $().ready(function() {
+         $.getJSON("{{ STATIC_URL }}lizard_blockbox/QS.json",
+             function(json){
+                 JSONTooltip('QS', json);
+             }
+         );
+
          $.getJSON("{{ STATIC_URL }}lizard_blockbox/IVM_deel1.json",
              function(json){
                  JSONTooltip('IVM deel 1', json);

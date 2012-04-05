@@ -22,7 +22,7 @@ class RiverSegment(gis_models.Model):
     """
 
     location = models.IntegerField()
-    the_geom = gis_models.PointField(srid='4326', null=True, blank=True)
+    the_geom = gis_models.PointField(srid=4326, null=True, blank=True)
     objects = gis_models.GeoManager()
 
     def __unicode__(self):
