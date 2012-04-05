@@ -1,4 +1,5 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
+from django.contrib.gis.db import models as gis_models
 from django.db import models
 
 
@@ -14,14 +15,15 @@ class Reach(models.Model):
         help_text=u"Slug will be automatically generated from the name.")
 
 
-class RiverSegment(models.Model):
+class RiverSegment(gis_models.Model):
     """
     A RiverSegement
 
     """
 
-    #branch = models.CharField(max_length=100)
     location = models.IntegerField()
+    the_geom = gis_models.PointField(srid='4326', null=True, blank=True)
+    objects = gis_models.GeoManager()
 
     def __unicode__(self):
         return '%i' % self.location

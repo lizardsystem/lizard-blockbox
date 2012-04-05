@@ -92,6 +92,12 @@
                  JSONLayer('Rijntak', json);
              }
          );
+	     $.getJSON("/blokkendoos/api/rivers/maas/",
+             function(json){
+                 JSONLayer('Maas', json);
+             }
+         );
+
      });
    </script>
 

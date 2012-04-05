@@ -4,6 +4,7 @@ from django.utils import simplejson as json
 from lizard_map.views import MapView
 
 from lizard_blockbox import models
+from lizard_map.coordinates import transform_point
 
 
 class BlockboxView(MapView):
@@ -60,5 +61,23 @@ def list_measures_json(request):
 
     measures = models.Measure.objects.all().values('name', 'short_name')
     response = HttpResponse(mimetype='application/json')
-    json.dump([i for i in measures], response)
+    json.dump(list(measures), response)
+    return response
+
+
+def maas_river_json(request):
+    """Return the maas kilometers shape in GeoJSON."""
+
+    features_geometry = [
+        {'type': "Feature",
+         'properties': {'MODELKM': segment.location},
+         'geometry': json.loads(transform_point(segment.the_geom.x,
+                                     segment.the_geom.y,
+                                     from_proj='wgs84',
+                                     to_proj='google').json)
+         } for segment in models.RiverSegment.objects.all()]
+
+    response = HttpResponse(mimetype='application/json')
+    json.dump({'type': 'FeatureCollection',
+               'features': features_geometry}, response)
     return response

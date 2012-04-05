@@ -3,10 +3,12 @@ import xlrd
 
 from optparse import make_option
 
+from django.contrib.gis.geos import Point
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from lizard_blockbox import models
+from lizard_map.coordinates import transform_point
 
 
 class Command(BaseCommand):
@@ -63,8 +65,14 @@ class Command(BaseCommand):
             # Only use a kilomter resolution, which are integers
             if not location.is_integer():
                 continue
-            riversegment, _ = models.RiverSegment.objects.get_or_create(
-                location=row[0])
+            try:
+                riversegment = models.RiverSegment.objects.get(
+                    location=row[0])
+            except models.RiverSegment.DoesNotExist:
+                the_geom = transform_point(
+                    row[1], row[2], from_proj='rd', to_proj='wgs84')
+                riversegment = models.RiverSegment.objects.create(
+                    location=row[0], the_geom=the_geom)
             # XXX: Named tuple?
             # Easy datastructure for the columns.
             chances = ((flooding_T250, 3, 7), (flooding_T1250, 4, 8))
