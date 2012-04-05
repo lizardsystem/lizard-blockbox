@@ -2,6 +2,8 @@
 from django.http import HttpResponse
 from django.utils import simplejson as json
 from lizard_map.views import MapView
+from lizard_ui.layout import Action
+from django.utils.translation import ugettext as _
 
 from lizard_blockbox import models
 from lizard_map.coordinates import transform_point
@@ -11,6 +13,22 @@ class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
     template_name = 'lizard_blockbox/blockbox.html'
     edit_link = '/admin/lizard_blockbox/'
+
+    @property
+    def content_actions(self):
+        actions = super(BlockboxView, self).content_actions
+        to_table_text = _('Show table')
+        to_map_text = _('Show map')
+        switch_map_and_table = Action(
+            name=to_table_text,
+            description=_('Switch between a graph+map view and a graph+table '
+                          'view.'),
+            icon='icon-random',
+            data_attributes={'to-table-text': to_table_text,
+                             'to-map-text': to_map_text},
+            klass='toggle_map_and_table')
+        actions.insert(0, switch_map_and_table)
+        return actions
 
 
 def reference_json(request):
@@ -46,7 +64,7 @@ def calculated_measures_json(request):
     json.dump([{'riversegement': i['riversegment__location'],
                 'difference_reference': i['level_difference'],
                 'difference_target': ((i['level_difference'] +
-                                      i['reference_value__reference']) -
+                                       i['reference_value__reference']) -
                                       i['reference_value__target']),
                 'absolute': (i['level_difference'] +
                              i['reference_value__reference'])}

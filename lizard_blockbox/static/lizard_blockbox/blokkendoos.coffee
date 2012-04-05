@@ -19,14 +19,14 @@ MeasureList = Backbone.Collection.extend
 # View for single measure li element
 MeasureView = Backbone.View.extend
     tagName: 'li'
-    
+
     # template: _.template $('#measure-template').html()
-    
+
     initialize: ->
         @model.bind('change', @render, @)
-    
+
     render: ->
-        @$el.html """<a href="#" class="padded-sidebar-item workspace-acceptable has_popover" data-content="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a>"""
+        @$el.html """<a href="#" class="padded-sidebar-item" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a>"""
         # @$el.html(@template(@model.toJSON()))
         @
 
@@ -34,13 +34,13 @@ MeasureView = Backbone.View.extend
 # View for measures list
 MeasureListView = Backbone.View.extend
     el: $('#measures-list')
-    
+
     id: 'measures-view'
 
     addOne: (measure) ->
         view = new MeasureView(model:measure)
         @$el.append(view.render().el)
-        
+
     addAll: ->
         measure_list.each @addOne
 
@@ -143,7 +143,7 @@ setPlaceholderControl = (control_data) ->
     d4 = undefined
     d5 = undefined
     pl_lines = undefined
-    
+
     options =
         xaxis:
             position: "bottom"
@@ -226,8 +226,8 @@ options =
 
 $(document).ready ->
     setFlotSeries()
-    
-    
+
+
 
 
 $('.btn.collapse-sidebar').click ->
@@ -247,7 +247,7 @@ $('.btn.collapse-sidebar').click ->
         $('#placeholder_top').css('height', '150px')
         $('#placeholder_control').css('height', '100px')
         $('#placeholder_control_legend').css('height', '100px')
-    
+
         setFlotSeries()
     ,500)
 
@@ -264,7 +264,7 @@ $('.btn.collapse-rightbar').click ->
         $('#placeholder_top').css('width', '100%')
         $('#placeholder_control').css('width', '100%')
         $('#placeholder_control_legend').css('width', '100%')
-    
+
         $('#placeholder_top_legend').css('height', '0px')
         $('#placeholder_top').css('height', '150px')
         $('#placeholder_control').css('height', '100px')
@@ -272,6 +272,24 @@ $('.btn.collapse-rightbar').click ->
 
         setFlotSeries()
     ,500)
+
+
+$('.toggle_map_and_table').click (e) ->
+    e.preventDefault()
+    link = $('.toggle_map_and_table')
+    parent = link.parent()
+    to_table_text = parent.attr('data-to-table-text')
+    to_map_text = parent.attr('data-to-map-text')
+    if window.table_or_map == 'map'
+        $('#map').hide 500, () =>
+            $('#blockbox-table').show(500)
+            $('.action-text', link).text(to_map_text)
+        window.table_or_map = 'table'
+    else
+        $('#blockbox-table').hide 500, () =>
+            $('#map').show(500)
+            $('.action-text', link).text(to_table_text)
+        window.table_or_map = 'map'
 
 
 doit = undefined
@@ -282,18 +300,20 @@ $(window).resize ->
         $('#placeholder_top').empty()
         $('#placeholder_control').empty()
         $('#placeholder_control_legend').empty()
-        
+
         $('#placeholder_top_legend').css('width', '100%')
         $('#placeholder_top').css('width', '100%')
         $('#placeholder_control').css('width', '100%')
         $('#placeholder_control_legend').css('width', '100%')
-        
+
         $('#placeholder_top_legend').css('height', '0px')
         $('#placeholder_top').css('height', '150px')
         $('#placeholder_control').css('height', '100px')
         $('#placeholder_control_legend').css('height', '100px')
-        
+
         setFlotSeries()
     , 100)
-    
-    
+
+
+$(document).ready ->
+    window.table_or_map = "map"
