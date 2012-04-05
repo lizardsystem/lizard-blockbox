@@ -10,8 +10,11 @@ urlpatterns = patterns(
     '',
     url(r'^$',
         BlockboxView.as_view(),
-        {},
         name='lizard_blockbox.home'),
+    url(r'^table/$',
+        BlockboxView.as_view(
+            template_name='lizard_blockbox/blockbox-table.html'),
+        name='lizard_blockbox.table'),
     url(r'^api/reference/',
         'lizard_blockbox.views.reference_json',
         name="reference_json"),
