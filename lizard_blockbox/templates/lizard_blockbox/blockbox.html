@@ -6,14 +6,14 @@
     </script>
     <script type="text/javascript"
     		   src="{{ STATIC_URL }}lizard_blockbox/backbone.js">
-    </script>    
+    </script>
     <script type="text/javascript"
     		   src="{{ STATIC_URL }}lizard_blockbox/blokkendoos.js">
     </script>
     <script type="text/javascript"
     		   src="{{ STATIC_URL }}lizard_blockbox/data.js">
     </script>
-    
+
     <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/flot/excanvas.min.js"></script><![endif]-->
    <script type="text/javascript"
 		   src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.js">
@@ -21,11 +21,11 @@
    <script type="text/javascript"
 		   src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.symbol.js">
    </script>
-   
+
    <script type="text/javascript"
    		   src="{{ STATIC_URL }}lizard_blockbox/graph_with_flot.js">
    </script>
-   
+
 
    <script type="text/javascript">
 	 var selectControl, selectedFeature;
@@ -83,25 +83,25 @@
 
 
 	 $().ready(function() {
-         // $.getJSON("{{ STATIC_URL }}lizard_blockbox/IVM_deel1.json",
-         //     function(json){
-         //         JSONTooltip('IVM deel 1', json);
-         //     }
-         // );
-         // $.getJSON("{{ STATIC_URL }}lizard_blockbox/rijntakken.json",
-         //     function(json){
-         //         JSONLayer('Rijntak', json);
-         //     }
-         // );
-         // window.setFlotSeries(); 
+         $.getJSON("{{ STATIC_URL }}lizard_blockbox/IVM_deel1.json",
+             function(json){
+                 JSONTooltip('IVM deel 1', json);
+             }
+         );
+         $.getJSON("{{ STATIC_URL }}lizard_blockbox/rijntakken.json",
+             function(json){
+                 JSONLayer('Rijntak', json);
+             }
+         );
+         window.setFlotSeries();
      });
     var FLOT_URL = "";
    </script>
-   
+
    <script type="text/template" id="measure-template">
         <strong>Measure</strong>
    </script>
-   
+
    {{ block.super }}
 {% endblock %}
 
