@@ -18,7 +18,7 @@ MeasureList = Backbone.Collection.extend
 
 # View for single measure li element
 MeasureView = Backbone.View.extend
-    tagName: 'li'
+    tagName: 'tr'
 
     # template: _.template $('#measure-template').html()
 
@@ -26,14 +26,15 @@ MeasureView = Backbone.View.extend
         @model.bind('change', @render, @)
 
     render: ->
-        @$el.html """<a href="#" class="padded-sidebar-item" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a>"""
+        # @$el.html """<a href="#" class="padded-sidebar-item" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a>"""
         # @$el.html(@template(@model.toJSON()))
+        @$el.html """<td>#{@model.toJSON().short_name}</td><td>(type)</td><td>(start km)</td>"""
         @
 
 
 # View for measures list
 MeasureListView = Backbone.View.extend
-    el: $('#measures-list')
+    el: $('#measures-table')
 
     id: 'measures-view'
 
@@ -285,6 +286,7 @@ $('.toggle_map_and_table').click (e) ->
             $('#blockbox-table').show(500)
             $('.action-text', link).text(to_map_text)
         window.table_or_map = 'table'
+        $('#blockbox-table').height($("#content").height() - 250)
     else
         $('#blockbox-table').hide 500, () =>
             $('#map').show(500)

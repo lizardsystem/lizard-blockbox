@@ -52,7 +52,7 @@
 
     function onFeatureHighlight(feature){
         selectedFeature = feature;
-        ff = feature.feature
+        ff = feature.feature;
         popup = new OpenLayers.Popup.FramedCloud("chicken",
             ff.geometry.getBounds().getCenterLonLat(),
             null,
@@ -68,7 +68,6 @@
         feature.feature.popup.destroy();
         feature.feature.popup = null;
     }
-
 
 
     function JSONTooltip(name, json) {
@@ -130,31 +129,36 @@
 {% endblock css %}
 
 {% block sidebar %}
-<h3>Maatregelen</h3>
-<ul id="measures-list" class="without-bullets" />
+  <h3>Geselecteerde maatregelen</h3>
+  <ul id="selected-measures-list" class="without-bullets" />
 {% endblock %}
 
 {% block content %}
-  <div id="blockbox">
-    <div id="lizard-blockbox-graph">
-      {% block lizard-blockbox-graph %}
-      <div id="placeholder_top_legend"
-           style="width:100%;height:0px;"></div>
-      <div id="placeholder_top"
-           style="width:100%;height:150px;"></div>
-      <!-- placeholder_top is the actual graph. -->
-      <div id="placeholder_control"
-           style="width:100%;height:100px;"></div>
-      <!-- placeholder_control is the graph part with the measures. -->
-      <div id="placeholder_control_legend"
-           style="width:100%;height:0px;"></div>
-      <!-- Note: this placeholder_control_legend isn't shown right now. -->
-      {% endblock %}
-    </div>
-    <div id="blockbox-table">
-      TODO: table here.
-    </div>
-
-    {{ block.super }}
+  <div id="lizard-blockbox-graph">
+    {% block lizard-blockbox-graph %}
+    <div id="placeholder_top_legend"
+         style="width:100%;height:0px;"></div>
+    <div id="placeholder_top"
+         style="width:100%;height:150px;"></div>
+    <!-- placeholder_top is the actual graph. -->
+    <div id="placeholder_control"
+         style="width:100%;height:100px;"></div>
+    <!-- placeholder_control is the graph part with the measures. -->
+    <!-- <div id="placeholder_control_legend"
+         style="width:100%;height:0px;"></div> -->
+    <!-- Note: this placeholder_control_legend isn't shown right now. -->
+    {% endblock %}
   </div>
+  <div id="blockbox-table">
+    <h2>Alle maatregelen</h2>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr><th>Naam</th><th>Type</th><th>Start km</th></tr>
+      </thead>
+      <tbody id="measures-table">
+      </tbody>
+    </table>
+  </div>
+
+  {{ block.super }}
 {% endblock %}
