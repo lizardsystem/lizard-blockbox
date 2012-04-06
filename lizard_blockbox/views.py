@@ -49,7 +49,7 @@ def reference_json(request):
 
 
 def calculated_measures_json(request):
-    """Fetch dummy measure data and JSON it for a prelimnary frontpage graph.
+    """Fetch dummy measure data and JSON it for a preliminary frontpage graph.
     """
 
     flooding_chance = models.FloodingChance.objects.filter(name="T250")
@@ -78,6 +78,8 @@ def list_measures_json(request):
     """Return a list with all known measures."""
 
     measures = models.Measure.objects.all().values('name', 'short_name')
+    for measure in measures:
+        measure['selected'] = False
     response = HttpResponse(mimetype='application/json')
     json.dump(list(measures), response)
     return response

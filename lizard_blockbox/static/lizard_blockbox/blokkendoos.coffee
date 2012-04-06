@@ -16,7 +16,7 @@ MeasureList = Backbone.Collection.extend
     url: "/blokkendoos/api/measures/list/"
 
 
-# View for single measure li element
+# View for single measure table element
 MeasureView = Backbone.View.extend
     tagName: 'tr'
 
@@ -29,6 +29,18 @@ MeasureView = Backbone.View.extend
         # @$el.html """<a href="#" class="padded-sidebar-item" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a>"""
         # @$el.html(@template(@model.toJSON()))
         @$el.html """<td>#{@model.toJSON().short_name}</td><td>(type)</td><td>(start km)</td>"""
+        @
+
+
+# View for single *selected* measure li element
+SelectedMeasureView = Backbone.View.extend
+    tagName: 'li'
+
+    initialize: ->
+        @model.bind('change', @render, @)
+
+    render: ->
+        @$el.html """<a href="#" class="padded-sidebar-item" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a>"""
         @
 
 
@@ -55,11 +67,36 @@ MeasureListView = Backbone.View.extend
         @
 
 
+# View for *selected* measures list
+SelectedMeasureListView = Backbone.View.extend
+    el: $('#selected-measures-list')
+
+    id: 'selected-measures-listtt'
+
+    addOne: (measure) ->
+        if measure.attributes.selected
+            view = new SelectedMeasureView(model:measure)
+            @$el.append(view.render().el)
+
+    addAll: ->
+        measure_list.each @addOne
+
+    initialize: ->
+        measure_list.bind 'add', @addOne, @
+        measure_list.bind 'reset', @addAll, @
+        measure_list.fetch({add:true})
+        @render()
+
+    render: ->
+        @
+
+
 # Instance of collection
 measure_list = new MeasureList()
 
 # Instance of measure list
 window.measureListView = new MeasureListView();
+window.selectedMeasureListView = new SelectedMeasureListView();
 
 
 
@@ -224,6 +261,7 @@ options =
         labelFormatter: (label, series) ->
             cb = label
             cb
+
 
 $(document).ready ->
     setFlotSeries()
