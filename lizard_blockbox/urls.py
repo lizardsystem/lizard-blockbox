@@ -14,7 +14,10 @@ urlpatterns = patterns(
     url(r'^table/$',
         BlockboxView.as_view(
             template_name='lizard_blockbox/blockbox-table.html'),
-        name='lizard_blockbox.table'),
+        name='lizard_blockbox_table'),
+    url(r'^toggle_measure/',
+        'lizard_blockbox.views.toggle_measure',
+        name='lizard_blockbox_toggle_measure'),
     url(r'^api/reference/',
         'lizard_blockbox.views.reference_json',
         name="reference_json"),

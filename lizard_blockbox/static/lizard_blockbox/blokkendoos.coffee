@@ -26,9 +26,7 @@ MeasureView = Backbone.View.extend
         @model.bind('change', @render, @)
 
     render: ->
-        # @$el.html """<a href="#" class="padded-sidebar-item" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a>"""
-        # @$el.html(@template(@model.toJSON()))
-        @$el.html """<td>#{@model.toJSON().short_name}</td><td>(type)</td><td>(start km)</td>"""
+        @$el.html """<td><a href="#" class="blockbox-toggle-measure" data-measure-id="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a></td><td>(type)</td><td>(start km)</td>"""
         @
 
 
@@ -40,7 +38,10 @@ SelectedMeasureView = Backbone.View.extend
         @model.bind('change', @render, @)
 
     render: ->
-        @$el.html """<a href="#" class="padded-sidebar-item" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a>"""
+        @$el.html """<a href="#" class="sidebar-measure blockbox-toggle-measure padded-sidebar-item" data-measure-id="#{@model.toJSON().short_name}" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a>"""
+        if not @model.attributes.selected
+            @$el.hide()
+
         @
 
 
@@ -61,7 +62,6 @@ MeasureListView = Backbone.View.extend
         measure_list.bind 'add', @addOne, @
         measure_list.bind 'reset', @addAll, @
         measure_list.fetch({add:true})
-        @render()
 
     render: ->
         @
@@ -71,12 +71,9 @@ MeasureListView = Backbone.View.extend
 SelectedMeasureListView = Backbone.View.extend
     el: $('#selected-measures-list')
 
-    id: 'selected-measures-listtt'
-
     addOne: (measure) ->
-        if measure.attributes.selected
-            view = new SelectedMeasureView(model:measure)
-            @$el.append(view.render().el)
+        view = new SelectedMeasureView(model:measure)
+        @$el.append(view.render().el)
 
     addAll: ->
         measure_list.each @addOne
@@ -84,8 +81,7 @@ SelectedMeasureListView = Backbone.View.extend
     initialize: ->
         measure_list.bind 'add', @addOne, @
         measure_list.bind 'reset', @addAll, @
-        measure_list.fetch({add:true})
-        @render()
+        # measure_list.fetch({add:true})
 
     render: ->
         @
@@ -100,6 +96,31 @@ window.selectedMeasureListView = new SelectedMeasureListView();
 
 
 
+$('.blockbox-toggle-measure').live 'click', ->
+    # e.preventDefault()
+    measure_id = $(@).attr('data-measure-id')
+    url = $('#blockbox-table').attr('data-measure-toggle-url')
+    $.ajax({
+            type: 'POST',
+            url: url,
+            data: {'measure_id': measure_id},
+            async: false,
+            success: (data) ->
+                window.location.reload()
+                #$(".sidebar-measure").each ->
+                #    measure = $(@)
+                #    console.log(data)
+                #    console.log("" + measure.attr('data-measure-shortname'))
+                #    if $.inArray("" + measure.attr('data-measure-shortname'), data) isnt -1
+                #        console.log("Showing")
+                #        measure.parent().show()
+                #    else
+                #        console.log("Hiding")
+                #        measure.parent().hide()
+        })
+    #measure_list.reset()
+    #measure_list.fetch()
+    #window.selectedMeasureListView.render()
 
 
 

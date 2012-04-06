@@ -8,6 +8,8 @@ from django.utils.translation import ugettext as _
 from lizard_blockbox import models
 from lizard_map.coordinates import transform_point
 
+SELECTED_MEASURES_KEY = 'selected_measures_key'
+
 
 class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
@@ -74,12 +76,35 @@ def calculated_measures_json(request):
     return response
 
 
+def _selected_measures(request):
+    """Return selected measures."""
+    if not SELECTED_MEASURES_KEY in request.session:
+        request.session[SELECTED_MEASURES_KEY] = set([])
+    return request.session[SELECTED_MEASURES_KEY]
+
+
+def toggle_measure(request):
+    """Toggle a measure on or off."""
+    if not request.POST:
+        return
+    measure_id = request.POST['measure_id']
+    selected_measures = _selected_measures(request)
+    if measure_id in selected_measures:
+        selected_measures.remove(measure_id)
+    else:
+        selected_measures.add(measure_id)
+    request.session[SELECTED_MEASURES_KEY] = selected_measures
+    return HttpResponse(json.dumps(list(selected_measures)))
+
+
 def list_measures_json(request):
     """Return a list with all known measures."""
 
     measures = models.Measure.objects.all().values('name', 'short_name')
+    selected_measures = _selected_measures(request)
     for measure in measures:
-        measure['selected'] = False
+        selected = measure['short_name'] in selected_measures
+        measure['selected'] = selected
     response = HttpResponse(mimetype='application/json')
     json.dump(list(measures), response)
     return response
