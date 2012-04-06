@@ -1,5 +1,7 @@
 {% extends "lizard_map/wms.html" %}
 
+{% load i18n %}
+
 {% block javascript-in-head %}
  {{ block.super }}
   <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/flot/excanvas.min.js"></script><![endif]-->
