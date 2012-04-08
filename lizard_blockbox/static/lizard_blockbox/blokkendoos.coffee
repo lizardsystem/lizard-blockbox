@@ -142,9 +142,12 @@ showTooltip = (x, y, contents) ->
 
 
 
-setFlotSeries = ->
-    setPlaceholderTop json_data.basecase_data, json_data.result_data
-    setPlaceholderControl json_data.measure_control_data
+setFlotSeries = (json_url="/static_media/lizard_blockbox/sample.json") ->
+    $.getJSON json_url, (data) ->
+        setPlaceholderTop data.basecase_data, data.result_data
+        setPlaceholderControl data.measure_control_data
+        
+
 
 
 refreshGraph = ->
@@ -154,7 +157,7 @@ refreshGraph = ->
 setPlaceholderTop = (basecase_data, result_data) ->
 
     ed_data = [
-        data: json_data.basecase_data
+        data: basecase_data
         points:
             show: true
             symbol: "diamond"
@@ -165,7 +168,7 @@ setPlaceholderTop = (basecase_data, result_data) ->
         color: "blue"
     ,
         label: "Serie 1"
-        data: json_data.result_data
+        data: result_data
         points:
             show: true
             symbol: "triangle"
@@ -261,6 +264,7 @@ setPlaceholderControl = (control_data) ->
 
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
         if item
+            console.log item
             pl_lines.unhighlight item.series, item.datapoint
             result_id = item.series.data[item.dataIndex][2].id
             refreshGraph()
@@ -282,11 +286,6 @@ options =
         labelFormatter: (label, series) ->
             cb = label
             cb
-
-
-$(document).ready ->
-    setFlotSeries()
-
 
 
 
@@ -378,3 +377,4 @@ $(window).resize ->
 
 $(document).ready ->
     window.table_or_map = "map"
+    setFlotSeries("/static_media/lizard_blockbox/sample.json")
