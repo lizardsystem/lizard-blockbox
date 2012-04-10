@@ -15,22 +15,22 @@ BlockboxRouter = Backbone.Router.extend
         console.log "map() route!"
         $('#blockbox-table').hide 500, () ->
             $('#map').show(500)
-            $('.action-text').text("Show table")
-            $('.action-text').parent().attr("href", "#table")
+            $('a.toggle_map_and_table span').text("Show table")
+            $('a.toggle_map_and_table').attr("href", "#table")
 
 
     table: ->
         console.log "table() route!"
         $('#map').hide 500, () ->
             $('#blockbox-table').show(500)
-            $('.action-text').text("Show map")
-            $('.action-text').parent().attr("href", "#map")
+            $('a.toggle_map_and_table span').text("Show map")
+            $('a.toggle_map_and_table').attr("href", "#map")
 
 
 
 app_router = new BlockboxRouter
 
-# Start Backbone history, a neccesary step for bookmarkable URLs
+# Start Backbone history, a required step for bookmarkable URLs
 Backbone.history.start()
 
 
