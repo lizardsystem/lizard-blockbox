@@ -11,10 +11,10 @@
 #     routes:
 #         "":     "index"
 #         "help": "help"
-#         
+#
 #     index: ->
 #         console.log "index() route!"
-# 
+#
 #     help: ->
 #         console.log "help() route!"
 
@@ -161,10 +161,10 @@ showTooltip = (x, y, contents) ->
 
 
 
-setFlotSeries = (json_url="/static_media/lizard_blockbox/sample.json") ->
+setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
     $.getJSON json_url, (data) ->
-        setPlaceholderTop data.basecase_data, data.result_data
-        setPlaceholderControl data.measure_control_data
+        setPlaceholderTop data
+        #setPlaceholderControl data.measure_control_data
 
 
 
@@ -173,14 +173,17 @@ refreshGraph = ->
     $.plot $("#placeholder_top"), ed_data, options
 
 
-setPlaceholderTop = (basecase_data, result_data) ->
+setPlaceholderTop = (json_data) ->
 
     DIAMOND_COLOR = "#105987"
     TRIANGLE_COLOR = "#E78B00"
     SQUARE_COLOR = "#122F64"
 
+    reference = ([num.location, num.reference_value] for num in json_data)
+    target = ([num.location, num.reference_target] for num in json_data)
+    measures = ([num.location, num.measures_level] for num in json_data)
     ed_data = [
-        data: basecase_data
+        data: reference
         points:
             show: true
             symbol: "diamond"
@@ -191,7 +194,7 @@ setPlaceholderTop = (basecase_data, result_data) ->
         color: DIAMOND_COLOR
     ,
         label: "Serie 1"
-        data: result_data
+        data: target
         points:
             show: true
             symbol: "triangle"
@@ -201,7 +204,21 @@ setPlaceholderTop = (basecase_data, result_data) ->
             show: true
             lineWidth: 2
 
-        color: TRIANGLE_COLOR
+        color: "red"
+    ,
+        label: "Measurements"
+        data: measures
+        points:
+            show: true
+            symbol: "triangle"
+            radius: 2
+
+        lines:
+            show: true
+            lineWidth: 2
+
+        color: "green"
+
     ]
 
     options =
@@ -403,4 +420,4 @@ $(window).resize ->
 
 $(document).ready ->
     window.table_or_map = "map"
-    setFlotSeries("/static_media/lizard_blockbox/sample.json")
+    setFlotSeries( "/blokkendoos/api/measures/calculated/")
