@@ -1,4 +1,6 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
+#from collections import defaultdict
+
 from django.http import HttpResponse
 from django.utils import simplejson as json
 from lizard_map.views import MapView
@@ -55,23 +57,35 @@ def calculated_measures_json(request):
     """
 
     flooding_chance = models.FloodingChance.objects.filter(name="T250")
-    measure = models.Measure.objects.get(short_name='maatregel13')
-    wld = models.WaterLevelDifference.objects.filter(
-        measure=measure, flooding_chance=flooding_chance).values(
+    selected_measures = _selected_measures(request)
+    measures = models.Measure.objects.filter(short_name__in=selected_measures)
+    water_level_diferences = models.WaterLevelDifference.objects.filter(
+        measure__in=measures, flooding_chance=flooding_chance).values(
         'riversegment__location', 'level_difference',
         'reference_value__reference', 'reference_value__target')
 
+    water_levels = {}
+    for diff in water_level_diferences:
+        #XXX: Refactor to use Default dict
+        location = diff['riversegment__location']
+        d = water_levels.get(location)
+        if d is None:
+            d = {'reference_value': diff['reference_value__reference'],
+                 'reference_target': diff['reference_value__target'],
+                 'difference_level': diff['level_difference']}
+        else:
+            d['difference_level'] += diff['level_difference']
+        water_levels[location] = d
+
     response = HttpResponse(mimetype='application/json')
 
-    json.dump([{'riversegement': i['riversegment__location'],
-                'difference_reference': i['level_difference'],
-                'difference_target': ((i['level_difference'] +
-                                       i['reference_value__reference']) -
-                                      i['reference_value__target']),
-                'absolute': (i['level_difference'] +
-                             i['reference_value__reference'])}
-               for i in wld],
-              response)
+    for value in water_levels.itervalues():
+        absolute = value['reference_value'] + value['difference_level']
+        value['water_level'] = absolute
+        value['difference_reference'] = absolute - value['reference_value']
+        value['difference_target'] = absolute - value['reference_target']
+
+    json.dump(water_levels, response)
 
     return response
 
