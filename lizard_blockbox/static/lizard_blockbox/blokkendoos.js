@@ -1,5 +1,22 @@
 (function() {
-  var Measure, MeasureList, MeasureListView, MeasureView, SelectedMeasureListView, SelectedMeasureView, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+  var BlockboxRouter, Measure, MeasureList, MeasureListView, MeasureView, SelectedMeasureListView, SelectedMeasureView, app_router, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+
+  BlockboxRouter = Backbone.Router.extend({
+    routes: {
+      "": "index",
+      "help": "help"
+    },
+    index: function() {
+      return console.log("index() route!");
+    },
+    help: function() {
+      return console.log("help() route!");
+    }
+  });
+
+  app_router = new BlockboxRouter;
+
+  Backbone.history.start();
 
   Measure = Backbone.Model.extend({
     defaults: {
