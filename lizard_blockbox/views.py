@@ -28,6 +28,7 @@ class BlockboxView(MapView):
             description=_('Switch between a graph+map view and a graph+table '
                           'view.'),
             icon='icon-random',
+            url='#table',
             data_attributes={'to-table-text': to_table_text,
                              'to-map-text': to_map_text},
             klass='toggle_map_and_table')
