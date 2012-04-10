@@ -3,14 +3,24 @@
 
   BlockboxRouter = Backbone.Router.extend({
     routes: {
-      "": "index",
-      "help": "help"
+      "map": "map",
+      "table": "table"
     },
-    index: function() {
-      return console.log("index() route!");
+    map: function() {
+      console.log("map() route!");
+      return $('#blockbox-table').hide(500, function() {
+        $('#map').show(500);
+        $('.action-text').text("Show table");
+        return $('.action-text').parent().attr("href", "#table");
+      });
     },
-    help: function() {
-      return console.log("help() route!");
+    table: function() {
+      console.log("table() route!");
+      return $('#map').hide(500, function() {
+        $('#blockbox-table').show(500);
+        $('.action-text').text("Show map");
+        return $('.action-text').parent().attr("href", "#map");
+      });
     }
   });
 
@@ -297,30 +307,6 @@
       }
     }
   };
-
-  $('.toggle_map_and_table').click(function(e) {
-    var link, parent, to_map_text, to_table_text,
-      _this = this;
-    e.preventDefault();
-    link = $('.toggle_map_and_table');
-    parent = link.parent();
-    to_table_text = parent.attr('data-to-table-text');
-    to_map_text = parent.attr('data-to-map-text');
-    if (window.table_or_map === 'map') {
-      $('#map').hide(500, function() {
-        $('#blockbox-table').show(500);
-        return $('.action-text', link).text(to_map_text);
-      });
-      window.table_or_map = 'table';
-      return $('#blockbox-table').height($("#content").height() - 250);
-    } else {
-      $('#blockbox-table').hide(500, function() {
-        $('#map').show(500);
-        return $('.action-text', link).text(to_table_text);
-      });
-      return window.table_or_map = 'map';
-    }
-  });
 
   $('.btn.collapse-sidebar').click(function() {
     var doit;

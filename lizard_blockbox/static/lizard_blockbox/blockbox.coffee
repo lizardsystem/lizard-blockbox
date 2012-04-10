@@ -8,14 +8,23 @@
 
 BlockboxRouter = Backbone.Router.extend
     routes:
-        "":     "index"
-        "help": "help"
+        "map":      "map"
+        "table":    "table"
         
-    index: ->
-        console.log "index() route!"
+    map: ->
+        console.log "map() route!"
+        $('#blockbox-table').hide 500, () ->
+            $('#map').show(500)
+            $('.action-text').text("Show table")
+            $('.action-text').parent().attr("href", "#table")
 
-    help: ->
-        console.log "help() route!"
+
+    table: ->
+        console.log "table() route!"
+        $('#map').hide 500, () ->
+            $('#blockbox-table').show(500)
+            $('.action-text').text("Show map")
+            $('.action-text').parent().attr("href", "#map")
 
 
 
@@ -319,23 +328,23 @@ options =
             cb
 
 
-$('.toggle_map_and_table').click (e) ->
-    e.preventDefault()
-    link = $('.toggle_map_and_table')
-    parent = link.parent()
-    to_table_text = parent.attr('data-to-table-text')
-    to_map_text = parent.attr('data-to-map-text')
-    if window.table_or_map == 'map'
-        $('#map').hide 500, () =>
-            $('#blockbox-table').show(500)
-            $('.action-text', link).text(to_map_text)
-        window.table_or_map = 'table'
-        $('#blockbox-table').height($("#content").height() - 250)
-    else
-        $('#blockbox-table').hide 500, () =>
-            $('#map').show(500)
-            $('.action-text', link).text(to_table_text)
-        window.table_or_map = 'map'
+# $('.toggle_map_and_table').click (e) ->
+#     e.preventDefault()
+#     link = $('.toggle_map_and_table')
+#     parent = link.parent()
+#     to_table_text = parent.attr('data-to-table-text')
+#     to_map_text = parent.attr('data-to-map-text')
+#     if window.table_or_map == 'map'
+#         $('#map').hide 500, () =>
+#             $('#blockbox-table').show(500)
+#             $('.action-text', link).text(to_map_text)
+#         window.table_or_map = 'table'
+#         $('#blockbox-table').height($("#content").height() - 250)
+#     else
+#         $('#blockbox-table').hide 500, () =>
+#             $('#map').show(500)
+#             $('.action-text', link).text(to_table_text)
+#         window.table_or_map = 'map'
 
 
 $('.btn.collapse-sidebar').click ->
