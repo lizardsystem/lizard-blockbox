@@ -3,8 +3,23 @@
 
 
 #######################################################
-# Backbone part                                          #
+# Backbone part                                       #
 #######################################################
+
+
+# BlockboxRouter = Backbone.Router.extend
+#     routes:
+#         "":     "index"
+#         "help": "help"
+#         
+#     index: ->
+#         console.log "index() route!"
+# 
+#     help: ->
+#         console.log "help() route!"
+
+
+
 
 # Currently renders the measures on the left...
 
@@ -160,6 +175,10 @@ refreshGraph = ->
 
 setPlaceholderTop = (basecase_data, result_data) ->
 
+    DIAMOND_COLOR = "#105987"
+    TRIANGLE_COLOR = "#E78B00"
+    SQUARE_COLOR = "#122F64"
+
     ed_data = [
         data: basecase_data
         points:
@@ -169,7 +188,7 @@ setPlaceholderTop = (basecase_data, result_data) ->
         lines:
             show: true
 
-        color: "blue"
+        color: DIAMOND_COLOR
     ,
         label: "Serie 1"
         data: result_data
@@ -182,7 +201,7 @@ setPlaceholderTop = (basecase_data, result_data) ->
             show: true
             lineWidth: 2
 
-        color: "red"
+        color: TRIANGLE_COLOR
     ]
 
     options =
@@ -206,6 +225,10 @@ setPlaceholderTop = (basecase_data, result_data) ->
 
 
 setPlaceholderControl = (control_data) ->
+    DIAMOND_COLOR = "#105987"
+    TRIANGLE_COLOR = "#E78B00"
+    SQUARE_COLOR = "#122F64"
+
     d4 = undefined
     d5 = undefined
     pl_lines = undefined
@@ -237,7 +260,7 @@ setPlaceholderControl = (control_data) ->
         lines:
             show: false
 
-        color: "red"
+        color: SQUARE_COLOR
     ,
         label: "Serie 3"
         data: d4
@@ -249,7 +272,7 @@ setPlaceholderControl = (control_data) ->
         lines:
             show: false
 
-        color: "green"
+        color: TRIANGLE_COLOR
     ,
         data: d5
         points:
@@ -291,6 +314,24 @@ options =
             cb = label
             cb
 
+
+$('.toggle_map_and_table').click (e) ->
+    e.preventDefault()
+    link = $('.toggle_map_and_table')
+    parent = link.parent()
+    to_table_text = parent.attr('data-to-table-text')
+    to_map_text = parent.attr('data-to-map-text')
+    if window.table_or_map == 'map'
+        $('#map').hide 500, () =>
+            $('#blockbox-table').show(500)
+            $('.action-text', link).text(to_map_text)
+        window.table_or_map = 'table'
+        $('#blockbox-table').height($("#content").height() - 250)
+    else
+        $('#blockbox-table').hide 500, () =>
+            $('#map').show(500)
+            $('.action-text', link).text(to_table_text)
+        window.table_or_map = 'map'
 
 
 $('.btn.collapse-sidebar').click ->
@@ -335,25 +376,6 @@ $('.btn.collapse-rightbar').click ->
 
         setFlotSeries()
     ,500)
-
-
-$('.toggle_map_and_table').click (e) ->
-    e.preventDefault()
-    link = $('.toggle_map_and_table')
-    parent = link.parent()
-    to_table_text = parent.attr('data-to-table-text')
-    to_map_text = parent.attr('data-to-map-text')
-    if window.table_or_map == 'map'
-        $('#map').hide 500, () =>
-            $('#blockbox-table').show(500)
-            $('.action-text', link).text(to_map_text)
-        window.table_or_map = 'table'
-        $('#blockbox-table').height($("#content").height() - 250)
-    else
-        $('#blockbox-table').hide 500, () =>
-            $('#map').show(500)
-            $('.action-text', link).text(to_table_text)
-        window.table_or_map = 'map'
 
 
 doit = undefined
