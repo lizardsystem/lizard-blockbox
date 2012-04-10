@@ -71,8 +71,9 @@ def calculated_measures_json(request):
         location = diff['riversegment__location']
         d = water_levels.get(location)
         if d is None:
-            d = {'reference_value': diff['reference_value__reference'],
-                 'reference_target': diff['reference_value__target'],
+            ref = diff['reference_value__reference']
+            d = {'reference_value': 0,
+                 'reference_target': diff['reference_value__target'] - ref,
                  'difference_level': diff['level_difference']}
         else:
             d['difference_level'] += diff['level_difference']
@@ -81,11 +82,8 @@ def calculated_measures_json(request):
     response = HttpResponse(mimetype='application/json')
 
     for key, value in water_levels.iteritems():
-        absolute = value['reference_value'] + value['difference_level']
         value['location'] = key
-        value['measures_level'] = absolute
-        value['difference_to_reference'] = absolute - value['reference_value']
-        value['difference_to_target'] = absolute - value['reference_target']
+        value['measures_level'] = value['difference_level']
 
     # Put it in a list because can't figure out how to
     # parse it correctly in coffeescript

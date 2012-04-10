@@ -198,7 +198,7 @@
         },
         color: DIAMOND_COLOR
       }, {
-        label: "Serie 1",
+        label: "Doel waarde",
         data: target,
         points: {
           show: true,
