@@ -2,19 +2,23 @@
 # Backbone part                                       #
 #######################################################
 
+BlockboxRouter = Backbone.Router.extend
+    routes:
+        "":     "index"
+        "help": "help"
+        
+    index: ->
+        console.log "index() route!"
 
-# BlockboxRouter = Backbone.Router.extend
-#     routes:
-#         "":     "index"
-#         "help": "help"
-#         
-#     index: ->
-#         console.log "index() route!"
-# 
-#     help: ->
-#         console.log "help() route!"
+    help: ->
+        console.log "help() route!"
 
 
+
+app_router = new BlockboxRouter
+
+# Start Backbone history, a neccesary step for bookmarkable URLs
+Backbone.history.start()
 
 
 # Currently renders the measures on the left...
