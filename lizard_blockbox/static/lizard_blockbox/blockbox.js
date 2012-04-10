@@ -150,10 +150,9 @@
   };
 
   setFlotSeries = function(json_url) {
-    if (json_url == null) json_url = "/static_media/lizard_blockbox/sample.json";
+    if (json_url == null) json_url = "/blokkendoos/api/measures/calculated/";
     return $.getJSON(json_url, function(data) {
-      setPlaceholderTop(data.basecase_data, data.result_data);
-      return setPlaceholderControl(data.measure_control_data);
+      return setPlaceholderTop(data);
     });
   };
 
@@ -161,11 +160,38 @@
     return $.plot($("#placeholder_top"), ed_data, options);
   };
 
-  setPlaceholderTop = function(basecase_data, result_data) {
-    var ed_data, options, pl_lines;
+  setPlaceholderTop = function(json_data) {
+    var ed_data, measures, num, options, pl_lines, reference, target;
+    reference = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = json_data.length; _i < _len; _i++) {
+        num = json_data[_i];
+        _results.push([num.location, num.reference_value]);
+      }
+      return _results;
+    })();
+    target = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = json_data.length; _i < _len; _i++) {
+        num = json_data[_i];
+        _results.push([num.location, num.reference_target]);
+      }
+      return _results;
+    })();
+    measures = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = json_data.length; _i < _len; _i++) {
+        num = json_data[_i];
+        _results.push([num.location, num.measures_level]);
+      }
+      return _results;
+    })();
     ed_data = [
       {
-        data: basecase_data,
+        data: reference,
         points: {
           show: true,
           symbol: "diamond"
@@ -175,8 +201,8 @@
         },
         color: DIAMOND_COLOR
       }, {
-        label: "Serie 1",
-        data: result_data,
+        label: "Doel waarde",
+        data: target,
         points: {
           show: true,
           symbol: "triangle",
@@ -186,7 +212,20 @@
           show: true,
           lineWidth: 2
         },
-        color: TRIANGLE_COLOR
+        color: "red"
+      }, {
+        label: "Measurements",
+        data: measures,
+        points: {
+          show: true,
+          symbol: "triangle",
+          radius: 2
+        },
+        lines: {
+          show: true,
+          lineWidth: 2
+        },
+        color: "green"
       }
     ];
     options = {
@@ -374,7 +413,7 @@
 
   $(document).ready(function() {
     window.table_or_map = "map";
-    return setFlotSeries("/static_media/lizard_blockbox/sample.json");
+    return setFlotSeries("/blokkendoos/api/measures/calculated/");
   });
 
 }).call(this);
