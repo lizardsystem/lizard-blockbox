@@ -28,17 +28,6 @@ BlockboxRouter = Backbone.Router.extend
             $('a.toggle_map_and_table span').text("Show map")
             $('a.toggle_map_and_table').attr("href", "#map")
 
-# BlockboxRouter = Backbone.Router.extend
-#     routes:
-#         "":     "index"
-#         "help": "help"
-#
-#     index: ->
-#         console.log "index() route!"
-#
-#     help: ->
-#         console.log "help() route!"
-
 
 # Currently renders the measures on the left...
 
