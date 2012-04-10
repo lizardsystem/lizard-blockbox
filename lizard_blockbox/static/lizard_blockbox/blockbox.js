@@ -1,5 +1,13 @@
 (function() {
-  var BlockboxRouter, Measure, MeasureList, MeasureListView, MeasureView, SelectedMeasureListView, SelectedMeasureView, app_router, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+
+  ANIMATION_DURATION = 150;
+
+  DIAMOND_COLOR = "#105987";
+
+  TRIANGLE_COLOR = "#E78B00";
+
+  SQUARE_COLOR = "#122F64";
 
   BlockboxRouter = Backbone.Router.extend({
     routes: {
@@ -7,26 +15,20 @@
       "table": "table"
     },
     map: function() {
-      console.log("map() route!");
-      return $('#blockbox-table').hide(500, function() {
-        $('#map').show(500);
+      return $('#blockbox-table').slideUp(ANIMATION_DURATION, function() {
+        $('#map').slideDown(ANIMATION_DURATION);
         $('a.toggle_map_and_table span').text("Show table");
         return $('a.toggle_map_and_table').attr("href", "#table");
       });
     },
     table: function() {
-      console.log("table() route!");
-      return $('#map').hide(500, function() {
-        $('#blockbox-table').show(500);
+      return $('#map').slideUp(ANIMATION_DURATION, function() {
+        $('#blockbox-table').slideDown(ANIMATION_DURATION);
         $('a.toggle_map_and_table span').text("Show map");
         return $('a.toggle_map_and_table').attr("href", "#map");
       });
     }
   });
-
-  app_router = new BlockboxRouter;
-
-  Backbone.history.start();
 
   Measure = Backbone.Model.extend({
     defaults: {
@@ -114,6 +116,10 @@
 
   window.selectedMeasureListView = new SelectedMeasureListView();
 
+  window.app_router = new BlockboxRouter;
+
+  Backbone.history.start();
+
   $('.blockbox-toggle-measure').live('click', function() {
     var measure_id, url;
     measure_id = $(this).attr('data-measure-id');
@@ -156,10 +162,7 @@
   };
 
   setPlaceholderTop = function(basecase_data, result_data) {
-    var DIAMOND_COLOR, SQUARE_COLOR, TRIANGLE_COLOR, ed_data, options, pl_lines;
-    DIAMOND_COLOR = "#105987";
-    TRIANGLE_COLOR = "#E78B00";
-    SQUARE_COLOR = "#122F64";
+    var ed_data, options, pl_lines;
     ed_data = [
       {
         data: basecase_data,
@@ -211,7 +214,7 @@
   };
 
   setPlaceholderControl = function(control_data) {
-    var DIAMOND_COLOR, SQUARE_COLOR, TRIANGLE_COLOR, d4, d5, measures_controls, options, pl_control, pl_lines;
+    var d4, d5, measures_controls, options, pl_control, pl_lines;
     DIAMOND_COLOR = "#105987";
     TRIANGLE_COLOR = "#E78B00";
     SQUARE_COLOR = "#122F64";

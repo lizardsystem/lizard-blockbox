@@ -6,32 +6,28 @@
 # Backbone part                                       #
 #######################################################
 
+ANIMATION_DURATION = 150
+DIAMOND_COLOR = "#105987"
+TRIANGLE_COLOR = "#E78B00"
+SQUARE_COLOR = "#122F64"
+
 BlockboxRouter = Backbone.Router.extend
     routes:
         "map":      "map"
         "table":    "table"
         
     map: ->
-        console.log "map() route!"
-        $('#blockbox-table').hide 500, () ->
-            $('#map').show(500)
+        $('#blockbox-table').slideUp ANIMATION_DURATION, () ->
+            $('#map').slideDown(ANIMATION_DURATION)
             $('a.toggle_map_and_table span').text("Show table")
             $('a.toggle_map_and_table').attr("href", "#table")
 
-
     table: ->
-        console.log "table() route!"
-        $('#map').hide 500, () ->
-            $('#blockbox-table').show(500)
+        $('#map').slideUp ANIMATION_DURATION, () ->
+            $('#blockbox-table').slideDown(ANIMATION_DURATION)
             $('a.toggle_map_and_table span').text("Show map")
             $('a.toggle_map_and_table').attr("href", "#map")
 
-
-
-app_router = new BlockboxRouter
-
-# Start Backbone history, a required step for bookmarkable URLs
-Backbone.history.start()
 
 
 # Currently renders the measures on the left...
@@ -126,6 +122,11 @@ measure_list = new MeasureList()
 window.measureListView = new MeasureListView();
 window.selectedMeasureListView = new SelectedMeasureListView();
 
+window.app_router = new BlockboxRouter
+
+# Start Backbone history, a required step for bookmarkable URLs
+Backbone.history.start()
+
 
 
 $('.blockbox-toggle-measure').live 'click', ->
@@ -187,10 +188,6 @@ refreshGraph = ->
 
 
 setPlaceholderTop = (basecase_data, result_data) ->
-
-    DIAMOND_COLOR = "#105987"
-    TRIANGLE_COLOR = "#E78B00"
-    SQUARE_COLOR = "#122F64"
 
     ed_data = [
         data: basecase_data
