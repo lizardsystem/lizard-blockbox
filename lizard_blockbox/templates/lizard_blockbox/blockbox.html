@@ -22,13 +22,21 @@
     <script type="text/javascript"
         src="{{ STATIC_URL }}lizard_blockbox/backbone.js">
     </script>
-    <script type="text/coffeescript"
-        src="{{ STATIC_URL }}lizard_blockbox/blokkendoos.coffee">
-    </script>
+    <!--script type="text/coffeescript"
+        src="{{ STATIC_URL }}lizard_blockbox/blockbox.coffee">
+    </script-->
 {% endblock %}
 
 {% block map-javascript %}
   {{ block.super }}
+  <!--
+    <script type="text/javascript"
+        src="{{ STATIC_URL }}lizard_blockbox/graph_with_flot.js">
+    </script>
+  -->
+   <script type="text/javascript"
+     src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
+   </script>
 
    <script type="text/javascript">
 	 var selectControl, selectedFeature;

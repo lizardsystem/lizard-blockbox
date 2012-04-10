@@ -1,3 +1,7 @@
+# HEADSUP: This file needs to be compiled by hand:
+# coffee -wc blockbox.coffee
+
+
 #######################################################
 # Backbone part                                       #
 #######################################################
@@ -165,7 +169,7 @@ setFlotSeries = (json_url="/static_media/lizard_blockbox/sample.json") ->
     $.getJSON json_url, (data) ->
         setPlaceholderTop data.basecase_data, data.result_data
         setPlaceholderControl data.measure_control_data
-        
+
 
 
 
