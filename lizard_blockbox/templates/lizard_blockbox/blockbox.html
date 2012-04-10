@@ -141,25 +141,28 @@
 {% endblock css %}
 
 {% block sidebar %}
-    <h3>Rivierselectie</h3>
-    <select data-placeholder="Kies een rivier" class="chzn-select" tabindex="2" style="width:275px;">
-        <option value=""></option>
+    <h2>Rivierselectie</h2>
+    <p class="muted">
+      Opmerking: op het moment werkt alleen de Maas.
+    </p>
+    <form>
+      <select data-placeholder="Kies een rivier"
+              class="chzn-select"
+              tabindex="2"
+              style="width:275px;">
+        <option>Maas</option>
         <option>Waal (tot Vuren)</option>
         <option>IJsseldelta</option>
         <option>IJssel (tot Hattem)</option>
         <option>Boven Rijn</option>
         <option>Pannerdensch Kanaal</option>
-    </select>
+      </select>
+    </form>
 
     <h3>Geselecteerde maatregelen</h3>
     <ul id="selected-measures-list" class="without-bullets" />
-  
-  
+
 {% endblock %}
-
-
-
-
 
 {% block content %}
   <div id="lizard-blockbox-graph">
