@@ -129,7 +129,10 @@
   };
 
   setPlaceholderTop = function(basecase_data, result_data) {
-    var ed_data, options, pl_lines;
+    var DIAMOND_COLOR, SQUARE_COLOR, TRIANGLE_COLOR, ed_data, options, pl_lines;
+    DIAMOND_COLOR = "#105987";
+    TRIANGLE_COLOR = "#E78B00";
+    SQUARE_COLOR = "#122F64";
     ed_data = [
       {
         data: basecase_data,
@@ -140,7 +143,7 @@
         lines: {
           show: true
         },
-        color: "blue"
+        color: DIAMOND_COLOR
       }, {
         label: "Serie 1",
         data: result_data,
@@ -153,7 +156,7 @@
           show: true,
           lineWidth: 2
         },
-        color: "red"
+        color: TRIANGLE_COLOR
       }
     ];
     options = {
@@ -181,7 +184,10 @@
   };
 
   setPlaceholderControl = function(control_data) {
-    var d4, d5, measures_controls, options, pl_control, pl_lines;
+    var DIAMOND_COLOR, SQUARE_COLOR, TRIANGLE_COLOR, d4, d5, measures_controls, options, pl_control, pl_lines;
+    DIAMOND_COLOR = "#105987";
+    TRIANGLE_COLOR = "#E78B00";
+    SQUARE_COLOR = "#122F64";
     d4 = void 0;
     d5 = void 0;
     pl_lines = void 0;
@@ -216,7 +222,7 @@
         lines: {
           show: false
         },
-        color: "red"
+        color: SQUARE_COLOR
       }, {
         label: "Serie 3",
         data: d4,
@@ -228,7 +234,7 @@
         lines: {
           show: false
         },
-        color: "green"
+        color: TRIANGLE_COLOR
       }, {
         data: d5,
         points: {
@@ -275,6 +281,30 @@
     }
   };
 
+  $('.toggle_map_and_table').click(function(e) {
+    var link, parent, to_map_text, to_table_text,
+      _this = this;
+    e.preventDefault();
+    link = $('.toggle_map_and_table');
+    parent = link.parent();
+    to_table_text = parent.attr('data-to-table-text');
+    to_map_text = parent.attr('data-to-map-text');
+    if (window.table_or_map === 'map') {
+      $('#map').hide(500, function() {
+        $('#blockbox-table').show(500);
+        return $('.action-text', link).text(to_map_text);
+      });
+      window.table_or_map = 'table';
+      return $('#blockbox-table').height($("#content").height() - 250);
+    } else {
+      $('#blockbox-table').hide(500, function() {
+        $('#map').show(500);
+        return $('.action-text', link).text(to_table_text);
+      });
+      return window.table_or_map = 'map';
+    }
+  });
+
   $('.btn.collapse-sidebar').click(function() {
     var doit;
     clearTimeout(doit);
@@ -313,30 +343,6 @@
       $('#placeholder_control_legend').css('height', '100px');
       return setFlotSeries();
     }, 500);
-  });
-
-  $('.toggle_map_and_table').click(function(e) {
-    var link, parent, to_map_text, to_table_text,
-      _this = this;
-    e.preventDefault();
-    link = $('.toggle_map_and_table');
-    parent = link.parent();
-    to_table_text = parent.attr('data-to-table-text');
-    to_map_text = parent.attr('data-to-map-text');
-    if (window.table_or_map === 'map') {
-      $('#map').hide(500, function() {
-        $('#blockbox-table').show(500);
-        return $('.action-text', link).text(to_map_text);
-      });
-      window.table_or_map = 'table';
-      return $('#blockbox-table').height($("#content").height() - 250);
-    } else {
-      $('#blockbox-table').hide(500, function() {
-        $('#map').show(500);
-        return $('.action-text', link).text(to_table_text);
-      });
-      return window.table_or_map = 'map';
-    }
   });
 
   doit = void 0;
