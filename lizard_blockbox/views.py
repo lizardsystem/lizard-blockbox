@@ -81,9 +81,9 @@ def calculated_measures_json(request):
 
     for value in water_levels.itervalues():
         absolute = value['reference_value'] + value['difference_level']
-        value['water_level'] = absolute
-        value['difference_reference'] = absolute - value['reference_value']
-        value['difference_target'] = absolute - value['reference_target']
+        value['measures_level'] = absolute
+        value['difference_to_reference'] = absolute - value['reference_value']
+        value['difference_to_target'] = absolute - value['reference_target']
 
     json.dump(water_levels, response)
 
