@@ -208,8 +208,7 @@ setPlaceholderTop = (json_data) ->
     ed_data = [
         data: reference
         points:
-            show: true
-            symbol: "diamond"
+            show: false
 
         lines:
             show: true

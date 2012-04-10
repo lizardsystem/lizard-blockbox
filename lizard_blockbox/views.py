@@ -71,9 +71,9 @@ def calculated_measures_json(request):
         location = diff['riversegment__location']
         d = water_levels.get(location)
         if d is None:
-            ref = diff['reference_value__reference']
             d = {'reference_value': 0,
-                 'reference_target': diff['reference_value__target'] - ref,
+                 # -0.10 chosen to have some target..
+                 'reference_target': -0.10,
                  'difference_level': diff['level_difference']}
         else:
             d['difference_level'] += diff['level_difference']
