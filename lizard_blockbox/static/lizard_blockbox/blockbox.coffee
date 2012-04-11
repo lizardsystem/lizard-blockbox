@@ -1,6 +1,8 @@
 # HEADSUP: This file needs to be compiled by hand:
 # coffee -wc blockbox.coffee
-
+# 
+# setFlotSeries() is the wrapper function you're looking for to
+# draw the flot graph.
 
 #######################################################
 # Backbone part                                       #
@@ -211,7 +213,7 @@ showTooltip = (x, y, contents) ->
         left: x + 5
         border: "1px solid #fdd"
         padding: "2px"
-        backgroundcolor: "#fee"
+        background: "#fee"
     ).appendTo("body").fadeIn 200
 
 
@@ -222,8 +224,8 @@ setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
         setPlaceholderControl window.measure_list.toJSON()
 
 
-refreshGraph = ->
-    $.plot $("#placeholder_top"), ed_data, options
+# refreshGraph = ->
+#     $.plot $("#placeholder_top"), ed_data, options
 
 
 setPlaceholderTop = (json_data) ->
@@ -291,6 +293,7 @@ setPlaceholderTop = (json_data) ->
 
 
 setPlaceholderControl = (control_data) ->
+    measures = ([num.km_from, Math.floor(Math.random() * 5), num.name] for num in control_data)
 
     d4 = undefined
     d5 = undefined
@@ -302,6 +305,7 @@ setPlaceholderControl = (control_data) ->
 
         grid:
             clickable: true
+            hoverable: true
             borderWidth: 1
 
         legend:
@@ -314,7 +318,7 @@ setPlaceholderControl = (control_data) ->
 
     measures_controls = [
         label: "Serie 2"
-        data: control_data
+        data: measures
         points:
             show: true
             symbol: "square"
@@ -354,7 +358,7 @@ setPlaceholderControl = (control_data) ->
 
     $("#placeholder_top").bind "plotclick", (event, pos, item) ->
         if item
-            console.log item
+            # console.log item
             # pl_lines.unhighlight item.series, item.datapoint
             # result_id = item.series.data[item.dataIndex][2].id
             refreshGraph()
@@ -362,12 +366,22 @@ setPlaceholderControl = (control_data) ->
 
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
         if item
-            console.log item
-            pl_lines.unhighlight item.series, item.datapoint
-            result_id = item.series.data[item.dataIndex][2].id
-            refreshGraph()
+            console.log "Clicked on #{item.series.data[item.dataIndex][2]}"
+            pl_control.unhighlight item.series, item.datapoint
+            result_id = item.series.data[item.dataIndex][1]
+            setFlotSeries()
 
+    $("#placeholder_control").bind "plothover", (event, pos, item) ->
 
+        if item
+            $('#tooltip').remove()
+            showTooltip(
+                item.pageX,
+                item.pageY,
+                item.series.data[item.dataIndex][2]
+            )
+        else
+            $('#tooltip').remove()
 
 options =
     xaxis:

@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, SelectedMeasuresList, TRIANGLE_COLOR, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, SelectedMeasuresList, TRIANGLE_COLOR, doit, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
 
   ANIMATION_DURATION = 150;
 
@@ -165,7 +165,7 @@
       left: x + 5,
       border: "1px solid #fdd",
       padding: "2px",
-      backgroundcolor: "#fee"
+      background: "#fee"
     }).appendTo("body").fadeIn(200);
   };
 
@@ -175,10 +175,6 @@
       setPlaceholderTop(data);
       return setPlaceholderControl(window.measure_list.toJSON());
     });
-  };
-
-  refreshGraph = function() {
-    return $.plot($("#placeholder_top"), ed_data, options);
   };
 
   setPlaceholderTop = function(json_data) {
@@ -273,7 +269,16 @@
   };
 
   setPlaceholderControl = function(control_data) {
-    var d4, d5, measures_controls, options, pl_control, pl_lines;
+    var d4, d5, measures, measures_controls, num, options, pl_control, pl_lines;
+    measures = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = control_data.length; _i < _len; _i++) {
+        num = control_data[_i];
+        _results.push([num.km_from, Math.floor(Math.random() * 5), num.name]);
+      }
+      return _results;
+    })();
     d4 = void 0;
     d5 = void 0;
     pl_lines = void 0;
@@ -283,6 +288,7 @@
       },
       grid: {
         clickable: true,
+        hoverable: true,
         borderWidth: 1
       },
       legend: {
@@ -299,7 +305,7 @@
     measures_controls = [
       {
         label: "Serie 2",
-        data: control_data,
+        data: measures,
         points: {
           show: true,
           symbol: "square",
@@ -337,18 +343,23 @@
     ];
     pl_control = $.plot($("#placeholder_control"), measures_controls, options);
     $("#placeholder_top").bind("plotclick", function(event, pos, item) {
-      if (item) {
-        console.log(item);
-        return refreshGraph();
-      }
+      if (item) return refreshGraph();
     });
-    return $("#placeholder_control").bind("plotclick", function(event, pos, item) {
+    $("#placeholder_control").bind("plotclick", function(event, pos, item) {
       var result_id;
       if (item) {
-        console.log(item);
-        pl_lines.unhighlight(item.series, item.datapoint);
-        result_id = item.series.data[item.dataIndex][2].id;
-        return refreshGraph();
+        console.log("Clicked on " + item.series.data[item.dataIndex][2]);
+        pl_control.unhighlight(item.series, item.datapoint);
+        result_id = item.series.data[item.dataIndex][1];
+        return setFlotSeries();
+      }
+    });
+    return $("#placeholder_control").bind("plothover", function(event, pos, item) {
+      if (item) {
+        $('#tooltip').remove();
+        return showTooltip(item.pageX, item.pageY, item.series.data[item.dataIndex][2]);
+      } else {
+        return $('#tooltip').remove();
       }
     });
   };
