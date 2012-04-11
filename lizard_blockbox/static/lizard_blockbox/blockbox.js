@@ -86,7 +86,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<a\nhref=\"#\"\nclass=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\"\ndata-measure-id=\"" + (this.model.get('short_name')) + "\"\ndata-measure-shortname=\"" + (this.model.get('short_name')) + "\">\n    " + (this.model.get('short_name')) + "\n</a>");
+      this.$el.html("<a\nhref=\"#\"\nclass=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\"\ndata-measure-id=\"" + (this.model.get('short_name')) + "\"\ndata-measure-shortname=\"" + (this.model.get('short_name')) + "\">\n    " + (this.model.get('name') || this.model.get('short_name')) + "\n</a>");
       if (!this.model.attributes.selected) this.$el.hide();
       return this;
     }

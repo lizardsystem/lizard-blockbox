@@ -70,7 +70,7 @@ MeasureView = Backbone.View.extend
                 window.location.reload()
 
     initialize: ->
-        @model.bind('change', @render, @)
+        @model.bind 'change', @render, @
         @
 
 
@@ -107,7 +107,7 @@ SelectedMeasureView = Backbone.View.extend
             class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
             data-measure-id="#{@model.get('short_name')}"
             data-measure-shortname="#{@model.get('short_name')}">
-                #{@model.get('short_name')}
+                #{@model.get('name') or @model.get('short_name')}
             </a>
         """
 
@@ -184,7 +184,6 @@ Backbone.history.start()
 # Graph part                                          #
 #######################################################
 
-<<<<<<< HEAD
 # This was an attempt to make the flot graph into a jQ plugin,
 # but time didn't allow it... here's the skeleton:
 
@@ -200,19 +199,7 @@ Backbone.history.start()
 #     console.log "Bound to", @
 #
 #     initialize: ->
-#         @
 
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> dc4a4e5de9d2560a954d4aa151ed831b8e266878
 showTooltip = (x, y, contents) ->
     $("<div id=\"tooltip\">#{contents}</div>").css(
         position: "absolute"
