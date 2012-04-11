@@ -28,9 +28,14 @@
     <script type="text/javascript"
         src="{{ STATIC_URL }}deltaportaal/chosen.jquery.js">
     </script>
-    <!--script type="text/coffeescript"
+    <script type="text/javascript"
+        src="{{ STATIC_URL }}lizard_blockbox/jquery.tablesorter.js">
+    </script>
+
+	<!--script type="text/coffeescript"
         src="{{ STATIC_URL }}lizard_blockbox/blockbox.coffee">
     </script-->
+
 {% endblock %}
 
 {% block map-javascript %}
@@ -119,7 +124,6 @@
                  JSONLayer('Maas', json);
              }
          );
-
      });
    </script>
 
@@ -153,8 +157,8 @@
 
     <h3>Geselecteerde maatregelen</h3>
     <ul id="selected-measures-list" class="without-bullets" />
-  
-  
+
+
 {% endblock %}
 
 
@@ -180,7 +184,7 @@
   <div id="blockbox-table"
        data-measure-toggle-url="{% url lizard_blockbox_toggle_measure %}">
     <h2>Alle maatregelen</h2>
-    <table class="table table-striped table-bordered">
+    <table id="measures-table" class="table table-striped table-bordered">
       <thead>
         <tr><th>Naam</th><th>Type</th><th>Start km</th></tr>
       </thead>

@@ -99,6 +99,8 @@ MeasureListView = Backbone.View.extend
     addOne: (measure) ->
         view = new MeasureView(model:measure)
         @$el.append(view.render().el)
+        $('#measures-table').tablesorter()
+        @
 
     addAll: ->
         measure_list.each @addOne

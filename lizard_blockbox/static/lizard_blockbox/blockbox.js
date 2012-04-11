@@ -78,7 +78,9 @@
       view = new MeasureView({
         model: measure
       });
-      return this.$el.append(view.render().el);
+      this.$el.append(view.render().el);
+      $('#measures-table').tablesorter();
+      return this;
     },
     addAll: function() {
       return measure_list.each(this.addOne);
