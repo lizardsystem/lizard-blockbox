@@ -101,22 +101,20 @@
         model: measure
       });
       this.$el.append(view.render().el);
-      $('#measures-table').tablesorter();
-      console.log('measure-table');
       return this;
     },
     addAll: function() {
       return measure_list.each(this.addOne);
     },
-    table: function() {
-      return $('#measures-table-top');
+    tablesort: function() {
+      return $('#measures-table-top').tablesorter();
     },
     initialize: function() {
       measure_list.bind('add', this.addOne, this);
       measure_list.bind('reset', this.addAll, this);
-      measure_list.binde('table', this.table, this);
       return measure_list.fetch({
-        add: true
+        add: true,
+        success: this.tablesort
       });
     },
     render: function() {
