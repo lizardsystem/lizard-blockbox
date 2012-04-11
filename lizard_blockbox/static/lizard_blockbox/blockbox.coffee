@@ -127,14 +127,19 @@ MeasureListView = Backbone.View.extend
         view = new MeasureView(model:measure)
         @$el.append(view.render().el)
         $('#measures-table').tablesorter()
+        console.log 'measure-table'
         @
 
     addAll: ->
         measure_list.each @addOne
 
+    table: ->
+        $('#measures-table-top')
+
     initialize: ->
         measure_list.bind 'add', @addOne, @
         measure_list.bind 'reset', @addAll, @
+        measure_list.binde 'table', @table, @
         measure_list.fetch({add:true})
 
     render: ->
