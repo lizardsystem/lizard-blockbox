@@ -165,7 +165,8 @@
   setFlotSeries = function(json_url) {
     if (json_url == null) json_url = "/blokkendoos/api/measures/calculated/";
     return $.getJSON(json_url, function(data) {
-      return setPlaceholderTop(data);
+      setPlaceholderTop(data);
+      return setPlaceholderControl(data.measure_control_data);
     });
   };
 

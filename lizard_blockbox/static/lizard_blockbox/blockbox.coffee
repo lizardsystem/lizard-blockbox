@@ -74,7 +74,8 @@ MeasureView = Backbone.View.extend
             </td>
             <td>
                 #{@model.toJSON().km_from}
-            </td>"""
+            </td>
+        """
         @
 
 
@@ -196,7 +197,10 @@ $('.blockbox-toggle-measure').live 'click', ->
 #######################################################
 # Graph part                                          #
 #######################################################
-# 
+
+# This was an attempt to make the flot graph into a jQ plugin,
+# but time didn't allow it... here's the skeleton:
+
 # $ = jQuery
 # 
 # $.fn.flotGraph = (options) ->
@@ -236,7 +240,7 @@ showTooltip = (x, y, contents) ->
 setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
     $.getJSON json_url, (data) ->
         setPlaceholderTop data
-        #setPlaceholderControl data.measure_control_data
+        setPlaceholderControl data.measure_control_data
 
 
 
