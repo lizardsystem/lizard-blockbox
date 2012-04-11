@@ -351,7 +351,6 @@ setPlaceholderControl = (control_data) ->
             console.log "Clicked on #{item.series.data[item.dataIndex][2]}"
             pl_control.unhighlight item.series, item.datapoint
             result_id = item.series.data[item.dataIndex][1]
-            setFlotSeries()
 
     $("#placeholder_control").bind "plothover", (event, pos, item) ->
 

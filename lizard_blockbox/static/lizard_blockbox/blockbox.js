@@ -347,8 +347,7 @@
       if (item) {
         console.log("Clicked on " + item.series.data[item.dataIndex][2]);
         pl_control.unhighlight(item.series, item.datapoint);
-        result_id = item.series.data[item.dataIndex][1];
-        return setFlotSeries();
+        return result_id = item.series.data[item.dataIndex][1];
       }
     });
     return $("#placeholder_control").bind("plothover", function(event, pos, item) {
