@@ -118,6 +118,7 @@ SelectedMeasureView = Backbone.View.extend
 
 
 # View for measures list
+
 MeasureListView = Backbone.View.extend
     el: $('#measures-table')
 
@@ -147,10 +148,6 @@ SelectedMeasureListView = Backbone.View.extend
 
     id: 'selected-measures-view'
 
-
-    fillGraph: ->
-        setPlaceholderControl data.measure_control_data
-
     addOne: (measure) ->
         view = new SelectedMeasureView(model:measure)
         @$el.append(view.render().el)
@@ -169,6 +166,10 @@ SelectedMeasureListView = Backbone.View.extend
 
 
 measure_list = new MeasureList()
+
+window.measure_list = measure_list
+
+
 window.measureListView = new MeasureListView();
 window.selectedMeasureListView = new SelectedMeasureListView();
 window.app_router = new BlockboxRouter
@@ -185,7 +186,7 @@ Backbone.history.start()
 #######################################################
 
 showTooltip = (x, y, contents) ->
-    $("<div id=\"tooltip\">#{contents}</div>").css(
+    $("""<div id="tooltip">#{contents}</div>""").css(
         position: "absolute"
         display: "none"
         top: y - 35
@@ -200,9 +201,7 @@ showTooltip = (x, y, contents) ->
 setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
     $.getJSON json_url, (data) ->
         setPlaceholderTop data
-        # setPlaceholderControl data.measure_control_data
-
-
+        setPlaceholderControl window.measure_list.toJSON()
 
 
 refreshGraph = ->
@@ -438,5 +437,6 @@ $(window).resize ->
 
 $(document).ready ->
     window.table_or_map = "map"
-    setFlotSeries("/blokkendoos/api/measures/calculated/")
+    setFlotSeries()
     $(".chzn-select").chosen()
+
