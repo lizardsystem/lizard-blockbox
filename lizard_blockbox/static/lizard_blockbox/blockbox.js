@@ -53,7 +53,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<td>\n    <a href=\"#\" \n       class=\"blockbox-toggle-measure\" \n       data-measure-id=\"" + (this.model.toJSON().short_name) + "\">\n            " + (this.model.toJSON().short_name) + "\n    </a>\n</td>\n<td>\n    (type)\n</td>\n<td>\n    (start km)\n</td>");
+      this.$el.html("<td>\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.toJSON().short_name) + "\">\n            " + (this.model.toJSON().name) + "\n    </a>\n</td>\n<td>\n   " + (this.model.toJSON().measure_type) + "\n</td>\n<td>\n    " + (this.model.toJSON().km_from) + "\n</td>");
       return this;
     }
   });
@@ -64,7 +64,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<a href=\"#\" class=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\" data-measure-id=\"" + (this.model.toJSON().short_name) + "\" data-measure-shortname=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().short_name) + "</a>");
+      this.$el.html("<a href=\"#\" class=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\" data-measure-id=\"" + (this.model.toJSON().short_name) + "\" data-measure-shortname=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().name) + "</a>");
       if (!this.model.attributes.selected) this.$el.hide();
       return this;
     }
@@ -199,8 +199,7 @@
       {
         data: reference,
         points: {
-          show: true,
-          symbol: "diamond"
+          show: false
         },
         lines: {
           show: true

@@ -54,9 +54,9 @@ def reference_json(request):
 
 
 def calculated_measures_json(request):
-    """Fetch dummy measure data and JSON it for a preliminary frontpage graph.
+    """Fetch measure data and JSON it for a preliminary frontpage graph.
     """
-
+    #XXX Refactor when needed.
     flooding_chance = models.FloodingChance.objects.filter(name="T250")
     selected_measures = _selected_measures(request)
     measures = models.Measure.objects.filter(short_name__in=selected_measures)
@@ -71,9 +71,9 @@ def calculated_measures_json(request):
         location = diff['riversegment__location']
         d = water_levels.get(location)
         if d is None:
-            ref = diff['reference_value__reference']
             d = {'reference_value': 0,
-                 'reference_target': diff['reference_value__target'] - ref,
+                 # -0.10 chosen to have some target..
+                 'reference_target': -0.10,
                  'difference_level': diff['level_difference']}
         else:
             d['difference_level'] += diff['level_difference']
@@ -115,7 +115,8 @@ def toggle_measure(request):
 def list_measures_json(request):
     """Return a list with all known measures."""
 
-    measures = models.Measure.objects.all().values('name', 'short_name')
+    measures = models.Measure.objects.all().values(
+        'name', 'short_name', 'measure_type', 'km_from')
     selected_measures = _selected_measures(request)
     for measure in measures:
         selected = measure['short_name'] in selected_measures

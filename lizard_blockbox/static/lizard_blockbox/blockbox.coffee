@@ -49,15 +49,13 @@ SelectedMeasuresList = Backbone.Collection.extend
 # View for single measure table element
 MeasureView = Backbone.View.extend
     tagName: 'tr'
-    
+
     events:
         click: 'addRow'
-        
+
     addRow: ->
-        console.log "Adding #{@model.get('short_name')} to selection!"
-        window.selected_measures_list.add @model
-        @
-        
+        console.log "Adding #{@model.toJSON().short_name} to selection!"
+
     initialize: ->
         @model.bind('change', @render, @)
         @
@@ -72,10 +70,10 @@ MeasureView = Backbone.View.extend
                 </a>
             </td>
             <td>
-                (type)
+               #{@model.toJSON().measure_type}
             </td>
             <td>
-                (start km)
+                #{@model.toJSON().km_from}
             </td>"""
         @
 
@@ -233,8 +231,7 @@ setPlaceholderTop = (json_data) ->
     ed_data = [
         data: reference
         points:
-            show: true
-            symbol: "diamond"
+            show: false
 
         lines:
             show: true

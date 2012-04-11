@@ -75,6 +75,10 @@ class Measure(models.Model):
 
     name = models.CharField(max_length=100, blank=True, null=True)
     short_name = models.CharField(max_length=100, blank=True, null=True)
+    measure_type = models.CharField(max_length=100, blank=True, null=True)
+    traject = models.CharField(max_length=100, blank=True, null=True)
+    km_from = models.IntegerField(null=True, blank=True)
+    km_to = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
         name = self.name or self.short_name
@@ -99,10 +103,6 @@ class ReferenceValue(models.Model):
 
     reference = models.FloatField()
     target = models.FloatField()
-
-    # class Meta:
-    #     unique_together = ('riversegment', 'scenario', 'year',
-    #                        'flooding_chance')
 
     def __unicode__(self):
         return '%s %s %s Reference: %s' % (
