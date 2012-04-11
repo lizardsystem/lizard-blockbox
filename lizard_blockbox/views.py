@@ -46,9 +46,11 @@ def reference_json(request):
         'riversegment__location', 'reference', 'target')
 
     response = HttpResponse(mimetype='application/json')
-    json.dump([{'reference': float(i['reference']),
-                'riversegment': i['riversegment__location'],
-                'target': float(i['target'])} for i in references],
+    json.dump([{'reference_value': 0,
+                'location': i['riversegment__location'],
+                'reference_target': i['target'] - i['reference'],
+                'measures_level': 0}
+               for i in references],
               response)
     return response
 
@@ -57,8 +59,10 @@ def calculated_measures_json(request):
     """Fetch measure data and JSON it for a preliminary frontpage graph.
     """
     #XXX Refactor when needed.
-    flooding_chance = models.FloodingChance.objects.filter(name="T250")
     selected_measures = _selected_measures(request)
+    if not selected_measures:
+        return reference_json(request)
+    flooding_chance = models.FloodingChance.objects.filter(name="T250")
     measures = models.Measure.objects.filter(short_name__in=selected_measures)
     water_level_diferences = models.WaterLevelDifference.objects.filter(
         measure__in=measures, flooding_chance=flooding_chance).values(
