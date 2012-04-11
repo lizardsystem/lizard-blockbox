@@ -63,7 +63,7 @@ MeasureView = Backbone.View.extend
                 <a href="#"
                    class="blockbox-toggle-measure"
                    data-measure-id="#{@model.toJSON().short_name}">
-                        #{@model.toJSON().short_name}
+                        #{@model.toJSON().name}
                 </a>
             </td>
             <td>
