@@ -75,7 +75,7 @@
       return this;
     },
     render: function() {
-      this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.get('measure_type')) + "\n</td>\n<td>\n    " + (this.model.get('km_from')) + "\n</td>");
+      this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('name') || this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.get('measure_type') || 'Onbekend') + "\n</td>\n<td>\n    " + (this.model.get('km_from') || 'Onbekend') + "\n</td>");
       return this;
     }
   });

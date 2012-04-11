@@ -67,7 +67,7 @@ MeasureView = Backbone.View.extend
                 'measure_id': @model.get('short_name')
             async: false
             success: (data) ->
-                window.location.reload()        
+                window.location.reload()
 
     initialize: ->
         @model.bind('change', @render, @)
@@ -80,14 +80,14 @@ MeasureView = Backbone.View.extend
                 <a href="#"
                    class="blockbox-toggle-measure"
                    data-measure-id="#{@model.get('short_name')}">
-                        #{@model.get('short_name')}
+                        #{@model.get('name') or @model.get('short_name')}
                 </a>
             </td>
             <td>
-               #{@model.get('measure_type')}
+               #{@model.get('measure_type') or 'Onbekend'}
             </td>
             <td>
-                #{@model.get('km_from')}
+                #{@model.get('km_from') or 'Onbekend'}
             </td>
         """
         @
@@ -110,7 +110,7 @@ SelectedMeasureView = Backbone.View.extend
                 #{@model.get('short_name')}
             </a>
         """
-         
+
         if not @model.attributes.selected
             @$el.hide()
 
@@ -185,6 +185,35 @@ Backbone.history.start()
 # Graph part                                          #
 #######################################################
 
+<<<<<<< HEAD
+# This was an attempt to make the flot graph into a jQ plugin,
+# but time didn't allow it... here's the skeleton:
+
+# $ = jQuery
+#
+# $.fn.flotGraph = (options) ->
+#
+#     defaults =
+#         someDefault: '#ccc'
+#
+#     options = $.extend(defaults, options)
+#
+#     console.log "Bound to", @
+#
+#     initialize: ->
+#         @
+
+
+
+
+
+
+
+
+
+
+=======
+>>>>>>> dc4a4e5de9d2560a954d4aa151ed831b8e266878
 showTooltip = (x, y, contents) ->
     $("""<div id="tooltip">#{contents}</div>""").css(
         position: "absolute"
