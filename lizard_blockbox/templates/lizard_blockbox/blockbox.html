@@ -145,37 +145,44 @@
 {% endblock css %}
 
 {% block sidebar %}
-    <h3>Rivierselectie</h3>
-    <select data-placeholder="Kies een rivier" class="chzn-select" tabindex="2" style="width:275px;">
-        <option value=""></option>
+    <h2>Rivierselectie</h2>
+    <p class="muted">
+      Opmerking: op het moment werkt alleen de Maas.
+    </p>
+    <form>
+      <select data-placeholder="Kies een rivier"
+              class="chzn-select"
+              tabindex="2"
+              style="width:275px;">
+        <option>Maas</option>
         <option>Waal (tot Vuren)</option>
         <option>IJsseldelta</option>
         <option>IJssel (tot Hattem)</option>
         <option>Boven Rijn</option>
         <option>Pannerdensch Kanaal</option>
-    </select>
+      </select>
+    </form>
 
     <h3>Geselecteerde maatregelen</h3>
     <ul id="selected-measures-list" class="without-bullets" />
-
-
 {% endblock %}
-
-
-
-
 
 {% block content %}
   <div id="lizard-blockbox-graph">
     {% block lizard-blockbox-graph %}
+
     <div id="placeholder_top_legend"
          style="width:100%;height:0px;"></div>
+
     <div id="placeholder_top"
          style="width:100%;height:150px;"></div>
     <!-- placeholder_top is the actual graph. -->
+
     <div id="placeholder_control"
          style="width:100%;height:100px;"></div>
+
     <!-- placeholder_control is the graph part with the measures. -->
+
     <!-- <div id="placeholder_control_legend"
          style="width:100%;height:0px;"></div> -->
     <!-- Note: this placeholder_control_legend isn't shown right now. -->

@@ -17,16 +17,19 @@ BlockboxRouter = Backbone.Router.extend
         "table":    "table"
 
     map: ->
+        to_table_text = $('.toggle_map_and_table').parent().attr('data-to-table-text')
+        $('a.toggle_map_and_table span').text(to_table_text)
+        $('a.toggle_map_and_table').attr("href", "#table")
         $('#blockbox-table').slideUp ANIMATION_DURATION, () ->
             $('#map').slideDown(ANIMATION_DURATION)
-            $('a.toggle_map_and_table span').text("Show table")
-            $('a.toggle_map_and_table').attr("href", "#table")
 
     table: ->
+        to_map_text = $('.toggle_map_and_table').parent().attr('data-to-map-text')
+        $('a.toggle_map_and_table span').text(to_map_text)
+        $('a.toggle_map_and_table').attr("href", "#map")
         $('#map').slideUp ANIMATION_DURATION, () ->
-            $('#blockbox-table').slideDown(ANIMATION_DURATION)
-            $('a.toggle_map_and_table span').text("Show map")
-            $('a.toggle_map_and_table').attr("href", "#map")
+            $('#blockbox-table').slideDown ANIMATION_DURATION, () ->
+                $('#blockbox-table').height($("#content").height() - 250)
 
 
 # Currently renders the measures on the left...
@@ -37,10 +40,14 @@ Measure = Backbone.Model.extend
         name: "Untitled measure"
 
 
-# Collection
+# Collections
 MeasureList = Backbone.Collection.extend
     model: Measure
     url: "/blokkendoos/api/measures/list/"
+
+SelectedMeasuresList = Backbone.Collection.extend
+    model: Measure
+
 
 
 # View for single measure table element
@@ -48,30 +55,41 @@ MeasureView = Backbone.View.extend
     tagName: 'tr'
 
     events:
-        click: 'addRow'
+        click: 'addMeasure'
 
-    addRow: ->
-        console.log "Adding #{@model.toJSON().short_name} to selection!"
-
+    addMeasure: ->
+        console.log "Adding #{@model.get('short_name')} to selection!"
+        $.ajax
+            type: 'POST'
+            url: $('#blockbox-table').attr('data-measure-toggle-url')
+            data:
+                # 'measure_id': @$el.find('td:first a').data('measure-id')
+                'measure_id': @model.get('short_name')
+            async: false
+            success: (data) ->
+                window.location.reload()
+        
 
     initialize: ->
         @model.bind('change', @render, @)
+        @
 
     render: ->
         @$el.html """
-            <td>
+            <td style="cursor:pointer;">
                 <a href="#"
                    class="blockbox-toggle-measure"
-                   data-measure-id="#{@model.toJSON().short_name}">
-                        #{@model.toJSON().name}
+                   data-measure-id="#{@model.get('short_name')}">
+                        #{@model.get('short_name')}
                 </a>
             </td>
             <td>
-               #{@model.toJSON().measure_type}
+               #{@model.get('measure_type')}
             </td>
             <td>
-                #{@model.toJSON().km_from}
-            </td>"""
+                #{@model.get('km_from')}
+            </td>
+        """
         @
 
 
@@ -83,7 +101,16 @@ SelectedMeasureView = Backbone.View.extend
         @model.bind('change', @render, @)
 
     render: ->
-        @$el.html """<a href="#" class="sidebar-measure blockbox-toggle-measure padded-sidebar-item" data-measure-id="#{@model.toJSON().short_name}" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().name}</a>"""
+        @$el.html """
+            <a
+            href="#"
+            class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
+            data-measure-id="#{@model.get('short_name')}"
+            data-measure-shortname="#{@model.get('short_name')}">
+                #{@model.get('short_name')}
+            </a>
+        """
+         
         if not @model.attributes.selected
             @$el.hide()
 
@@ -118,59 +145,41 @@ MeasureListView = Backbone.View.extend
 SelectedMeasureListView = Backbone.View.extend
     el: $('#selected-measures-list')
 
+    id: 'selected-measures-view'
+
     addOne: (measure) ->
         view = new SelectedMeasureView(model:measure)
         @$el.append(view.render().el)
 
     addAll: ->
-        measure_list.each @addOne
+        window.selected_measures_list.each @addOne
 
     initialize: ->
         measure_list.bind 'add', @addOne, @
         measure_list.bind 'reset', @addAll, @
-        # measure_list.fetch({add:true})
+        @
 
     render: ->
         @
 
 
-# Instance of collection
+# Instance of Measures collection
 measure_list = new MeasureList()
+
+# Instance of SelectedMeasuresList model
+# window.selected_measures_list = new SelectedMeasuresList()
 
 # Instance of measure list
 window.measureListView = new MeasureListView();
 window.selectedMeasureListView = new SelectedMeasureListView();
+
+console.log window.sele
 
 window.app_router = new BlockboxRouter
 Backbone.history.start()
 
 
 
-$('.blockbox-toggle-measure').live 'click', ->
-    # e.preventDefault()
-    measure_id = $(@).attr('data-measure-id')
-    url = $('#blockbox-table').attr('data-measure-toggle-url')
-    $.ajax({
-            type: 'POST',
-            url: url,
-            data: {'measure_id': measure_id},
-            async: false,
-            success: (data) ->
-                window.location.reload()
-                #$(".sidebar-measure").each ->
-                #    measure = $(@)
-                #    console.log(data)
-                #    console.log("" + measure.attr('data-measure-shortname'))
-                #    if $.inArray("" + measure.attr('data-measure-shortname'), data) isnt -1
-                #        console.log("Showing")
-                #        measure.parent().show()
-                #    else
-                #        console.log("Hiding")
-                #        measure.parent().hide()
-        })
-    #measure_list.reset()
-    #measure_list.fetch()
-    #window.selectedMeasureListView.render()
 
 
 
@@ -178,6 +187,32 @@ $('.blockbox-toggle-measure').live 'click', ->
 #######################################################
 # Graph part                                          #
 #######################################################
+
+# This was an attempt to make the flot graph into a jQ plugin,
+# but time didn't allow it... here's the skeleton:
+
+# $ = jQuery
+# 
+# $.fn.flotGraph = (options) ->
+# 
+#     defaults = 
+#         someDefault: '#ccc'
+#         
+#     options = $.extend(defaults, options)
+#         
+#     console.log "Bound to", @
+#     
+#     initialize: ->
+#         @
+
+
+
+
+
+
+
+
+
 
 showTooltip = (x, y, contents) ->
     $("<div id=\"tooltip\">#{contents}</div>").css(
@@ -192,10 +227,10 @@ showTooltip = (x, y, contents) ->
 
 
 
-setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
+setFlotSeries = (json_url) ->
     $.getJSON json_url, (data) ->
         setPlaceholderTop data
-        #setPlaceholderControl data.measure_control_data
+        # setPlaceholderControl data.measure_control_data
 
 
 
@@ -269,9 +304,6 @@ setPlaceholderTop = (json_data) ->
 
 
 setPlaceholderControl = (control_data) ->
-    DIAMOND_COLOR = "#105987"
-    TRIANGLE_COLOR = "#E78B00"
-    SQUARE_COLOR = "#122F64"
 
     d4 = undefined
     d5 = undefined
@@ -367,25 +399,6 @@ options =
             cb
 
 
-# $('.toggle_map_and_table').click (e) ->
-#     e.preventDefault()
-#     link = $('.toggle_map_and_table')
-#     parent = link.parent()
-#     to_table_text = parent.attr('data-to-table-text')
-#     to_map_text = parent.attr('data-to-map-text')
-#     if window.table_or_map == 'map'
-#         $('#map').hide 500, () =>
-#             $('#blockbox-table').show(500)
-#             $('.action-text', link).text(to_map_text)
-#         window.table_or_map = 'table'
-#         $('#blockbox-table').height($("#content").height() - 250)
-#     else
-#         $('#blockbox-table').hide 500, () =>
-#             $('#map').show(500)
-#             $('.action-text', link).text(to_table_text)
-#         window.table_or_map = 'map'
-
-
 $('.btn.collapse-sidebar').click ->
     clearTimeout doit
     doit = setTimeout(->
@@ -455,5 +468,5 @@ $(window).resize ->
 
 $(document).ready ->
     window.table_or_map = "map"
-    setFlotSeries( "/blokkendoos/api/measures/calculated/")
+    setFlotSeries("/blokkendoos/api/measures/calculated/")
     $(".chzn-select").chosen()
