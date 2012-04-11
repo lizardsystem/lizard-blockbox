@@ -72,7 +72,7 @@ MeasureView = Backbone.View.extend
                 window.location.reload()
 
     initialize: ->
-        @model.bind('change', @render, @)
+        @model.bind 'change', @render, @
         @
 
 
@@ -109,7 +109,7 @@ SelectedMeasureView = Backbone.View.extend
             class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
             data-measure-id="#{@model.get('short_name')}"
             data-measure-shortname="#{@model.get('short_name')}">
-                #{@model.get('short_name')}
+                #{@model.get('name') or @model.get('short_name')}
             </a>
         """
 
@@ -129,16 +129,18 @@ MeasureListView = Backbone.View.extend
     addOne: (measure) ->
         view = new MeasureView(model:measure)
         @$el.append(view.render().el)
-        $('#measures-table').tablesorter()
         @
 
     addAll: ->
         measure_list.each @addOne
 
+    tablesort: ->
+        $('#measures-table-top').tablesorter()
+
     initialize: ->
         measure_list.bind 'add', @addOne, @
         measure_list.bind 'reset', @addAll, @
-        measure_list.fetch({add:true})
+        measure_list.fetch({add:true, success: @tablesort})
 
     render: ->
         @
@@ -186,6 +188,22 @@ Backbone.history.start()
 #######################################################
 # Graph part                                          #
 #######################################################
+
+# This was an attempt to make the flot graph into a jQ plugin,
+# but time didn't allow it... here's the skeleton:
+
+# $ = jQuery
+#
+# $.fn.flotGraph = (options) ->
+#
+#     defaults =
+#         someDefault: '#ccc'
+#
+#     options = $.extend(defaults, options)
+#
+#     console.log "Bound to", @
+#
+#     initialize: ->
 
 showTooltip = (x, y, contents) ->
     $("""<div id="tooltip">#{contents}</div>""").css(

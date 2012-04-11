@@ -86,7 +86,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<a\nhref=\"#\"\nclass=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\"\ndata-measure-id=\"" + (this.model.get('short_name')) + "\"\ndata-measure-shortname=\"" + (this.model.get('short_name')) + "\">\n    " + (this.model.get('short_name')) + "\n</a>");
+      this.$el.html("<a\nhref=\"#\"\nclass=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\"\ndata-measure-id=\"" + (this.model.get('short_name')) + "\"\ndata-measure-shortname=\"" + (this.model.get('short_name')) + "\">\n    " + (this.model.get('name') || this.model.get('short_name')) + "\n</a>");
       if (!this.model.attributes.selected) this.$el.hide();
       return this;
     }
@@ -101,17 +101,20 @@
         model: measure
       });
       this.$el.append(view.render().el);
-      $('#measures-table').tablesorter();
       return this;
     },
     addAll: function() {
       return measure_list.each(this.addOne);
     },
+    tablesort: function() {
+      return $('#measures-table-top').tablesorter();
+    },
     initialize: function() {
       measure_list.bind('add', this.addOne, this);
       measure_list.bind('reset', this.addAll, this);
       return measure_list.fetch({
-        add: true
+        add: true,
+        success: this.tablesort
       });
     },
     render: function() {
