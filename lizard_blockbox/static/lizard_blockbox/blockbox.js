@@ -48,17 +48,28 @@
   MeasureView = Backbone.View.extend({
     tagName: 'tr',
     events: {
-      click: 'addRow'
+      click: 'addMeasure'
     },
-    addRow: function() {
-      return console.log("Adding " + (this.model.toJSON().short_name) + " to selection!");
+    addMeasure: function() {
+      console.log("Adding " + (this.model.get('short_name')) + " to selection!");
+      return $.ajax({
+        type: 'POST',
+        url: $('#blockbox-table').attr('data-measure-toggle-url'),
+        data: {
+          'measure_id': this.model.get('short_name')
+        },
+        async: false,
+        success: function(data) {
+          return window.location.reload();
+        }
+      });
     },
     initialize: function() {
       this.model.bind('change', this.render, this);
       return this;
     },
     render: function() {
-      this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\" \n       class=\"blockbox-toggle-measure\" \n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.toJSON().measure_type) + "\n</td>\n<td>\n    " + (this.model.toJSON().km_from) + "\n</td>");
+      this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\" \n       class=\"blockbox-toggle-measure\" \n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.get('measure_type')) + "\n</td>\n<td>\n    " + (this.model.get('km_from')) + "\n</td>");
       return this;
     }
   });
@@ -129,26 +140,11 @@
 
   window.selectedMeasureListView = new SelectedMeasureListView();
 
+  console.log(window.sele);
+
   window.app_router = new BlockboxRouter;
 
   Backbone.history.start();
-
-  $('.blockbox-toggle-measure').live('click', function() {
-    var measure_id, url;
-    measure_id = $(this).attr('data-measure-id');
-    url = $('#blockbox-table').attr('data-measure-toggle-url');
-    return $.ajax({
-      type: 'POST',
-      url: url,
-      data: {
-        'measure_id': measure_id
-      },
-      async: false,
-      success: function(data) {
-        return window.location.reload();
-      }
-    });
-  });
 
   showTooltip = function(x, y, contents) {
     return $("<div id=\"tooltip\">" + contents + "</div>").css({
@@ -163,10 +159,8 @@
   };
 
   setFlotSeries = function(json_url) {
-    if (json_url == null) json_url = "/blokkendoos/api/measures/calculated/";
     return $.getJSON(json_url, function(data) {
-      setPlaceholderTop(data);
-      return setPlaceholderControl(data.measure_control_data);
+      return setPlaceholderTop(data);
     });
   };
 

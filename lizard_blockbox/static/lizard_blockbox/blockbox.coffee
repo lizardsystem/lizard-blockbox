@@ -46,15 +46,26 @@ SelectedMeasuresList = Backbone.Collection.extend
     model: Measure
 
 
+
 # View for single measure table element
 MeasureView = Backbone.View.extend
     tagName: 'tr'
 
     events:
-        click: 'addRow'
+        click: 'addMeasure'
 
-    addRow: ->
-        console.log "Adding #{@model.toJSON().short_name} to selection!"
+    addMeasure: ->
+        console.log "Adding #{@model.get('short_name')} to selection!"
+        $.ajax
+            type: 'POST'
+            url: $('#blockbox-table').attr('data-measure-toggle-url')
+            data:
+                # 'measure_id': @$el.find('td:first a').data('measure-id')
+                'measure_id': @model.get('short_name')
+            async: false
+            success: (data) ->
+                window.location.reload()
+        
 
     initialize: ->
         @model.bind('change', @render, @)
@@ -70,10 +81,10 @@ MeasureView = Backbone.View.extend
                 </a>
             </td>
             <td>
-               #{@model.toJSON().measure_type}
+               #{@model.get('measure_type')}
             </td>
             <td>
-                #{@model.toJSON().km_from}
+                #{@model.get('km_from')}
             </td>
         """
         @
@@ -96,6 +107,7 @@ SelectedMeasureView = Backbone.View.extend
                 #{@model.get('short_name')}
             </a>
         """
+         
         if not @model.attributes.selected
             @$el.hide()
 
@@ -141,7 +153,6 @@ SelectedMeasureListView = Backbone.View.extend
         measure_list.bind 'add', @addOne, @
         measure_list.bind 'reset', @addAll, @
         @
-        # measure_list.fetch({add:true})
 
     render: ->
         @
@@ -157,37 +168,11 @@ measure_list = new MeasureList()
 window.measureListView = new MeasureListView();
 window.selectedMeasureListView = new SelectedMeasureListView();
 
+console.log window.sele
+
 window.app_router = new BlockboxRouter
 Backbone.history.start()
 
-
-
-
-$('.blockbox-toggle-measure').live 'click', ->
-    # e.preventDefault()
-    measure_id = $(@).attr('data-measure-id')
-    url = $('#blockbox-table').attr('data-measure-toggle-url')
-    $.ajax({
-            type: 'POST',
-            url: url,
-            data: {'measure_id': measure_id},
-            async: false,
-            success: (data) ->
-                window.location.reload()
-                #$(".sidebar-measure").each ->
-                #    measure = $(@)
-                #    console.log(data)
-                #    console.log("" + measure.attr('data-measure-shortname'))
-                #    if $.inArray("" + measure.attr('data-measure-shortname'), data) isnt -1
-                #        console.log("Showing")
-                #        measure.parent().show()
-                #    else
-                #        console.log("Hiding")
-                #        measure.parent().hide()
-        })
-    #measure_list.reset()
-    #measure_list.fetch()
-    #window.selectedMeasureListView.render()
 
 
 
@@ -237,10 +222,10 @@ showTooltip = (x, y, contents) ->
 
 
 
-setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
+setFlotSeries = (json_url) ->
     $.getJSON json_url, (data) ->
         setPlaceholderTop data
-        setPlaceholderControl data.measure_control_data
+        # setPlaceholderControl data.measure_control_data
 
 
 
@@ -478,5 +463,5 @@ $(window).resize ->
 
 $(document).ready ->
     window.table_or_map = "map"
-    setFlotSeries( "/blokkendoos/api/measures/calculated/")
+    setFlotSeries("/blokkendoos/api/measures/calculated/")
     $(".chzn-select").chosen()
