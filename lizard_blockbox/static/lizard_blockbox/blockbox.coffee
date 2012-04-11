@@ -37,10 +37,13 @@ Measure = Backbone.Model.extend
         name: "Untitled measure"
 
 
-# Collection
+# Collections
 MeasureList = Backbone.Collection.extend
     model: Measure
     url: "/blokkendoos/api/measures/list/"
+
+SelectedMeasuresList = Backbone.Collection.extend
+    model: Measure
 
 
 # View for single measure table element
@@ -53,17 +56,17 @@ MeasureView = Backbone.View.extend
     addRow: ->
         console.log "Adding #{@model.toJSON().short_name} to selection!"
 
-
     initialize: ->
         @model.bind('change', @render, @)
+        @
 
     render: ->
         @$el.html """
-            <td>
-                <a href="#"
-                   class="blockbox-toggle-measure"
-                   data-measure-id="#{@model.toJSON().short_name}">
-                        #{@model.toJSON().name}
+            <td style="cursor:pointer;">
+                <a href="#" 
+                   class="blockbox-toggle-measure" 
+                   data-measure-id="#{@model.get('short_name')}">
+                        #{@model.get('short_name')}
                 </a>
             </td>
             <td>
@@ -83,7 +86,15 @@ SelectedMeasureView = Backbone.View.extend
         @model.bind('change', @render, @)
 
     render: ->
-        @$el.html """<a href="#" class="sidebar-measure blockbox-toggle-measure padded-sidebar-item" data-measure-id="#{@model.toJSON().short_name}" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().name}</a>"""
+        @$el.html """
+            <a 
+            href="#" 
+            class="sidebar-measure blockbox-toggle-measure padded-sidebar-item" 
+            data-measure-id="#{@model.get('short_name')}" 
+            data-measure-shortname="#{@model.get('short_name')}">
+                #{@model.get('short_name')}
+            </a>
+        """
         if not @model.attributes.selected
             @$el.hide()
 
@@ -116,24 +127,30 @@ MeasureListView = Backbone.View.extend
 SelectedMeasureListView = Backbone.View.extend
     el: $('#selected-measures-list')
 
+    id: 'selected-measures-view'
+
     addOne: (measure) ->
         view = new SelectedMeasureView(model:measure)
         @$el.append(view.render().el)
 
     addAll: ->
-        measure_list.each @addOne
+        window.selected_measures_list.each @addOne
 
     initialize: ->
         measure_list.bind 'add', @addOne, @
         measure_list.bind 'reset', @addAll, @
+        @
         # measure_list.fetch({add:true})
 
     render: ->
         @
 
 
-# Instance of collection
+# Instance of Measures collection
 measure_list = new MeasureList()
+
+# Instance of SelectedMeasuresList model
+# window.selected_measures_list = new SelectedMeasuresList()
 
 # Instance of measure list
 window.measureListView = new MeasureListView();
@@ -141,6 +158,7 @@ window.selectedMeasureListView = new SelectedMeasureListView();
 
 window.app_router = new BlockboxRouter
 Backbone.history.start()
+
 
 
 
@@ -169,6 +187,8 @@ $('.blockbox-toggle-measure').live 'click', ->
     #measure_list.reset()
     #measure_list.fetch()
     #window.selectedMeasureListView.render()
+
+
 
 
 
