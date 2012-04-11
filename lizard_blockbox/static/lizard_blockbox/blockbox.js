@@ -75,7 +75,7 @@
       return this;
     },
     render: function() {
-      this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.get('measure_type')) + "\n</td>\n<td>\n    " + (this.model.get('km_from')) + "\n</td>");
+      this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('name') || this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.get('measure_type') || 'Onbekend') + "\n</td>\n<td>\n    " + (this.model.get('km_from') || 'Onbekend') + "\n</td>");
       return this;
     }
   });
@@ -122,9 +122,6 @@
   SelectedMeasureListView = Backbone.View.extend({
     el: $('#selected-measures-list'),
     id: 'selected-measures-view',
-    fillGraph: function() {
-      return setPlaceholderControl(data.measure_control_data);
-    },
     addOne: function(measure) {
       var view;
       view = new SelectedMeasureView({
@@ -146,6 +143,8 @@
   });
 
   measure_list = new MeasureList();
+
+  window.measure_list = measure_list;
 
   window.measureListView = new MeasureListView();
 
@@ -170,7 +169,8 @@
   setFlotSeries = function(json_url) {
     if (json_url == null) json_url = "/blokkendoos/api/measures/calculated/";
     return $.getJSON(json_url, function(data) {
-      return setPlaceholderTop(data);
+      setPlaceholderTop(data);
+      return setPlaceholderControl(window.measure_list.toJSON());
     });
   };
 
@@ -433,7 +433,7 @@
 
   $(document).ready(function() {
     window.table_or_map = "map";
-    setFlotSeries("/blokkendoos/api/measures/calculated/");
+    setFlotSeries();
     return $(".chzn-select").chosen();
   });
 
