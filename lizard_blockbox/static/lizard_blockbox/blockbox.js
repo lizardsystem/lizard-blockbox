@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, SelectedMeasuresList, TRIANGLE_COLOR, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
 
   ANIMATION_DURATION = 150;
 
@@ -15,17 +15,23 @@
       "table": "table"
     },
     map: function() {
+      var to_table_text;
+      to_table_text = $('.toggle_map_and_table').parent().attr('data-to-table-text');
+      $('a.toggle_map_and_table span').text(to_table_text);
+      $('a.toggle_map_and_table').attr("href", "#table");
       return $('#blockbox-table').slideUp(ANIMATION_DURATION, function() {
-        $('#map').slideDown(ANIMATION_DURATION);
-        $('a.toggle_map_and_table span').text("Show table");
-        return $('a.toggle_map_and_table').attr("href", "#table");
+        return $('#map').slideDown(ANIMATION_DURATION);
       });
     },
     table: function() {
+      var to_map_text;
+      to_map_text = $('.toggle_map_and_table').parent().attr('data-to-map-text');
+      $('a.toggle_map_and_table span').text(to_map_text);
+      $('a.toggle_map_and_table').attr("href", "#map");
       return $('#map').slideUp(ANIMATION_DURATION, function() {
-        $('#blockbox-table').slideDown(ANIMATION_DURATION);
-        $('a.toggle_map_and_table span').text("Show map");
-        return $('a.toggle_map_and_table').attr("href", "#map");
+        return $('#blockbox-table').slideDown(ANIMATION_DURATION, function() {
+          return $('#blockbox-table').height($("#content").height() - 250);
+        });
       });
     }
   });
@@ -41,6 +47,10 @@
     url: "/blokkendoos/api/measures/list/"
   });
 
+  SelectedMeasuresList = Backbone.Collection.extend({
+    model: Measure
+  });
+
   MeasureView = Backbone.View.extend({
     tagName: 'tr',
     events: {
@@ -50,10 +60,11 @@
       return console.log("Adding " + (this.model.toJSON().short_name) + " to selection!");
     },
     initialize: function() {
-      return this.model.bind('change', this.render, this);
+      this.model.bind('change', this.render, this);
+      return this;
     },
     render: function() {
-      this.$el.html("<td>\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.toJSON().short_name) + "\">\n            " + (this.model.toJSON().name) + "\n    </a>\n</td>\n<td>\n   " + (this.model.toJSON().measure_type) + "\n</td>\n<td>\n    " + (this.model.toJSON().km_from) + "\n</td>");
+      this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.toJSON().measure_type) + "\n</td>\n<td>\n    " + (this.model.toJSON().km_from) + "\n</td>");
       return this;
     }
   });
@@ -64,7 +75,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<a href=\"#\" class=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\" data-measure-id=\"" + (this.model.toJSON().short_name) + "\" data-measure-shortname=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().name) + "</a>");
+      this.$el.html("<a\nhref=\"#\"\nclass=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\"\ndata-measure-id=\"" + (this.model.get('short_name')) + "\"\ndata-measure-shortname=\"" + (this.model.get('short_name')) + "\">\n    " + (this.model.get('short_name')) + "\n</a>");
       if (!this.model.attributes.selected) this.$el.hide();
       return this;
     }
@@ -97,6 +108,7 @@
 
   SelectedMeasureListView = Backbone.View.extend({
     el: $('#selected-measures-list'),
+    id: 'selected-measures-view',
     addOne: function(measure) {
       var view;
       view = new SelectedMeasureView({
@@ -105,11 +117,12 @@
       return this.$el.append(view.render().el);
     },
     addAll: function() {
-      return measure_list.each(this.addOne);
+      return window.selected_measures_list.each(this.addOne);
     },
     initialize: function() {
       measure_list.bind('add', this.addOne, this);
-      return measure_list.bind('reset', this.addAll, this);
+      measure_list.bind('reset', this.addAll, this);
+      return this;
     },
     render: function() {
       return this;
