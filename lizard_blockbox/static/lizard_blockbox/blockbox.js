@@ -15,17 +15,23 @@
       "table": "table"
     },
     map: function() {
+      var to_table_text;
+      to_table_text = $('.toggle_map_and_table').parent().attr('data-to-table-text');
+      $('a.toggle_map_and_table span').text(to_table_text);
+      $('a.toggle_map_and_table').attr("href", "#table");
       return $('#blockbox-table').slideUp(ANIMATION_DURATION, function() {
-        $('#map').slideDown(ANIMATION_DURATION);
-        $('a.toggle_map_and_table span').text("Show table");
-        return $('a.toggle_map_and_table').attr("href", "#table");
+        return $('#map').slideDown(ANIMATION_DURATION);
       });
     },
     table: function() {
+      var to_map_text;
+      to_map_text = $('.toggle_map_and_table').parent().attr('data-to-map-text');
+      $('a.toggle_map_and_table span').text(to_map_text);
+      $('a.toggle_map_and_table').attr("href", "#map");
       return $('#map').slideUp(ANIMATION_DURATION, function() {
-        $('#blockbox-table').slideDown(ANIMATION_DURATION);
-        $('a.toggle_map_and_table span').text("Show map");
-        return $('a.toggle_map_and_table').attr("href", "#map");
+        return $('#blockbox-table').slideDown(ANIMATION_DURATION, function() {
+          return $('#blockbox-table').height($("#content").height() - 250);
+        });
       });
     }
   });
@@ -69,7 +75,7 @@
       return this;
     },
     render: function() {
-      this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\" \n       class=\"blockbox-toggle-measure\" \n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.get('measure_type')) + "\n</td>\n<td>\n    " + (this.model.get('km_from')) + "\n</td>");
+      this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.get('measure_type')) + "\n</td>\n<td>\n    " + (this.model.get('km_from')) + "\n</td>");
       return this;
     }
   });
@@ -80,7 +86,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<a \nhref=\"#\" \nclass=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\" \ndata-measure-id=\"" + (this.model.get('short_name')) + "\" \ndata-measure-shortname=\"" + (this.model.get('short_name')) + "\">\n    " + (this.model.get('short_name')) + "\n</a>");
+      this.$el.html("<a\nhref=\"#\"\nclass=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\"\ndata-measure-id=\"" + (this.model.get('short_name')) + "\"\ndata-measure-shortname=\"" + (this.model.get('short_name')) + "\">\n    " + (this.model.get('short_name')) + "\n</a>");
       if (!this.model.attributes.selected) this.$el.hide();
       return this;
     }

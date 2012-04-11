@@ -17,16 +17,19 @@ BlockboxRouter = Backbone.Router.extend
         "table":    "table"
 
     map: ->
+        to_table_text = $('.toggle_map_and_table').parent().attr('data-to-table-text')
+        $('a.toggle_map_and_table span').text(to_table_text)
+        $('a.toggle_map_and_table').attr("href", "#table")
         $('#blockbox-table').slideUp ANIMATION_DURATION, () ->
             $('#map').slideDown(ANIMATION_DURATION)
-            $('a.toggle_map_and_table span').text("Show table")
-            $('a.toggle_map_and_table').attr("href", "#table")
 
     table: ->
+        to_map_text = $('.toggle_map_and_table').parent().attr('data-to-map-text')
+        $('a.toggle_map_and_table span').text(to_map_text)
+        $('a.toggle_map_and_table').attr("href", "#map")
         $('#map').slideUp ANIMATION_DURATION, () ->
-            $('#blockbox-table').slideDown(ANIMATION_DURATION)
-            $('a.toggle_map_and_table span').text("Show map")
-            $('a.toggle_map_and_table').attr("href", "#map")
+            $('#blockbox-table').slideDown ANIMATION_DURATION, () ->
+                $('#blockbox-table').height($("#content").height() - 250)
 
 
 # Currently renders the measures on the left...
@@ -74,8 +77,8 @@ MeasureView = Backbone.View.extend
     render: ->
         @$el.html """
             <td style="cursor:pointer;">
-                <a href="#" 
-                   class="blockbox-toggle-measure" 
+                <a href="#"
+                   class="blockbox-toggle-measure"
                    data-measure-id="#{@model.get('short_name')}">
                         #{@model.get('short_name')}
                 </a>
@@ -99,10 +102,10 @@ SelectedMeasureView = Backbone.View.extend
 
     render: ->
         @$el.html """
-            <a 
-            href="#" 
-            class="sidebar-measure blockbox-toggle-measure padded-sidebar-item" 
-            data-measure-id="#{@model.get('short_name')}" 
+            <a
+            href="#"
+            class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
+            data-measure-id="#{@model.get('short_name')}"
             data-measure-shortname="#{@model.get('short_name')}">
                 #{@model.get('short_name')}
             </a>
