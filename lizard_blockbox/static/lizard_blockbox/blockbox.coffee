@@ -68,7 +68,7 @@ MeasureView = Backbone.View.extend
         @model.bind('change', @render, @)
 
     render: ->
-        @$el.html """<td><a href="#" class="blockbox-toggle-measure" data-measure-id="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a></td><td>(type)</td><td>(start km)</td>"""
+        @$el.html """<td><a href="#" class="blockbox-toggle-measure" data-measure-id="#{@model.toJSON().short_name}">#{@model.toJSON().name}</a></td><td>#{@model.toJSON().measure_type}</td><td>#{@model.toJSON().km_from}</td>"""
         @
 
 
@@ -80,7 +80,7 @@ SelectedMeasureView = Backbone.View.extend
         @model.bind('change', @render, @)
 
     render: ->
-        @$el.html """<a href="#" class="sidebar-measure blockbox-toggle-measure padded-sidebar-item" data-measure-id="#{@model.toJSON().short_name}" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().short_name}</a>"""
+        @$el.html """<a href="#" class="sidebar-measure blockbox-toggle-measure padded-sidebar-item" data-measure-id="#{@model.toJSON().short_name}" data-measure-shortname="#{@model.toJSON().short_name}">#{@model.toJSON().name}</a>"""
         if not @model.attributes.selected
             @$el.hide()
 

@@ -45,7 +45,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<td><a href=\"#\" class=\"blockbox-toggle-measure\" data-measure-id=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().short_name) + "</a></td><td>(type)</td><td>(start km)</td>");
+      this.$el.html("<td><a href=\"#\" class=\"blockbox-toggle-measure\" data-measure-id=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().name) + "</a></td><td>" + (this.model.toJSON().measure_type) + "</td><td>" + (this.model.toJSON().km_from) + "</td>");
       return this;
     }
   });
@@ -56,7 +56,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<a href=\"#\" class=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\" data-measure-id=\"" + (this.model.toJSON().short_name) + "\" data-measure-shortname=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().short_name) + "</a>");
+      this.$el.html("<a href=\"#\" class=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\" data-measure-id=\"" + (this.model.toJSON().short_name) + "\" data-measure-shortname=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().name) + "</a>");
       if (!this.model.attributes.selected) this.$el.hide();
       return this;
     }
