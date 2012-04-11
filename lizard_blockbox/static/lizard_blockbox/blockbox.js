@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, SelectedMeasuresList, TRIANGLE_COLOR, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
 
   ANIMATION_DURATION = 150;
 
@@ -41,6 +41,10 @@
     url: "/blokkendoos/api/measures/list/"
   });
 
+  SelectedMeasuresList = Backbone.Collection.extend({
+    model: Measure
+  });
+
   MeasureView = Backbone.View.extend({
     tagName: 'tr',
     events: {
@@ -50,10 +54,11 @@
       return console.log("Adding " + (this.model.toJSON().short_name) + " to selection!");
     },
     initialize: function() {
-      return this.model.bind('change', this.render, this);
+      this.model.bind('change', this.render, this);
+      return this;
     },
     render: function() {
-      this.$el.html("<td>\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.toJSON().short_name) + "\">\n            " + (this.model.toJSON().name) + "\n    </a>\n</td>\n<td>\n   " + (this.model.toJSON().measure_type) + "\n</td>\n<td>\n    " + (this.model.toJSON().km_from) + "\n</td>");
+      this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\" \n       class=\"blockbox-toggle-measure\" \n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.toJSON().measure_type) + "\n</td>\n<td>\n    " + (this.model.toJSON().km_from) + "\n</td>");
       return this;
     }
   });
@@ -64,7 +69,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<a href=\"#\" class=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\" data-measure-id=\"" + (this.model.toJSON().short_name) + "\" data-measure-shortname=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().name) + "</a>");
+      this.$el.html("<a \nhref=\"#\" \nclass=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\" \ndata-measure-id=\"" + (this.model.get('short_name')) + "\" \ndata-measure-shortname=\"" + (this.model.get('short_name')) + "\">\n    " + (this.model.get('short_name')) + "\n</a>");
       if (!this.model.attributes.selected) this.$el.hide();
       return this;
     }
@@ -97,6 +102,7 @@
 
   SelectedMeasureListView = Backbone.View.extend({
     el: $('#selected-measures-list'),
+    id: 'selected-measures-view',
     addOne: function(measure) {
       var view;
       view = new SelectedMeasureView({
@@ -105,11 +111,12 @@
       return this.$el.append(view.render().el);
     },
     addAll: function() {
-      return measure_list.each(this.addOne);
+      return window.selected_measures_list.each(this.addOne);
     },
     initialize: function() {
       measure_list.bind('add', this.addOne, this);
-      return measure_list.bind('reset', this.addAll, this);
+      measure_list.bind('reset', this.addAll, this);
+      return this;
     },
     render: function() {
       return this;
@@ -259,9 +266,6 @@
 
   setPlaceholderControl = function(control_data) {
     var d4, d5, measures_controls, options, pl_control, pl_lines;
-    DIAMOND_COLOR = "#105987";
-    TRIANGLE_COLOR = "#E78B00";
-    SQUARE_COLOR = "#122F64";
     d4 = void 0;
     d5 = void 0;
     pl_lines = void 0;

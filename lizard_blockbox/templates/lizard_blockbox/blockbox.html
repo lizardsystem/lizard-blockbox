@@ -164,17 +164,22 @@
 {% block content %}
   <div id="lizard-blockbox-graph">
     {% block lizard-blockbox-graph %}
-    <div id="placeholder_top_legend"
-         style="width:100%;height:0px;"></div>
-    <div id="placeholder_top"
-         style="width:100%;height:150px;"></div>
-    <!-- placeholder_top is the actual graph. -->
-    <div id="placeholder_control"
-         style="width:100%;height:100px;"></div>
-    <!-- placeholder_control is the graph part with the measures. -->
-    <!-- <div id="placeholder_control_legend"
-         style="width:100%;height:0px;"></div> -->
-    <!-- Note: this placeholder_control_legend isn't shown right now. -->
+    
+    <div id="flot-graph"
+         style="width:100%; height:250px;">
+    </div>
+    
+    {# <div id="placeholder_top_legend" #}
+    {#      style="width:100%;height:0px;"></div> #}
+    {# <div id="placeholder_top" #}
+    {#      style="width:100%;height:150px;"></div> #}
+    {# <!-- placeholder_top is the actual graph. --> #}
+    {# <div id="placeholder_control" #}
+    {#      style="width:100%;height:100px;"></div> #}
+    {# <!-- placeholder_control is the graph part with the measures. --> #}
+    {# <!-- <div id="placeholder_control_legend" #}
+    {#      style="width:100%;height:0px;"></div> --> #}
+    {# <!-- Note: this placeholder_control_legend isn't shown right now. --> #}
     {% endblock %}
   </div>
   <div id="blockbox-table"
