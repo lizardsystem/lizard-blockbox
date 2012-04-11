@@ -22,6 +22,12 @@
     <script type="text/javascript"
         src="{{ STATIC_URL }}lizard_blockbox/backbone.js">
     </script>
+    <script type="text/javascript"
+        src="{{ STATIC_URL }}lizard_blockbox/backbone.layoutmanager.js">
+    </script>
+    <script type="text/javascript"
+        src="{{ STATIC_URL }}deltaportaal/chosen.jquery.js">
+    </script>
     <!--script type="text/coffeescript"
         src="{{ STATIC_URL }}lizard_blockbox/blockbox.coffee">
     </script-->
@@ -128,12 +134,32 @@
         href="{{ STATIC_URL }}lizard_blockbox/lizard_blockbox.less"
         type="text/less"
         media="screen, projection" />
+  <link rel="stylesheet"
+        href="{{ STATIC_URL }}deltaportaal/chosen.css"
+        type="text/less"
+        media="screen, projection" />
 {% endblock css %}
 
 {% block sidebar %}
-  <h3>Geselecteerde maatregelen</h3>
-  <ul id="selected-measures-list" class="without-bullets" />
+    <h3>Rivierselectie</h3>
+    <select data-placeholder="Kies een rivier" class="chzn-select" tabindex="2" style="width:275px;">
+        <option value=""></option>
+        <option>Waal (tot Vuren)</option>
+        <option>IJsseldelta</option>
+        <option>IJssel (tot Hattem)</option>
+        <option>Boven Rijn</option>
+        <option>Pannerdensch Kanaal</option>
+    </select>
+
+    <h3>Geselecteerde maatregelen</h3>
+    <ul id="selected-measures-list" class="without-bullets" />
+  
+  
 {% endblock %}
+
+
+
+
 
 {% block content %}
   <div id="lizard-blockbox-graph">
@@ -167,4 +193,12 @@
 {% endblock %}
 
 {% block orthogonal-actions %}
+{% endblock %}
+
+
+{% block content-actions %}
+
+{# A place to add the river selection dropdown? #}
+
+{{ block.super }}
 {% endblock %}

@@ -1,5 +1,13 @@
 (function() {
-  var BlockboxRouter, Measure, MeasureList, MeasureListView, MeasureView, SelectedMeasureListView, SelectedMeasureView, app_router, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, measure_list, options, refreshGraph, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+
+  ANIMATION_DURATION = 150;
+
+  DIAMOND_COLOR = "#105987";
+
+  TRIANGLE_COLOR = "#E78B00";
+
+  SQUARE_COLOR = "#122F64";
 
   BlockboxRouter = Backbone.Router.extend({
     routes: {
@@ -7,26 +15,20 @@
       "table": "table"
     },
     map: function() {
-      console.log("map() route!");
-      return $('#blockbox-table').hide(500, function() {
-        $('#map').show(500);
+      return $('#blockbox-table').slideUp(ANIMATION_DURATION, function() {
+        $('#map').slideDown(ANIMATION_DURATION);
         $('a.toggle_map_and_table span').text("Show table");
         return $('a.toggle_map_and_table').attr("href", "#table");
       });
     },
     table: function() {
-      console.log("table() route!");
-      return $('#map').hide(500, function() {
-        $('#blockbox-table').show(500);
+      return $('#map').slideUp(ANIMATION_DURATION, function() {
+        $('#blockbox-table').slideDown(ANIMATION_DURATION);
         $('a.toggle_map_and_table span').text("Show map");
         return $('a.toggle_map_and_table').attr("href", "#map");
       });
     }
   });
-
-  app_router = new BlockboxRouter;
-
-  Backbone.history.start();
 
   Measure = Backbone.Model.extend({
     defaults: {
@@ -41,11 +43,17 @@
 
   MeasureView = Backbone.View.extend({
     tagName: 'tr',
+    events: {
+      click: 'addRow'
+    },
+    addRow: function() {
+      return console.log("Adding " + (this.model.toJSON().short_name) + " to selection!");
+    },
     initialize: function() {
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<td><a href=\"#\" class=\"blockbox-toggle-measure\" data-measure-id=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().name) + "</a></td><td>" + (this.model.toJSON().measure_type) + "</td><td>" + (this.model.toJSON().km_from) + "</td>");
+      this.$el.html("<td>\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.toJSON().short_name) + "\">\n            " + (this.model.toJSON().short_name) + "\n    </a>\n</td>\n<td>\n    (type)\n</td>\n<td>\n    (start km)\n</td>");
       return this;
     }
   });
@@ -114,6 +122,10 @@
 
   window.selectedMeasureListView = new SelectedMeasureListView();
 
+  window.app_router = new BlockboxRouter;
+
+  Backbone.history.start();
+
   $('.blockbox-toggle-measure').live('click', function() {
     var measure_id, url;
     measure_id = $(this).attr('data-measure-id');
@@ -155,10 +167,7 @@
   };
 
   setPlaceholderTop = function(json_data) {
-    var DIAMOND_COLOR, SQUARE_COLOR, TRIANGLE_COLOR, ed_data, measures, num, options, pl_lines, reference, target;
-    DIAMOND_COLOR = "#105987";
-    TRIANGLE_COLOR = "#E78B00";
-    SQUARE_COLOR = "#122F64";
+    var ed_data, measures, num, options, pl_lines, reference, target;
     reference = (function() {
       var _i, _len, _results;
       _results = [];
@@ -208,7 +217,7 @@
           show: true,
           lineWidth: 2
         },
-        color: "red"
+        color: DIAMOND_COLOR
       }, {
         label: "Measurements",
         data: measures,
@@ -221,7 +230,7 @@
           show: true,
           lineWidth: 2
         },
-        color: "green"
+        color: TRIANGLE_COLOR
       }
     ];
     options = {
@@ -249,7 +258,7 @@
   };
 
   setPlaceholderControl = function(control_data) {
-    var DIAMOND_COLOR, SQUARE_COLOR, TRIANGLE_COLOR, d4, d5, measures_controls, options, pl_control, pl_lines;
+    var d4, d5, measures_controls, options, pl_control, pl_lines;
     DIAMOND_COLOR = "#105987";
     TRIANGLE_COLOR = "#E78B00";
     SQUARE_COLOR = "#122F64";
@@ -315,6 +324,12 @@
       }
     ];
     pl_control = $.plot($("#placeholder_control"), measures_controls, options);
+    $("#placeholder_top").bind("plotclick", function(event, pos, item) {
+      if (item) {
+        console.log(item);
+        return refreshGraph();
+      }
+    });
     return $("#placeholder_control").bind("plotclick", function(event, pos, item) {
       var result_id;
       if (item) {
@@ -409,7 +424,8 @@
 
   $(document).ready(function() {
     window.table_or_map = "map";
-    return setFlotSeries("/blokkendoos/api/measures/calculated/");
+    setFlotSeries("/blokkendoos/api/measures/calculated/");
+    return $(".chzn-select").chosen();
   });
 
 }).call(this);

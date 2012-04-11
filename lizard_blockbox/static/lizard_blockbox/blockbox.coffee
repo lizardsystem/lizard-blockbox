@@ -6,42 +6,27 @@
 # Backbone part                                       #
 #######################################################
 
+ANIMATION_DURATION = 150
+DIAMOND_COLOR = "#105987"
+TRIANGLE_COLOR = "#E78B00"
+SQUARE_COLOR = "#122F64"
+
 BlockboxRouter = Backbone.Router.extend
     routes:
         "map":      "map"
         "table":    "table"
 
     map: ->
-        console.log "map() route!"
-        $('#blockbox-table').hide 500, () ->
-            $('#map').show(500)
+        $('#blockbox-table').slideUp ANIMATION_DURATION, () ->
+            $('#map').slideDown(ANIMATION_DURATION)
             $('a.toggle_map_and_table span').text("Show table")
             $('a.toggle_map_and_table').attr("href", "#table")
 
-
     table: ->
-        console.log "table() route!"
-        $('#map').hide 500, () ->
-            $('#blockbox-table').show(500)
+        $('#map').slideUp ANIMATION_DURATION, () ->
+            $('#blockbox-table').slideDown(ANIMATION_DURATION)
             $('a.toggle_map_and_table span').text("Show map")
             $('a.toggle_map_and_table').attr("href", "#map")
-
-# BlockboxRouter = Backbone.Router.extend
-#     routes:
-#         "":     "index"
-#         "help": "help"
-#
-#     index: ->
-#         console.log "index() route!"
-#
-#     help: ->
-#         console.log "help() route!"
-
-
-app_router = new BlockboxRouter
-
-# Start Backbone history, a required step for bookmarkable URLs
-Backbone.history.start()
 
 
 # Currently renders the measures on the left...
@@ -62,13 +47,31 @@ MeasureList = Backbone.Collection.extend
 MeasureView = Backbone.View.extend
     tagName: 'tr'
 
-    # template: _.template $('#measure-template').html()
+    events:
+        click: 'addRow'
+
+    addRow: ->
+        console.log "Adding #{@model.toJSON().short_name} to selection!"
+
 
     initialize: ->
         @model.bind('change', @render, @)
 
     render: ->
-        @$el.html """<td><a href="#" class="blockbox-toggle-measure" data-measure-id="#{@model.toJSON().short_name}">#{@model.toJSON().name}</a></td><td>#{@model.toJSON().measure_type}</td><td>#{@model.toJSON().km_from}</td>"""
+        @$el.html """
+            <td>
+                <a href="#"
+                   class="blockbox-toggle-measure"
+                   data-measure-id="#{@model.toJSON().short_name}">
+                        #{@model.toJSON().short_name}
+                </a>
+            </td>
+            <td>
+                (type)
+            </td>
+            <td>
+                (start km)
+            </td>"""
         @
 
 
@@ -136,6 +139,9 @@ measure_list = new MeasureList()
 window.measureListView = new MeasureListView();
 window.selectedMeasureListView = new SelectedMeasureListView();
 
+window.app_router = new BlockboxRouter
+Backbone.history.start()
+
 
 
 $('.blockbox-toggle-measure').live 'click', ->
@@ -198,13 +204,10 @@ refreshGraph = ->
 
 setPlaceholderTop = (json_data) ->
 
-    DIAMOND_COLOR = "#105987"
-    TRIANGLE_COLOR = "#E78B00"
-    SQUARE_COLOR = "#122F64"
-
     reference = ([num.location, num.reference_value] for num in json_data)
     target = ([num.location, num.reference_target] for num in json_data)
     measures = ([num.location, num.measures_level] for num in json_data)
+
     ed_data = [
         data: reference
         points:
@@ -226,7 +229,7 @@ setPlaceholderTop = (json_data) ->
             show: true
             lineWidth: 2
 
-        color: "red"
+        color: DIAMOND_COLOR
     ,
         label: "Measurements"
         data: measures
@@ -239,7 +242,7 @@ setPlaceholderTop = (json_data) ->
             show: true
             lineWidth: 2
 
-        color: "green"
+        color: TRIANGLE_COLOR
 
     ]
 
@@ -327,6 +330,14 @@ setPlaceholderControl = (control_data) ->
     ]
 
     pl_control = $.plot($("#placeholder_control"), measures_controls, options)
+
+    $("#placeholder_top").bind "plotclick", (event, pos, item) ->
+        if item
+            console.log item
+            # pl_lines.unhighlight item.series, item.datapoint
+            # result_id = item.series.data[item.dataIndex][2].id
+            refreshGraph()
+
 
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
         if item
@@ -443,3 +454,4 @@ $(window).resize ->
 $(document).ready ->
     window.table_or_map = "map"
     setFlotSeries( "/blokkendoos/api/measures/calculated/")
+    $(".chzn-select").chosen()
