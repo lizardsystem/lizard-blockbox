@@ -122,6 +122,9 @@
   SelectedMeasureListView = Backbone.View.extend({
     el: $('#selected-measures-list'),
     id: 'selected-measures-view',
+    fillGraph: function() {
+      return setPlaceholderControl(data.measure_control_data);
+    },
     addOne: function(measure) {
       var view;
       view = new SelectedMeasureView({
@@ -148,8 +151,6 @@
 
   window.selectedMeasureListView = new SelectedMeasureListView();
 
-  console.log(window.sele);
-
   window.app_router = new BlockboxRouter;
 
   Backbone.history.start();
@@ -167,6 +168,7 @@
   };
 
   setFlotSeries = function(json_url) {
+    if (json_url == null) json_url = "/blokkendoos/api/measures/calculated/";
     return $.getJSON(json_url, function(data) {
       return setPlaceholderTop(data);
     });

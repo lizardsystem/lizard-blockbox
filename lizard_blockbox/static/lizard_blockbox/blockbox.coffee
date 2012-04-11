@@ -69,10 +69,10 @@ MeasureView = Backbone.View.extend
             success: (data) ->
                 window.location.reload()
 
-
     initialize: ->
         @model.bind('change', @render, @)
         @
+
 
     render: ->
         @$el.html """
@@ -147,6 +147,10 @@ SelectedMeasureListView = Backbone.View.extend
 
     id: 'selected-measures-view'
 
+
+    fillGraph: ->
+        setPlaceholderControl data.measure_control_data
+
     addOne: (measure) ->
         view = new SelectedMeasureView(model:measure)
         @$el.append(view.render().el)
@@ -163,18 +167,10 @@ SelectedMeasureListView = Backbone.View.extend
         @
 
 
-# Instance of Measures collection
+
 measure_list = new MeasureList()
-
-# Instance of SelectedMeasuresList model
-# window.selected_measures_list = new SelectedMeasuresList()
-
-# Instance of measure list
 window.measureListView = new MeasureListView();
 window.selectedMeasureListView = new SelectedMeasureListView();
-
-console.log window.sele
-
 window.app_router = new BlockboxRouter
 Backbone.history.start()
 
@@ -188,6 +184,7 @@ Backbone.history.start()
 # Graph part                                          #
 #######################################################
 
+<<<<<<< HEAD
 # This was an attempt to make the flot graph into a jQ plugin,
 # but time didn't allow it... here's the skeleton:
 
@@ -214,6 +211,8 @@ Backbone.history.start()
 
 
 
+=======
+>>>>>>> dc4a4e5de9d2560a954d4aa151ed831b8e266878
 showTooltip = (x, y, contents) ->
     $("<div id=\"tooltip\">#{contents}</div>").css(
         position: "absolute"
@@ -227,7 +226,7 @@ showTooltip = (x, y, contents) ->
 
 
 
-setFlotSeries = (json_url) ->
+setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
     $.getJSON json_url, (data) ->
         setPlaceholderTop data
         # setPlaceholderControl data.measure_control_data
