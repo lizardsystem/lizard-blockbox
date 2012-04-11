@@ -53,7 +53,7 @@
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<td>\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.toJSON().short_name) + "\">\n            " + (this.model.toJSON().name) + "\n    </a>\n</td>\n<td>\n    (type)\n</td>\n<td>\n    (start km)\n</td>");
+      this.$el.html("<td>\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.toJSON().short_name) + "\">\n            " + (this.model.toJSON().name) + "\n    </a>\n</td>\n<td>\n   " + (this.model.toJSON().measure_type) + "\n</td>\n<td>\n    " + (this.model.toJSON().km_from) + "\n</td>");
       return this;
     }
   });

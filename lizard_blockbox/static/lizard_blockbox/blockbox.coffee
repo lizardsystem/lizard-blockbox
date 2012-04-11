@@ -67,10 +67,10 @@ MeasureView = Backbone.View.extend
                 </a>
             </td>
             <td>
-                (type)
+               #{@model.toJSON().measure_type}
             </td>
             <td>
-                (start km)
+                #{@model.toJSON().km_from}
             </td>"""
         @
 
