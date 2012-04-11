@@ -185,35 +185,6 @@ Backbone.history.start()
 # Graph part                                          #
 #######################################################
 
-<<<<<<< HEAD
-# This was an attempt to make the flot graph into a jQ plugin,
-# but time didn't allow it... here's the skeleton:
-
-# $ = jQuery
-#
-# $.fn.flotGraph = (options) ->
-#
-#     defaults =
-#         someDefault: '#ccc'
-#
-#     options = $.extend(defaults, options)
-#
-#     console.log "Bound to", @
-#
-#     initialize: ->
-#         @
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> dc4a4e5de9d2560a954d4aa151ed831b8e266878
 showTooltip = (x, y, contents) ->
     $("""<div id="tooltip">#{contents}</div>""").css(
         position: "absolute"
