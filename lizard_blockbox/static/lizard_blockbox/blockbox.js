@@ -43,11 +43,17 @@
 
   MeasureView = Backbone.View.extend({
     tagName: 'tr',
+    events: {
+      click: 'addRow'
+    },
+    addRow: function() {
+      return console.log("Adding " + (this.model.toJSON().short_name) + " to selection!");
+    },
     initialize: function() {
       return this.model.bind('change', this.render, this);
     },
     render: function() {
-      this.$el.html("<td><a href=\"#\" class=\"blockbox-toggle-measure\" data-measure-id=\"" + (this.model.toJSON().short_name) + "\">" + (this.model.toJSON().short_name) + "</a></td><td>(type)</td><td>(start km)</td>");
+      this.$el.html("<td>\n    <a href=\"#\" \n       class=\"blockbox-toggle-measure\" \n       data-measure-id=\"" + (this.model.toJSON().short_name) + "\">\n            " + (this.model.toJSON().short_name) + "\n    </a>\n</td>\n<td>\n    (type)\n</td>\n<td>\n    (start km)\n</td>");
       return this;
     }
   });
@@ -212,7 +218,7 @@
           show: true,
           lineWidth: 2
         },
-        color: "red"
+        color: DIAMOND_COLOR
       }, {
         label: "Measurements",
         data: measures,
@@ -225,7 +231,7 @@
           show: true,
           lineWidth: 2
         },
-        color: "green"
+        color: TRIANGLE_COLOR
       }
     ];
     options = {
@@ -319,6 +325,12 @@
       }
     ];
     pl_control = $.plot($("#placeholder_control"), measures_controls, options);
+    $("#placeholder_top").bind("plotclick", function(event, pos, item) {
+      if (item) {
+        console.log(item);
+        return refreshGraph();
+      }
+    });
     return $("#placeholder_control").bind("plotclick", function(event, pos, item) {
       var result_id;
       if (item) {
@@ -413,7 +425,8 @@
 
   $(document).ready(function() {
     window.table_or_map = "map";
-    return setFlotSeries("/blokkendoos/api/measures/calculated/");
+    setFlotSeries("/blokkendoos/api/measures/calculated/");
+    return $(".chzn-select").chosen();
   });
 
 }).call(this);
