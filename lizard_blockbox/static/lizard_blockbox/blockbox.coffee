@@ -69,7 +69,10 @@ MeasureView = Backbone.View.extend
                 'measure_id': @model.get('short_name')
             async: false
             success: (data) ->
-                window.location.reload()
+                # window.location.reload()
+                # window.measure_list.reset()
+                window.measure_list.fetch({add:true})
+                setFlotSeries()
 
     initialize: ->
         @model.bind 'change', @render, @

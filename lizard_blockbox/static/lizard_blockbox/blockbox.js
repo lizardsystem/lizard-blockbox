@@ -66,7 +66,10 @@
         },
         async: false,
         success: function(data) {
-          return window.location.reload();
+          window.measure_list.fetch({
+            add: true
+          });
+          return setFlotSeries();
         }
       });
     },
