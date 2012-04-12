@@ -11,6 +11,7 @@ from lizard_blockbox import models
 from lizard_map.coordinates import transform_point
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
+REFERENCE_TARGET = -0.10
 
 
 class BlockboxView(MapView):
@@ -87,7 +88,7 @@ def calculated_measures_json(request):
         if d is None:
             d = {'reference_value': 0,
                  # -0.10 chosen to have some target..
-                 'reference_target': -0.10,
+                 'reference_target': REFERENCE_TARGET,
                  'difference_level': diff['level_difference']}
         else:
             d['difference_level'] += diff['level_difference']

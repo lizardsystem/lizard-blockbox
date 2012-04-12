@@ -54,8 +54,8 @@
 
 	 function JSONLayer(name, json){
 	     var geojson_format = new OpenLayers.Format.GeoJSON();
-         var vector_layer = new OpenLayers.Layer.Vector(name);
-         map.addLayer(vector_layer);
+             var vector_layer = new OpenLayers.Layer.Vector(name);
+             map.addLayer(vector_layer);
 	     vector_layer.addFeatures(geojson_format.read(json));
 	 }
 
@@ -153,7 +153,7 @@
       <select data-placeholder="Kies een rivier"
               class="chzn-select"
               tabindex="2"
-              style="width:275px;">
+              style="width:250px;">
         <option SELECTED>Maas</option>
         <option>Waal (tot Vuren)</option>
         <option>IJsseldelta</option>
@@ -164,6 +164,9 @@
     </form>
 
     <h3>Geselecteerde maatregelen</h3>
+    <p class="muted">
+      Klik om ze te deselecteren.
+    </p>
     <ul id="selected-measures-list" class="without-bullets">
       {% for measure in view.selected_measures %}
         <li>
@@ -190,7 +193,7 @@
     <!-- placeholder_top is the actual graph. -->
 
     <div id="placeholder_control"
-         style="width:100%;height:100px;border-bottom:1px solid #ccc;"></div>
+         style="width:100%;height:100px;border-bottom:1px solid #ccc;margin-left:15px;"></div>
 
     <!-- placeholder_control is the graph part with the measures. -->
 

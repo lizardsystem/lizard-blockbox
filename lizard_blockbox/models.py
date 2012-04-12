@@ -88,6 +88,7 @@ class Measure(models.Model):
         permissions = (("can_view_blockbox", "Can view blockbox"),)
         # ^^^ Note: just a generic blockbox permission. Just needs to be on a
         # model, not specifically *this* model.
+        ordering = ('km_from',)
 
 
 class ReferenceValue(models.Model):
