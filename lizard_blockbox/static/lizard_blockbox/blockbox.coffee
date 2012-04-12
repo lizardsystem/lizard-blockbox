@@ -1,6 +1,6 @@
 # HEADSUP: This file needs to be compiled by hand:
 # coffee -wc blockbox.coffee
-# 
+#
 # setFlotSeries() is the wrapper function you're looking for to
 # draw the flot graph.
 
@@ -45,7 +45,7 @@ Measure = Backbone.Model.extend
 # Collections
 MeasureList = Backbone.Collection.extend
     model: Measure
-    url: "/blokkendoos/api/measures/list/"
+    url: $('#blockbox-table').attr('data-measure-list-url')
 
 SelectedMeasuresList = Backbone.Collection.extend
     model: Measure
@@ -59,8 +59,9 @@ MeasureView = Backbone.View.extend
     events:
         click: 'addMeasure'
 
-    addMeasure: ->
-        console.log "Adding #{@model.get('short_name')} to selection!"
+    addMeasure: (e) ->
+        e.preventDefault()
+        # console.log "Adding #{@model.get('short_name')} to selection!"
         $.ajax
             type: 'POST'
             url: $('#blockbox-table').attr('data-measure-toggle-url')

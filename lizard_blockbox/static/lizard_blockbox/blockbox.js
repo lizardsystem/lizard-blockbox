@@ -44,7 +44,7 @@
 
   MeasureList = Backbone.Collection.extend({
     model: Measure,
-    url: "/blokkendoos/api/measures/list/"
+    url: $('#blockbox-table').attr('data-measure-list-url')
   });
 
   SelectedMeasuresList = Backbone.Collection.extend({
@@ -56,8 +56,8 @@
     events: {
       click: 'addMeasure'
     },
-    addMeasure: function() {
-      console.log("Adding " + (this.model.get('short_name')) + " to selection!");
+    addMeasure: function(e) {
+      e.preventDefault();
       return $.ajax({
         type: 'POST',
         url: $('#blockbox-table').attr('data-measure-toggle-url'),
