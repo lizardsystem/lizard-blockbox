@@ -67,7 +67,6 @@
           setFlotSeries();
           $holder = $('<div/>');
           return $holder.load('. #page', function() {
-            console.log($holder);
             return $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
           });
         }
@@ -216,7 +215,7 @@
         },
         color: DIAMOND_COLOR
       }, {
-        label: "Doel waarde",
+        label: "Doelwaarde",
         data: target,
         points: {
           show: true,
@@ -229,7 +228,7 @@
         },
         color: DIAMOND_COLOR
       }, {
-        label: "Measurements",
+        label: "Effect maatregelen",
         data: measures,
         points: {
           show: true,
@@ -347,7 +346,6 @@
     $("#placeholder_control").bind("plotclick", function(event, pos, item) {
       var result_id;
       if (item) {
-        console.log("Clicked on " + item.series.data[item.dataIndex][2]);
         pl_control.unhighlight(item.series, item.datapoint);
         return result_id = item.series.data[item.dataIndex][1];
       }
@@ -445,8 +443,6 @@
 
   $(".sidebar-measure").live('click', function(e) {
     e.preventDefault();
-    console.log(e);
-    console.log(this);
     return $.ajax({
       type: 'POST',
       url: $('#blockbox-table').attr('data-measure-toggle-url'),
@@ -460,7 +456,6 @@
         setFlotSeries();
         $holder = $('<div/>');
         return $holder.load('. #page', function() {
-          console.log($holder);
           return $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
         });
       }

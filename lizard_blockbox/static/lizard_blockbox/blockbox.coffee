@@ -85,7 +85,6 @@ MeasureView = Backbone.View.extend
                 #        $(@).show()
                 $holder = $('<div/>')
                 $holder.load '. #page', () ->
-                    console.log $holder
                     $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
 
 
@@ -259,7 +258,7 @@ setPlaceholderTop = (json_data) ->
 
         color: DIAMOND_COLOR
     ,
-        label: "Doel waarde"
+        label: "Doelwaarde"
         data: target
         points:
             show: true
@@ -272,7 +271,7 @@ setPlaceholderTop = (json_data) ->
 
         color: DIAMOND_COLOR
     ,
-        label: "Measurements"
+        label: "Effect maatregelen"
         data: measures
         points:
             show: true
@@ -368,7 +367,6 @@ setPlaceholderControl = (control_data) ->
         color: "gray"
         shadowSize: 0
     ]
-
     pl_control = $.plot($("#placeholder_control"), measures_controls, options)
 
     $("#placeholder_top").bind "plotclick", (event, pos, item) ->
@@ -381,7 +379,7 @@ setPlaceholderControl = (control_data) ->
 
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
         if item
-            console.log "Clicked on #{item.series.data[item.dataIndex][2]}"
+            # console.log "Clicked on #{item.series.data[item.dataIndex][2]}"
             pl_control.unhighlight item.series, item.datapoint
             result_id = item.series.data[item.dataIndex][1]
 
@@ -484,8 +482,6 @@ $(window).resize ->
 
 $(".sidebar-measure").live 'click', (e) ->
     e.preventDefault()
-    console.log e
-    console.log @
     $.ajax
         type: 'POST'
         url: $('#blockbox-table').attr('data-measure-toggle-url')
@@ -498,7 +494,6 @@ $(".sidebar-measure").live 'click', (e) ->
             # Hack hack hack
             $holder = $('<div/>')
             $holder.load '. #page', () ->
-                console.log $holder
                 $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
 
 
