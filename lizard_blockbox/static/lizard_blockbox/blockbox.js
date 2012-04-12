@@ -1,5 +1,7 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   ANIMATION_DURATION = 150;
 
@@ -9,12 +11,20 @@
 
   SQUARE_COLOR = "#122F64";
 
-  BlockboxRouter = Backbone.Router.extend({
-    routes: {
+  BlockboxRouter = (function(_super) {
+
+    __extends(BlockboxRouter, _super);
+
+    function BlockboxRouter() {
+      BlockboxRouter.__super__.constructor.apply(this, arguments);
+    }
+
+    BlockboxRouter.prototype.routes = {
       "map": "map",
       "table": "table"
-    },
-    map: function() {
+    };
+
+    BlockboxRouter.prototype.map = function() {
       var to_table_text;
       to_table_text = $('.toggle_map_and_table').parent().attr('data-to-table-text');
       $('a.toggle_map_and_table span').text(to_table_text);
@@ -22,8 +32,9 @@
       return $('#blockbox-table').slideUp(ANIMATION_DURATION, function() {
         return $('#map').slideDown(ANIMATION_DURATION);
       });
-    },
-    table: function() {
+    };
+
+    BlockboxRouter.prototype.table = function() {
       var to_map_text;
       to_map_text = $('.toggle_map_and_table').parent().attr('data-to-map-text');
       $('a.toggle_map_and_table span').text(to_map_text);
@@ -33,26 +44,59 @@
           return $('#blockbox-table').height($("#content").height() - 250);
         });
       });
-    }
-  });
+    };
 
-  Measure = Backbone.Model.extend({
-    defaults: {
+    return BlockboxRouter;
+
+  })(Backbone.Router);
+
+  Measure = (function(_super) {
+
+    __extends(Measure, _super);
+
+    function Measure() {
+      Measure.__super__.constructor.apply(this, arguments);
+    }
+
+    Measure.prototype.defaults = {
       name: "Untitled measure"
+    };
+
+    return Measure;
+
+  })(Backbone.Model);
+
+  MeasureList = (function(_super) {
+
+    __extends(MeasureList, _super);
+
+    function MeasureList() {
+      MeasureList.__super__.constructor.apply(this, arguments);
     }
-  });
 
-  MeasureList = Backbone.Collection.extend({
-    model: Measure,
-    url: $('#blockbox-table').attr('data-measure-list-url')
-  });
+    MeasureList.prototype.model = Measure;
 
-  MeasureView = Backbone.View.extend({
-    tagName: 'tr',
-    events: {
+    MeasureList.prototype.url = $('#blockbox-table').attr('data-measure-list-url');
+
+    return MeasureList;
+
+  })(Backbone.Collection);
+
+  MeasureView = (function(_super) {
+
+    __extends(MeasureView, _super);
+
+    function MeasureView() {
+      MeasureView.__super__.constructor.apply(this, arguments);
+    }
+
+    MeasureView.prototype.tagName = 'tr';
+
+    MeasureView.prototype.events = {
       click: 'toggleMeasure'
-    },
-    toggleMeasure: function(e) {
+    };
+
+    MeasureView.prototype.toggleMeasure = function(e) {
       e.preventDefault();
       return $.ajax({
         type: 'POST',
@@ -71,24 +115,38 @@
           });
         }
       });
-    },
-    initialize: function() {
+    };
+
+    MeasureView.prototype.initialize = function() {
       this.model.bind('change', this.render, this);
       return this;
-    },
-    render: function() {
+    };
+
+    MeasureView.prototype.render = function() {
       this.$el.html("<td style=\"cursor:pointer;\">\n    <a href=\"#\"\n       class=\"blockbox-toggle-measure\"\n       data-measure-id=\"" + (this.model.get('short_name')) + "\">\n            " + (this.model.get('name') || this.model.get('short_name')) + "\n    </a>\n</td>\n<td>\n   " + (this.model.get('measure_type') || 'Onbekend') + "\n</td>\n<td>\n    " + (this.model.get('km_from') || 'Onbekend') + "\n</td>");
       return this;
-    }
-  });
+    };
 
-  SelectedMeasureView = Backbone.View.extend({
-    tagName: 'li',
-    initialize: function() {
+    return MeasureView;
+
+  })(Backbone.View);
+
+  SelectedMeasureView = (function(_super) {
+
+    __extends(SelectedMeasureView, _super);
+
+    function SelectedMeasureView() {
+      SelectedMeasureView.__super__.constructor.apply(this, arguments);
+    }
+
+    SelectedMeasureView.prototype.tagName = 'li';
+
+    SelectedMeasureView.prototype.initialize = function() {
       this.model.bind('change', this.render, this);
       return measure_list.bind('reset', this.render, this);
-    },
-    render: function() {
+    };
+
+    SelectedMeasureView.prototype.render = function() {
       this.$el.html("<a\nhref=\"#\"\nclass=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\"\ndata-measure-id=\"" + (this.model.get('short_name')) + "\"\ndata-measure-shortname=\"" + (this.model.get('short_name')) + "\">\n    " + (this.model.get('name') || this.model.get('short_name')) + "\n</a>");
       if (!this.model.attributes.selected) {
         this.$el.hide();
@@ -96,35 +154,52 @@
         this.$el.show();
       }
       return this;
-    }
-  });
+    };
 
-  MeasureListView = Backbone.View.extend({
-    addOne: function(measure) {
+    return SelectedMeasureView;
+
+  })(Backbone.View);
+
+  MeasureListView = (function(_super) {
+
+    __extends(MeasureListView, _super);
+
+    function MeasureListView() {
+      MeasureListView.__super__.constructor.apply(this, arguments);
+    }
+
+    MeasureListView.prototype.addOne = function(measure) {
       var view;
       view = new MeasureView({
         model: measure
       });
       this.$el.append(view.render().el);
       return this;
-    },
-    addAll: function() {
+    };
+
+    MeasureListView.prototype.addAll = function() {
       return measure_list.each(this.addOne);
-    },
-    tablesort: function() {
+    };
+
+    MeasureListView.prototype.tablesort = function() {
       return $('#measures-table-top').tablesorter();
-    },
-    initialize: function() {
+    };
+
+    MeasureListView.prototype.initialize = function() {
       measure_list.bind('add', this.addOne, this);
       return measure_list.fetch({
         add: true,
         success: this.tablesort
       });
-    },
-    render: function() {
+    };
+
+    MeasureListView.prototype.render = function() {
       return this;
-    }
-  });
+    };
+
+    return MeasureListView;
+
+  })(Backbone.View);
 
   SelectedMeasureListView = Backbone.View.extend({
     addOne: function(measure) {
@@ -273,7 +348,7 @@
       _results = [];
       for (_i = 0, _len = control_data.length; _i < _len; _i++) {
         num = control_data[_i];
-        _results.push([num.km_from, num.type_index, num.measure_graph_name]);
+        _results.push([num.km_from, num.type_index, num.measure_graph_name, num.short_name]);
       }
       return _results;
     })();
@@ -347,7 +422,24 @@
       var result_id;
       if (item) {
         pl_control.unhighlight(item.series, item.datapoint);
-        return result_id = item.series.data[item.dataIndex][1];
+        result_id = item.series.data[item.dataIndex][1];
+        return $.ajax({
+          type: 'POST',
+          url: $('#blockbox-table').attr('data-measure-toggle-url'),
+          data: {
+            'measure_id': item.series.data[item.dataIndex][3]
+          },
+          async: false,
+          success: function(data) {
+            var $holder;
+            measure_list.fetch();
+            setFlotSeries();
+            $holder = $('<div/>');
+            return $holder.load('. #page', function() {
+              return $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
+            });
+          }
+        });
       }
     });
     return $("#placeholder_control").bind("plothover", function(event, pos, item) {

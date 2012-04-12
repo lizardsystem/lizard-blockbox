@@ -13,7 +13,7 @@ DIAMOND_COLOR = "#105987"
 TRIANGLE_COLOR = "#E78B00"
 SQUARE_COLOR = "#122F64"
 
-BlockboxRouter = Backbone.Router.extend
+class BlockboxRouter extends Backbone.Router
     routes:
         "map":      "map"
         "table":    "table"
@@ -37,13 +37,13 @@ BlockboxRouter = Backbone.Router.extend
 # Currently renders the measures on the left...
 
 # Model
-Measure = Backbone.Model.extend
+class Measure extends Backbone.Model
     defaults:
         name: "Untitled measure"
 
 
 # Collections
-MeasureList = Backbone.Collection.extend
+class MeasureList extends Backbone.Collection
     model: Measure
     url: $('#blockbox-table').attr('data-measure-list-url')
 
@@ -53,7 +53,7 @@ MeasureList = Backbone.Collection.extend
 
 
 # View for single measure table element
-MeasureView = Backbone.View.extend
+class MeasureView extends Backbone.View
     tagName: 'tr'
 
     events:
@@ -113,7 +113,7 @@ MeasureView = Backbone.View.extend
 
 
 # View for single *selected* measure li element
-SelectedMeasureView = Backbone.View.extend
+class SelectedMeasureView extends Backbone.View
     tagName: 'li'
 
     initialize: ->
@@ -141,7 +141,7 @@ SelectedMeasureView = Backbone.View.extend
 
 # View for measures list
 
-MeasureListView = Backbone.View.extend
+class MeasureListView extends Backbone.View
 
     addOne: (measure) ->
         view = new MeasureView(model:measure)
@@ -307,7 +307,7 @@ setPlaceholderTop = (json_data) ->
 
 
 setPlaceholderControl = (control_data) ->
-    measures = ([num.km_from, num.type_index, num.measure_graph_name] for num in control_data)
+    measures = ([num.km_from, num.type_index, num.measure_graph_name, num.short_name] for num in control_data)
 
     d4 = undefined
     d5 = undefined
@@ -382,6 +382,21 @@ setPlaceholderControl = (control_data) ->
             # console.log "Clicked on #{item.series.data[item.dataIndex][2]}"
             pl_control.unhighlight item.series, item.datapoint
             result_id = item.series.data[item.dataIndex][1]
+            
+            $.ajax
+                type: 'POST'
+                url: $('#blockbox-table').attr('data-measure-toggle-url')
+                data:
+                    'measure_id': item.series.data[item.dataIndex][3]
+                async: false
+                success: (data) ->
+                    measure_list.fetch()
+                    setFlotSeries()
+                    $holder = $('<div/>')
+                    $holder.load '. #page', () ->
+                        $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
+            
+            
 
     $("#placeholder_control").bind "plothover", (event, pos, item) ->
 
