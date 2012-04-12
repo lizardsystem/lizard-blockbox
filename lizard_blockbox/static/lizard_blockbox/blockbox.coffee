@@ -371,18 +371,12 @@ setPlaceholderControl = (control_data) ->
 
     $("#placeholder_top").bind "plotclick", (event, pos, item) ->
         if item
-            # console.log item
-            # pl_lines.unhighlight item.series, item.datapoint
-            # result_id = item.series.data[item.dataIndex][2].id
             refreshGraph()
 
 
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
         if item
-            # console.log "Clicked on #{item.series.data[item.dataIndex][2]}"
             pl_control.unhighlight item.series, item.datapoint
-            result_id = item.series.data[item.dataIndex][1]
-            
             $.ajax
                 type: 'POST'
                 url: $('#blockbox-table').attr('data-measure-toggle-url')

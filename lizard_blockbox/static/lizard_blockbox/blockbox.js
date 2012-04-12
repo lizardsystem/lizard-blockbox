@@ -419,10 +419,8 @@
       if (item) return refreshGraph();
     });
     $("#placeholder_control").bind("plotclick", function(event, pos, item) {
-      var result_id;
       if (item) {
         pl_control.unhighlight(item.series, item.datapoint);
-        result_id = item.series.data[item.dataIndex][1];
         return $.ajax({
           type: 'POST',
           url: $('#blockbox-table').attr('data-measure-toggle-url'),
