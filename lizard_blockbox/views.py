@@ -35,6 +35,16 @@ class BlockboxView(MapView):
         actions.insert(0, switch_map_and_table)
         return actions
 
+    def selected_measures(self):
+        measures = models.Measure.objects.all().values(
+            'name', 'short_name', 'measure_type', 'km_from')
+        selected_measures = _selected_measures(self.request)
+        result = []
+        for measure in measures:
+            selected = measure['short_name'] in selected_measures
+            if selected:
+                result.append(measure)
+        return result
 
 def reference_json(request):
     """Fetch the reference and target values for all rivers and JSON them.

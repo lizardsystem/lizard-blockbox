@@ -47,8 +47,8 @@ MeasureList = Backbone.Collection.extend
     model: Measure
     url: $('#blockbox-table').attr('data-measure-list-url')
 
-SelectedMeasuresList = Backbone.Collection.extend
-    model: Measure
+# SelectedMeasuresList = Backbone.Collection.extend
+#     model: Measure
 
 
 
@@ -57,11 +57,10 @@ MeasureView = Backbone.View.extend
     tagName: 'tr'
 
     events:
-        click: 'addMeasure'
+        click: 'toggleMeasure'
 
-    addMeasure: (e) ->
+    toggleMeasure: (e) ->
         e.preventDefault()
-        # console.log "Adding #{@model.get('short_name')} to selection!"
         $.ajax
             type: 'POST'
             url: $('#blockbox-table').attr('data-measure-toggle-url')
@@ -72,8 +71,23 @@ MeasureView = Backbone.View.extend
             success: (data) ->
                 # window.location.reload()
                 # window.measure_list.reset()
-                window.measure_list.fetch({add:true})
+                # window.measure_list.fetch({add:true})
+                measure_list.fetch()
                 setFlotSeries()
+                # Hack hack hack
+                #$(".sidebar-measure").each ->
+                #    console.log $(@).attr('data-measure-id')
+                #    if $.inArray($(@).attr('data-measure-id'), data) == -1
+                #        console.log "hiding " + $(@)
+                #        $(@).hide()
+                #    else
+                #        console.log "showing " + $(@)
+                #        $(@).show()
+                $holder = $('<div/>')
+                $holder.load '. #page', () ->
+                    console.log $holder
+                    $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
+
 
     initialize: ->
         @model.bind 'change', @render, @
@@ -104,7 +118,8 @@ SelectedMeasureView = Backbone.View.extend
     tagName: 'li'
 
     initialize: ->
-        @model.bind('change', @render, @)
+        @model.bind 'change', @render, @
+        measure_list.bind 'reset', @render, @
 
     render: ->
         @$el.html """
@@ -119,6 +134,8 @@ SelectedMeasureView = Backbone.View.extend
 
         if not @model.attributes.selected
             @$el.hide()
+        else
+            @$el.show()
 
         @
 
@@ -126,9 +143,6 @@ SelectedMeasureView = Backbone.View.extend
 # View for measures list
 
 MeasureListView = Backbone.View.extend
-    el: $('#measures-table')
-
-    id: 'measures-view'
 
     addOne: (measure) ->
         view = new MeasureView(model:measure)
@@ -143,7 +157,7 @@ MeasureListView = Backbone.View.extend
 
     initialize: ->
         measure_list.bind 'add', @addOne, @
-        measure_list.bind 'reset', @addAll, @
+        # measure_list.bind 'reset', @addAll, @
         measure_list.fetch({add:true, success: @tablesort})
 
     render: ->
@@ -152,20 +166,17 @@ MeasureListView = Backbone.View.extend
 
 # View for *selected* measures list
 SelectedMeasureListView = Backbone.View.extend
-    el: $('#selected-measures-list')
-
-    id: 'selected-measures-view'
 
     addOne: (measure) ->
         view = new SelectedMeasureView(model:measure)
-        @$el.append(view.render().el)
+        $(@el).append(view.render().el)
 
-    addAll: ->
-        window.selected_measures_list.each @addOne
+    #redraw: ->
+    #    measure_list.each @addOne
 
     initialize: ->
         measure_list.bind 'add', @addOne, @
-        measure_list.bind 'reset', @addAll, @
+        #measure_list.bind 'reset', @redraw, @
         @
 
     render: ->
@@ -178,8 +189,8 @@ measure_list = new MeasureList()
 window.measure_list = measure_list
 
 
-window.measureListView = new MeasureListView();
-window.selectedMeasureListView = new SelectedMeasureListView();
+window.measureListView = new MeasureListView({el: $('#measures-table')});
+#window.selectedMeasureListView = new SelectedMeasureListView({el: $('#selected-measures-list')});
 window.app_router = new BlockboxRouter
 Backbone.history.start()
 
@@ -468,6 +479,27 @@ $(window).resize ->
 
         setFlotSeries()
     , 100)
+
+
+
+$(".sidebar-measure").live 'click', (e) ->
+    e.preventDefault()
+    console.log e
+    console.log @
+    $.ajax
+        type: 'POST'
+        url: $('#blockbox-table').attr('data-measure-toggle-url')
+        data:
+            'measure_id': $(@).attr('data-measure-id')
+        async: false
+        success: (data) ->
+            measure_list.fetch()
+            setFlotSeries()
+            # Hack hack hack
+            $holder = $('<div/>')
+            $holder.load '. #page', () ->
+                console.log $holder
+                $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
 
 
 $(document).ready ->

@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, SelectedMeasuresList, TRIANGLE_COLOR, doit, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip;
 
   ANIMATION_DURATION = 150;
 
@@ -47,16 +47,12 @@
     url: $('#blockbox-table').attr('data-measure-list-url')
   });
 
-  SelectedMeasuresList = Backbone.Collection.extend({
-    model: Measure
-  });
-
   MeasureView = Backbone.View.extend({
     tagName: 'tr',
     events: {
-      click: 'addMeasure'
+      click: 'toggleMeasure'
     },
-    addMeasure: function(e) {
+    toggleMeasure: function(e) {
       e.preventDefault();
       return $.ajax({
         type: 'POST',
@@ -66,10 +62,14 @@
         },
         async: false,
         success: function(data) {
-          window.measure_list.fetch({
-            add: true
+          var $holder;
+          measure_list.fetch();
+          setFlotSeries();
+          $holder = $('<div/>');
+          return $holder.load('. #page', function() {
+            console.log($holder);
+            return $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
           });
-          return setFlotSeries();
         }
       });
     },
@@ -86,18 +86,21 @@
   SelectedMeasureView = Backbone.View.extend({
     tagName: 'li',
     initialize: function() {
-      return this.model.bind('change', this.render, this);
+      this.model.bind('change', this.render, this);
+      return measure_list.bind('reset', this.render, this);
     },
     render: function() {
       this.$el.html("<a\nhref=\"#\"\nclass=\"sidebar-measure blockbox-toggle-measure padded-sidebar-item\"\ndata-measure-id=\"" + (this.model.get('short_name')) + "\"\ndata-measure-shortname=\"" + (this.model.get('short_name')) + "\">\n    " + (this.model.get('name') || this.model.get('short_name')) + "\n</a>");
-      if (!this.model.attributes.selected) this.$el.hide();
+      if (!this.model.attributes.selected) {
+        this.$el.hide();
+      } else {
+        this.$el.show();
+      }
       return this;
     }
   });
 
   MeasureListView = Backbone.View.extend({
-    el: $('#measures-table'),
-    id: 'measures-view',
     addOne: function(measure) {
       var view;
       view = new MeasureView({
@@ -114,7 +117,6 @@
     },
     initialize: function() {
       measure_list.bind('add', this.addOne, this);
-      measure_list.bind('reset', this.addAll, this);
       return measure_list.fetch({
         add: true,
         success: this.tablesort
@@ -126,21 +128,15 @@
   });
 
   SelectedMeasureListView = Backbone.View.extend({
-    el: $('#selected-measures-list'),
-    id: 'selected-measures-view',
     addOne: function(measure) {
       var view;
       view = new SelectedMeasureView({
         model: measure
       });
-      return this.$el.append(view.render().el);
-    },
-    addAll: function() {
-      return window.selected_measures_list.each(this.addOne);
+      return $(this.el).append(view.render().el);
     },
     initialize: function() {
       measure_list.bind('add', this.addOne, this);
-      measure_list.bind('reset', this.addAll, this);
       return this;
     },
     render: function() {
@@ -152,9 +148,9 @@
 
   window.measure_list = measure_list;
 
-  window.measureListView = new MeasureListView();
-
-  window.selectedMeasureListView = new SelectedMeasureListView();
+  window.measureListView = new MeasureListView({
+    el: $('#measures-table')
+  });
 
   window.app_router = new BlockboxRouter;
 
@@ -445,6 +441,30 @@
       $('#placeholder_control_legend').css('height', '100px');
       return setFlotSeries();
     }, 100);
+  });
+
+  $(".sidebar-measure").live('click', function(e) {
+    e.preventDefault();
+    console.log(e);
+    console.log(this);
+    return $.ajax({
+      type: 'POST',
+      url: $('#blockbox-table').attr('data-measure-toggle-url'),
+      data: {
+        'measure_id': $(this).attr('data-measure-id')
+      },
+      async: false,
+      success: function(data) {
+        var $holder;
+        measure_list.fetch();
+        setFlotSeries();
+        $holder = $('<div/>');
+        return $holder.load('. #page', function() {
+          console.log($holder);
+          return $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
+        });
+      }
+    });
   });
 
   $(document).ready(function() {
