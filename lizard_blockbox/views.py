@@ -131,10 +131,16 @@ def list_measures_json(request):
 
     measures = models.Measure.objects.all().values(
         'name', 'short_name', 'measure_type', 'km_from')
+    all_types = sorted(list(
+            set([measure['measure_type'] for measure in measures])))
+
     selected_measures = _selected_measures(request)
     for measure in measures:
         selected = measure['short_name'] in selected_measures
         measure['selected'] = selected
+        measure['type_index'] = all_types.index(measure['measure_type'])
+        measure['measure_graph_name'] = '%s (%s)' % (
+            measure['name'], measure['measure_type'])
     response = HttpResponse(mimetype='application/json')
     json.dump(list(measures), response)
     return response

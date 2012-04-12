@@ -274,7 +274,7 @@
       _results = [];
       for (_i = 0, _len = control_data.length; _i < _len; _i++) {
         num = control_data[_i];
-        _results.push([num.km_from, Math.floor(Math.random() * 5), num.name]);
+        _results.push([num.km_from, num.type_index, num.measure_graph_name]);
       }
       return _results;
     })();

@@ -308,7 +308,7 @@ setPlaceholderTop = (json_data) ->
 
 
 setPlaceholderControl = (control_data) ->
-    measures = ([num.km_from, Math.floor(Math.random() * 5), num.name] for num in control_data)
+    measures = ([num.km_from, num.type_index, num.measure_graph_name] for num in control_data)
 
     d4 = undefined
     d5 = undefined
