@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, graphTimer, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
@@ -10,6 +10,8 @@
   TRIANGLE_COLOR = "#E78B00";
 
   SQUARE_COLOR = "#122F64";
+
+  graphTimer = '';
 
   toggleMeasure = function(measure_id) {
     return $.ajax({
@@ -423,11 +425,22 @@
       if (item) return refreshGraph();
     });
     $("#placeholder_control").bind("plotclick", function(event, pos, item) {
-      var result_id;
+      var callback, measure_id, result_id;
       if (item) {
         pl_control.unhighlight(item.series, item.datapoint);
         result_id = item.series.data[item.dataIndex][1];
-        return toggleMeasure(item.series.data[item.dataIndex][3]);
+        measure_id = item.series.data[item.dataIndex][3];
+        if (!graphTimer) {
+          console.log("Starting new timer" + graphTimer);
+          callback = function() {
+            console.log("Executing callback");
+            toggleMeasure(measure_id);
+            return graphTimer = '';
+          };
+          return graphTimer = setTimeout(callback, 200);
+        } else {
+          return console.log("Timer already running");
+        }
       }
     });
     return $("#placeholder_control").bind("plothover", function(event, pos, item) {

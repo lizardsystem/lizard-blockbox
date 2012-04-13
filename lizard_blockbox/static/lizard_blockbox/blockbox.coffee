@@ -13,6 +13,8 @@ DIAMOND_COLOR = "#105987"
 TRIANGLE_COLOR = "#E78B00"
 SQUARE_COLOR = "#122F64"
 
+graphTimer = ''
+
 
 toggleMeasure = (measure_id) ->
     $.ajax
@@ -374,8 +376,16 @@ setPlaceholderControl = (control_data) ->
             # console.log "Clicked on #{item.series.data[item.dataIndex][2]}"
             pl_control.unhighlight item.series, item.datapoint
             result_id = item.series.data[item.dataIndex][1]
-
-            toggleMeasure item.series.data[item.dataIndex][3]
+            measure_id = item.series.data[item.dataIndex][3]
+            if not graphTimer
+                console.log "Starting new timer" + graphTimer
+                callback = ->
+                    console.log "Executing callback"
+                    toggleMeasure measure_id
+                    graphTimer = ''
+                graphTimer = setTimeout(callback, 200)
+            else
+                console.log "Timer already running"
 
 
     $("#placeholder_control").bind "plothover", (event, pos, item) ->
