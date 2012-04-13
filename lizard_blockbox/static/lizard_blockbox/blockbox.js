@@ -431,15 +431,11 @@
         result_id = item.series.data[item.dataIndex][1];
         measure_id = item.series.data[item.dataIndex][3];
         if (!graphTimer) {
-          console.log("Starting new timer" + graphTimer);
           callback = function() {
-            console.log("Executing callback");
             toggleMeasure(measure_id);
             return graphTimer = '';
           };
           return graphTimer = setTimeout(callback, 200);
-        } else {
-          return console.log("Timer already running");
         }
       }
     });
