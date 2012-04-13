@@ -13,6 +13,23 @@ DIAMOND_COLOR = "#105987"
 TRIANGLE_COLOR = "#E78B00"
 SQUARE_COLOR = "#122F64"
 
+
+toggleMeasure = (measure_id) ->
+    $.ajax
+        type: 'POST'
+        url: $('#blockbox-table').attr('data-measure-toggle-url')
+        data:
+            'measure_id': measure_id
+        async: false
+        success: (data) ->
+            measure_list.fetch()
+            setFlotSeries()
+            # Hack hack hack
+            $holder = $('<div/>')
+            $holder.load '. #page', () ->
+                $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
+
+
 class BlockboxRouter extends Backbone.Router
     routes:
         "map":      "map"
@@ -61,32 +78,7 @@ class MeasureView extends Backbone.View
 
     toggleMeasure: (e) ->
         e.preventDefault()
-        $.ajax
-            type: 'POST'
-            url: $('#blockbox-table').attr('data-measure-toggle-url')
-            data:
-                # 'measure_id': @$el.find('td:first a').data('measure-id')
-                'measure_id': @model.get('short_name')
-            async: false
-            success: (data) ->
-                # window.location.reload()
-                # window.measure_list.reset()
-                # window.measure_list.fetch({add:true})
-                measure_list.fetch()
-                setFlotSeries()
-                # Hack hack hack
-                #$(".sidebar-measure").each ->
-                #    console.log $(@).attr('data-measure-id')
-                #    if $.inArray($(@).attr('data-measure-id'), data) == -1
-                #        console.log "hiding " + $(@)
-                #        $(@).hide()
-                #    else
-                #        console.log "showing " + $(@)
-                #        $(@).show()
-                $holder = $('<div/>')
-                $holder.load '. #page', () ->
-                    $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
-
+        toggleMeasure @model.get('short_name')
 
     initialize: ->
         @model.bind 'change', @render, @
@@ -382,21 +374,9 @@ setPlaceholderControl = (control_data) ->
             # console.log "Clicked on #{item.series.data[item.dataIndex][2]}"
             pl_control.unhighlight item.series, item.datapoint
             result_id = item.series.data[item.dataIndex][1]
-            
-            $.ajax
-                type: 'POST'
-                url: $('#blockbox-table').attr('data-measure-toggle-url')
-                data:
-                    'measure_id': item.series.data[item.dataIndex][3]
-                async: false
-                success: (data) ->
-                    measure_list.fetch()
-                    setFlotSeries()
-                    $holder = $('<div/>')
-                    $holder.load '. #page', () ->
-                        $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
-            
-            
+
+            toggleMeasure item.series.data[item.dataIndex][3]
+
 
     $("#placeholder_control").bind "plothover", (event, pos, item) ->
 
@@ -494,22 +474,9 @@ $(window).resize ->
     , 100)
 
 
-
 $(".sidebar-measure").live 'click', (e) ->
     e.preventDefault()
-    $.ajax
-        type: 'POST'
-        url: $('#blockbox-table').attr('data-measure-toggle-url')
-        data:
-            'measure_id': $(@).attr('data-measure-id')
-        async: false
-        success: (data) ->
-            measure_list.fetch()
-            setFlotSeries()
-            # Hack hack hack
-            $holder = $('<div/>')
-            $holder.load '. #page', () ->
-                $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
+    toggleMeasure $(@).attr('data-measure-id')
 
 
 $(document).ready ->
