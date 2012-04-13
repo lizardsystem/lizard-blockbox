@@ -14,6 +14,7 @@ TRIANGLE_COLOR = "#E78B00"
 SQUARE_COLOR = "#122F64"
 
 graphTimer = ''
+hasTooltip = ''
 
 
 toggleMeasure = (measure_id) ->
@@ -213,15 +214,15 @@ Backbone.history.start()
 #
 #     initialize: ->
 
-showTooltip = (x, y, contents) ->
-    $("""<div id="tooltip">#{contents}</div>""").css(
-        position: "absolute"
-        display: "none"
+showTooltip = (x, y, name, type_name) ->
+    $("""<div id="tooltip" class="popover top">
+           <div class="popover-inner">
+             <div class="popover-title"><h3>#{name}</h3></div>
+             <div class="popover-content">Type: #{type_name}</div>
+           </div>
+         </div>""").css(
         top: y - 35
         left: x + 5
-        border: "1px solid #fdd"
-        padding: "2px"
-        background: "#fee"
     ).appendTo("body").fadeIn 200
 
 
@@ -301,7 +302,7 @@ setPlaceholderTop = (json_data) ->
 
 
 setPlaceholderControl = (control_data) ->
-    measures = ([num.km_from, num.type_index, num.measure_graph_name, num.short_name] for num in control_data)
+    measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data)
 
     d4 = undefined
     d5 = undefined
@@ -386,14 +387,16 @@ setPlaceholderControl = (control_data) ->
 
     $("#placeholder_control").bind "plothover", (event, pos, item) ->
 
-        if item
-            $('#tooltip').remove()
+        if item and not hasTooltip
             showTooltip(
                 item.pageX,
                 item.pageY,
                 item.series.data[item.dataIndex][2]
+                item.series.data[item.dataIndex][4]
             )
+            hasTooltip = 'yep'
         else
+            hasTooltip = ''
             $('#tooltip').remove()
 
 options =

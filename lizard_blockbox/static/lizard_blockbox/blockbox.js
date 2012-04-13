@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, graphTimer, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
@@ -12,6 +12,8 @@
   SQUARE_COLOR = "#122F64";
 
   graphTimer = '';
+
+  hasTooltip = '';
 
   toggleMeasure = function(measure_id) {
     return $.ajax({
@@ -236,15 +238,10 @@
 
   Backbone.history.start();
 
-  showTooltip = function(x, y, contents) {
-    return $("<div id=\"tooltip\">" + contents + "</div>").css({
-      position: "absolute",
-      display: "none",
+  showTooltip = function(x, y, name, type_name) {
+    return $("<div id=\"tooltip\" class=\"popover top\">\n  <div class=\"popover-inner\">\n    <div class=\"popover-title\"><h3>" + name + "</h3></div>\n    <div class=\"popover-content\">Type: " + type_name + "</div>\n  </div>\n</div>").css({
       top: y - 35,
-      left: x + 5,
-      border: "1px solid #fdd",
-      padding: "2px",
-      background: "#fee"
+      left: x + 5
     }).appendTo("body").fadeIn(200);
   };
 
@@ -354,7 +351,7 @@
       _results = [];
       for (_i = 0, _len = control_data.length; _i < _len; _i++) {
         num = control_data[_i];
-        _results.push([num.km_from, num.type_index, num.measure_graph_name, num.short_name]);
+        _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
       }
       return _results;
     })();
@@ -440,10 +437,11 @@
       }
     });
     return $("#placeholder_control").bind("plothover", function(event, pos, item) {
-      if (item) {
-        $('#tooltip').remove();
-        return showTooltip(item.pageX, item.pageY, item.series.data[item.dataIndex][2]);
+      if (item && !hasTooltip) {
+        showTooltip(item.pageX, item.pageY, item.series.data[item.dataIndex][2], item.series.data[item.dataIndex][4]);
+        return hasTooltip = 'yep';
       } else {
+        hasTooltip = '';
         return $('#tooltip').remove();
       }
     });

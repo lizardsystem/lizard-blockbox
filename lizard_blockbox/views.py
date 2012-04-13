@@ -47,6 +47,7 @@ class BlockboxView(MapView):
                 result.append(measure)
         return result
 
+
 def reference_json(request):
     """Fetch the reference and target values for all rivers and JSON them.
     """
@@ -140,8 +141,6 @@ def list_measures_json(request):
         selected = measure['short_name'] in selected_measures
         measure['selected'] = selected
         measure['type_index'] = all_types.index(measure['measure_type'])
-        measure['measure_graph_name'] = '%s (%s)' % (
-            measure['name'], measure['measure_type'])
     response = HttpResponse(mimetype='application/json')
     json.dump(list(measures), response)
     return response
