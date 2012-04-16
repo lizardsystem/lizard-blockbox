@@ -13,6 +13,26 @@ DIAMOND_COLOR = "#105987"
 TRIANGLE_COLOR = "#E78B00"
 SQUARE_COLOR = "#122F64"
 
+graphTimer = ''
+hasTooltip = ''
+
+
+toggleMeasure = (measure_id) ->
+    $.ajax
+        type: 'POST'
+        url: $('#blockbox-table').attr('data-measure-toggle-url')
+        data:
+            'measure_id': measure_id
+        async: false
+        success: (data) ->
+            measure_list.fetch()
+            setFlotSeries()
+            # Hack hack hack
+            $holder = $('<div/>')
+            $holder.load '. #page', () ->
+                $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
+
+
 class BlockboxRouter extends Backbone.Router
     routes:
         "map":      "map"
@@ -61,32 +81,7 @@ class MeasureView extends Backbone.View
 
     toggleMeasure: (e) ->
         e.preventDefault()
-        $.ajax
-            type: 'POST'
-            url: $('#blockbox-table').attr('data-measure-toggle-url')
-            data:
-                # 'measure_id': @$el.find('td:first a').data('measure-id')
-                'measure_id': @model.get('short_name')
-            async: false
-            success: (data) ->
-                # window.location.reload()
-                # window.measure_list.reset()
-                # window.measure_list.fetch({add:true})
-                measure_list.fetch()
-                setFlotSeries()
-                # Hack hack hack
-                #$(".sidebar-measure").each ->
-                #    console.log $(@).attr('data-measure-id')
-                #    if $.inArray($(@).attr('data-measure-id'), data) == -1
-                #        console.log "hiding " + $(@)
-                #        $(@).hide()
-                #    else
-                #        console.log "showing " + $(@)
-                #        $(@).show()
-                $holder = $('<div/>')
-                $holder.load '. #page', () ->
-                    $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
-
+        toggleMeasure @model.get('short_name')
 
     initialize: ->
         @model.bind 'change', @render, @
@@ -219,15 +214,15 @@ Backbone.history.start()
 #
 #     initialize: ->
 
-showTooltip = (x, y, contents) ->
-    $("""<div id="tooltip">#{contents}</div>""").css(
-        position: "absolute"
-        display: "none"
+showTooltip = (x, y, name, type_name) ->
+    $("""<div id="tooltip" class="popover top">
+           <div class="popover-inner">
+             <div class="popover-title"><h3>#{name}</h3></div>
+             <div class="popover-content">Type: #{type_name}</div>
+           </div>
+         </div>""").css(
         top: y - 35
         left: x + 5
-        border: "1px solid #fdd"
-        padding: "2px"
-        background: "#fee"
     ).appendTo("body").fadeIn 200
 
 
@@ -307,7 +302,7 @@ setPlaceholderTop = (json_data) ->
 
 
 setPlaceholderControl = (control_data) ->
-    measures = ([num.km_from, num.type_index, num.measure_graph_name, num.short_name] for num in control_data)
+    measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data)
 
     d4 = undefined
     d5 = undefined
@@ -377,31 +372,26 @@ setPlaceholderControl = (control_data) ->
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
         if item
             pl_control.unhighlight item.series, item.datapoint
-            $.ajax
-                type: 'POST'
-                url: $('#blockbox-table').attr('data-measure-toggle-url')
-                data:
-                    'measure_id': item.series.data[item.dataIndex][3]
-                async: false
-                success: (data) ->
-                    measure_list.fetch()
-                    setFlotSeries()
-                    $holder = $('<div/>')
-                    $holder.load '. #page', () ->
-                        $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
-            
-            
+            result_id = item.series.data[item.dataIndex][1]
+            measure_id = item.series.data[item.dataIndex][3]
+            if not graphTimer
+                callback = ->
+                    toggleMeasure measure_id
+                    graphTimer = ''
+                graphTimer = setTimeout(callback, 200)
 
     $("#placeholder_control").bind "plothover", (event, pos, item) ->
 
-        if item
-            $('#tooltip').remove()
+        if item and not hasTooltip
             showTooltip(
                 item.pageX,
                 item.pageY,
                 item.series.data[item.dataIndex][2]
+                item.series.data[item.dataIndex][4]
             )
+            hasTooltip = 'yep'
         else
+            hasTooltip = ''
             $('#tooltip').remove()
 
 options =
@@ -488,22 +478,9 @@ $(window).resize ->
     , 100)
 
 
-
 $(".sidebar-measure").live 'click', (e) ->
     e.preventDefault()
-    $.ajax
-        type: 'POST'
-        url: $('#blockbox-table').attr('data-measure-toggle-url')
-        data:
-            'measure_id': $(@).attr('data-measure-id')
-        async: false
-        success: (data) ->
-            measure_list.fetch()
-            setFlotSeries()
-            # Hack hack hack
-            $holder = $('<div/>')
-            $holder.load '. #page', () ->
-                $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
+    toggleMeasure $(@).attr('data-measure-id')
 
 
 $(document).ready ->
