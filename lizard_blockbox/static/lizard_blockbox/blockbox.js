@@ -472,7 +472,6 @@
     pl_control = $.plot($("#placeholder_control"), measures_controls, options);
     $("#placeholder_control").bind("plotclick", function(event, pos, item) {
       var callback, measure_id, result_id;
-      console.log("item:", item);
       if (item) {
         pl_control.unhighlight(item.series, item.datapoint);
         result_id = item.series.data[item.dataIndex][1];

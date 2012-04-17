@@ -378,7 +378,6 @@ setPlaceholderControl = (control_data) ->
     pl_control = $.plot($("#placeholder_control"), measures_controls, options)
     
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
-        console.log "item:", item
         if item
             pl_control.unhighlight item.series, item.datapoint
             result_id = item.series.data[item.dataIndex][1]
