@@ -27,92 +27,91 @@
 {% endblock %}
 
 {% block map-javascript %}
-  {{ block.super }}
-   <script type="text/javascript"
-     src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
-   </script>
+    {{ block.super }}
+    <script type="text/javascript"
+        src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
+    </script>
 
-   <script type="text/javascript">
-     // var selectControl, selectedFeature;
-     // 
-     // function JSONLayer(name, json){
-     //     var geojson_format = new OpenLayers.Format.GeoJSON();
-     //              var vector_layer = new OpenLayers.Layer.Vector(name);
-     //              map.addLayer(vector_layer);
-     //     vector_layer.addFeatures(geojson_format.read(json));
-     // }
-     // 
-     //     function onPopupClose(evt) {
-     //         selectControl.unselect(selectedFeature);
-     //     }
-     // 
-     //     function onFeatureHighlight(feature){
-     //         selectedFeature = feature;
-     //         ff = feature.feature;
-     //         popup = new OpenLayers.Popup.FramedCloud("chicken",
-     //             ff.geometry.getBounds().getCenterLonLat(),
-     //             null,
-     //             "<div style='font-size:.8em'>" + ff.data.titel + "</div>",
-     //             null, false, false);
-     //         feature.feature.popup = popup;
-     //         map.addPopup(popup);
-     //     }
-     // 
-     // 
-     //     function onFeatureUnhighlight(feature) {
-     //         map.removePopup(feature.feature.popup);
-     //         feature.feature.popup.destroy();
-     //         feature.feature.popup = null;
-     //     }
-     // 
-     // 
-     //     function JSONTooltip(name, json) {
-     //         var geojson_format = new OpenLayers.Format.GeoJSON();
-     //         var vector_layer = new OpenLayers.Layer.Vector(name);
-     //         map.addLayer(vector_layer);
-     //         vector_layer.addFeatures(geojson_format.read(json));
-     // 
-     //         var highlightCtrl = new OpenLayers.Control.SelectFeature(vector_layer, {
-     //             hover: true,
-     //             highlightOnly: true,
-     //             renderIntent: "temporary",
-     //             eventListeners: {
-     //                 featurehighlighted: onFeatureHighlight,
-     //                 featureunhighlighted: onFeatureUnhighlight
-     //             }
-     //         });
-     //         map.addControl(highlightCtrl);
-     //         highlightCtrl.activate();
-     //     }
-     // 
-     // $().ready(function() {
-     //          $.getJSON("{{ STATIC_URL }}lizard_blockbox/QS.json",
-     //              function(json){
-     //                  JSONTooltip('QS', json);
-     //              }
-     //          );
-     // 
-     //          $.getJSON("{{ STATIC_URL }}lizard_blockbox/IVM_deel1.json",
-     //              function(json){
-     //                  JSONTooltip('IVM deel 1', json);
-     //              }
-     //          );
-     //          $.getJSON("{{ STATIC_URL }}lizard_blockbox/rijntakken.json",
-     //              function(json){
-     //                  JSONLayer('Rijntak', json);
-     //              }
-     //          );
-     //     $.getJSON("/blokkendoos/api/rivers/maas/",
-     //              function(json){
-     //                  JSONLayer('Maas', json);
-     //              }
-     //          );
-     //      });
-   </script>
+    <script type="text/javascript">
+    var selectControl, selectedFeature;
+     
+    function JSONLayer(name, json){
+        var geojson_format = new OpenLayers.Format.GeoJSON();
+        var vector_layer = new OpenLayers.Layer.Vector(name);
+        map.addLayer(vector_layer);
+        vector_layer.addFeatures(geojson_format.read(json));
+    }
+     
+    function onPopupClose(evt) {
+        selectControl.unselect(selectedFeature);
+    }
+     
+    function onFeatureHighlight(feature){
+        selectedFeature = feature;
+        ff = feature.feature;
+        popup = new OpenLayers.Popup.FramedCloud("chicken",
+            ff.geometry.getBounds().getCenterLonLat(),
+            null,
+            "<div style='font-size:.8em'>" + ff.data.titel + "</div>",
+            null, false, false);
+        feature.feature.popup = popup;
+        map.addPopup(popup);
+    }
+     
+     
+    function onFeatureUnhighlight(feature) {
+        map.removePopup(feature.feature.popup);
+        feature.feature.popup.destroy();
+        feature.feature.popup = null;
+    }
+     
+    function JSONTooltip(name, json) {
+        var geojson_format = new OpenLayers.Format.GeoJSON();
+        var vector_layer = new OpenLayers.Layer.Vector(name);
+        map.addLayer(vector_layer);
+        vector_layer.addFeatures(geojson_format.read(json));
 
-   <script type="text/template" id="measure-template">
+        var highlightCtrl = new OpenLayers.Control.SelectFeature(vector_layer, {
+            hover: true,
+            highlightOnly: true,
+            renderIntent: "temporary",
+            eventListeners: {
+                featurehighlighted: onFeatureHighlight,
+                featureunhighlighted: onFeatureUnhighlight
+            }
+        });
+        map.addControl(highlightCtrl);
+        highlightCtrl.activate();
+    }
+     
+    $().ready(function() {
+        $.getJSON("{{ STATIC_URL }}lizard_blockbox/QS.json",
+            function(json){
+                JSONTooltip('QS', json);
+            }
+        );
+
+        $.getJSON("{{ STATIC_URL }}lizard_blockbox/IVM_deel1.json",
+            function(json){
+                JSONTooltip('IVM deel 1', json);
+            }
+        );
+        $.getJSON("{{ STATIC_URL }}lizard_blockbox/rijntakken.json",
+            function(json){
+                JSONLayer('Rijntak', json);
+            }
+        );
+        $.getJSON("/blokkendoos/api/rivers/maas/",
+            function(json){
+                JSONLayer('Maas', json);
+            }
+        );
+    });
+    </script>
+
+    <script type="text/template" id="measure-template">
         <strong>Measure</strong>
-   </script>
+    </script>
    
     <!--[if lte IE 8]>
     <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/fxcanvas/jooscript.js"></script>
