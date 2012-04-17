@@ -238,7 +238,7 @@ setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
 
 
 setPlaceholderTop = (json_data) ->
-
+    console.log "json_data:", json_data
     reference = ([num.location, num.reference_value] for num in json_data)
     target = ([num.location, num.reference_target] for num in json_data)
     measures = ([num.location, num.measures_level] for num in json_data)
@@ -283,11 +283,14 @@ setPlaceholderTop = (json_data) ->
 
     options =
         xaxis:
+            transform: (v) -> -v
             position: "top"
 
-    grid:
-        clickable: true
-        borderWidth: 1
+        grid:
+            alignTicksWithAxis: 1
+            clickable: true
+            borderWidth: 1
+            labelMargin:-50
 
     legend:
         show: true
@@ -302,6 +305,7 @@ setPlaceholderTop = (json_data) ->
 
 
 setPlaceholderControl = (control_data) ->
+    console.log "control_data:", control_data
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data)
 
     d4 = undefined
@@ -310,12 +314,21 @@ setPlaceholderControl = (control_data) ->
 
     options =
         xaxis:
+            transform: (v) -> -v
+            reserveSpace: true
             position: "bottom"
+
+        yaxis:
+            reserveSpace: true
+            labelWidth: 21
+            position: "left"
 
         grid:
             clickable: true
             hoverable: true
             borderWidth: 1
+            labelMargin:-50
+            
 
         legend:
             show: true
@@ -393,22 +406,6 @@ setPlaceholderControl = (control_data) ->
         else
             hasTooltip = ''
             $('#tooltip').remove()
-
-options =
-    xaxis:
-        position: "top"
-
-    grid:
-        clickable: true
-        borderWidth: 1
-
-    legend:
-        show: true
-        noColumns: 4
-        container: $("#placeholder_top_legend")
-        labelFormatter: (label, series) ->
-            cb = label
-            cb
 
 
 $('.btn.collapse-sidebar').click ->
