@@ -263,6 +263,7 @@
       json_url = "/blokkendoos/api/measures/calculated/";
     }
     return $.getJSON(json_url, function(data) {
+      window.data = data;
       setPlaceholderTop(data);
       return setPlaceholderControl(window.measure_list.toJSON());
     });
@@ -340,12 +341,17 @@
         transform: function(v) {
           return -v;
         },
+        inverseTransform: function(v) {
+          return -v;
+        },
         position: "top"
       },
       grid: {
+        minBorderMargin: 20,
         alignTicksWithAxis: 1,
         clickable: true,
         borderWidth: 1,
+        axisMargin: 10,
         labelMargin: -50
       }
     };
@@ -361,7 +367,12 @@
         }
       }
     });
-    return pl_lines = $.plot($("#placeholder_top"), ed_data, options);
+    pl_lines = $.plot($("#placeholder_top"), ed_data, options);
+    return $("#placeholder_top").bind("plotclick", function(event, pos, item) {
+      if (item) {
+        return refreshGraph();
+      }
+    });
   };
 
   setPlaceholderControl = function(control_data) {
@@ -383,6 +394,11 @@
         transform: function(v) {
           return -v;
         },
+        inverseTransform: function(v) {
+          return -v;
+        },
+        min: window.data[0].location,
+        max: window.data[window.data.length - 1].location,
         reserveSpace: true,
         position: "bottom"
       },
@@ -392,6 +408,7 @@
         position: "left"
       },
       grid: {
+        minBorderMargin: 20,
         clickable: true,
         hoverable: true,
         borderWidth: 1,
@@ -448,13 +465,9 @@
       }
     ];
     pl_control = $.plot($("#placeholder_control"), measures_controls, options);
-    $("#placeholder_top").bind("plotclick", function(event, pos, item) {
-      if (item) {
-        return refreshGraph();
-      }
-    });
     $("#placeholder_control").bind("plotclick", function(event, pos, item) {
       var callback, measure_id, result_id;
+      console.log("item:", item);
       if (item) {
         pl_control.unhighlight(item.series, item.datapoint);
         result_id = item.series.data[item.dataIndex][1];

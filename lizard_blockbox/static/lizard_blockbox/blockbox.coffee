@@ -213,6 +213,7 @@ showTooltip = (x, y, name, type_name) ->
 
 setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
     $.getJSON json_url, (data) ->
+        window.data = data
         setPlaceholderTop data
         setPlaceholderControl window.measure_list.toJSON()
 
@@ -267,12 +268,15 @@ setPlaceholderTop = (json_data) ->
     options =
         xaxis:
             transform: (v) -> -v
+            inverseTransform: (v) -> -v
             position: "top"
 
         grid:
+            minBorderMargin: 20
             alignTicksWithAxis: 1
             clickable: true
             borderWidth: 1
+            axisMargin: 10
             labelMargin:-50
 
     legend:
@@ -285,9 +289,12 @@ setPlaceholderTop = (json_data) ->
 
     pl_lines = $.plot($("#placeholder_top"), ed_data, options)
 
+    $("#placeholder_top").bind "plotclick", (event, pos, item) ->
+        if item
+            refreshGraph()
 
 
-setPlaceholderControl = (control_data) ->
+setPlaceholderControl = (control_data) ->    
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data)
 
     d4 = undefined
@@ -297,6 +304,9 @@ setPlaceholderControl = (control_data) ->
     options =
         xaxis:
             transform: (v) -> -v
+            inverseTransform: (v) -> -v
+            min: window.data[0].location
+            max: window.data[window.data.length-1].location
             reserveSpace: true
             position: "bottom"
 
@@ -306,6 +316,7 @@ setPlaceholderControl = (control_data) ->
             position: "left"
 
         grid:
+            minBorderMargin: 20
             clickable: true
             hoverable: true
             borderWidth: 1
@@ -358,13 +369,9 @@ setPlaceholderControl = (control_data) ->
         shadowSize: 0
     ]
     pl_control = $.plot($("#placeholder_control"), measures_controls, options)
-
-    $("#placeholder_top").bind "plotclick", (event, pos, item) ->
-        if item
-            refreshGraph()
-
-
+    
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
+        console.log "item:", item
         if item
             pl_control.unhighlight item.series, item.datapoint
             result_id = item.series.data[item.dataIndex][1]
@@ -374,9 +381,9 @@ setPlaceholderControl = (control_data) ->
                     toggleMeasure measure_id
                     graphTimer = ''
                 graphTimer = setTimeout(callback, 200)
-
+    
     $("#placeholder_control").bind "plothover", (event, pos, item) ->
-
+    
         if item and not hasTooltip
             showTooltip(
                 item.pageX,
@@ -388,6 +395,8 @@ setPlaceholderControl = (control_data) ->
         else
             hasTooltip = ''
             $('#tooltip').remove()
+
+
 
 
 $('.btn.collapse-sidebar').click ->
@@ -466,4 +475,3 @@ $(document).ready ->
     window.table_or_map = "map"
     setFlotSeries()
     $(".chzn-select").chosen()
-
