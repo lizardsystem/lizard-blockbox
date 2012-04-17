@@ -270,6 +270,12 @@ setPlaceholderTop = (json_data) ->
             transform: (v) -> -v
             inverseTransform: (v) -> -v
             position: "top"
+            
+        yaxis:
+            labelWidth: 21
+            reserveSpace: true
+            position: "left"
+            tickDecimals: 1
 
         grid:
             minBorderMargin: 20
@@ -277,7 +283,7 @@ setPlaceholderTop = (json_data) ->
             clickable: true
             borderWidth: 1
             axisMargin: 10
-            labelMargin:-50
+            # labelMargin:-50
 
     legend:
         show: true
@@ -314,13 +320,14 @@ setPlaceholderControl = (control_data) ->
             reserveSpace: true
             labelWidth: 21
             position: "left"
+            tickDecimals: 0
 
         grid:
             minBorderMargin: 20
             clickable: true
             hoverable: true
             borderWidth: 1
-            labelMargin:-50
+            # labelMargin:-50
             
 
         legend:

@@ -346,13 +346,18 @@
         },
         position: "top"
       },
+      yaxis: {
+        labelWidth: 21,
+        reserveSpace: true,
+        position: "left",
+        tickDecimals: 1
+      },
       grid: {
         minBorderMargin: 20,
         alignTicksWithAxis: 1,
         clickable: true,
         borderWidth: 1,
-        axisMargin: 10,
-        labelMargin: -50
+        axisMargin: 10
       }
     };
     ({
@@ -405,14 +410,14 @@
       yaxis: {
         reserveSpace: true,
         labelWidth: 21,
-        position: "left"
+        position: "left",
+        tickDecimals: 0
       },
       grid: {
         minBorderMargin: 20,
         clickable: true,
         hoverable: true,
-        borderWidth: 1,
-        labelMargin: -50
+        borderWidth: 1
       },
       legend: {
         show: true,
