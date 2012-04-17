@@ -198,22 +198,6 @@ Backbone.history.start()
 # Graph part                                          #
 #######################################################
 
-# This was an attempt to make the flot graph into a jQ plugin,
-# but time didn't allow it... here's the skeleton:
-
-# $ = jQuery
-#
-# $.fn.flotGraph = (options) ->
-#
-#     defaults =
-#         someDefault: '#ccc'
-#
-#     options = $.extend(defaults, options)
-#
-#     console.log "Bound to", @
-#
-#     initialize: ->
-
 showTooltip = (x, y, name, type_name) ->
     $("""<div id="tooltip" class="popover top">
            <div class="popover-inner">
@@ -238,7 +222,6 @@ setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
 
 
 setPlaceholderTop = (json_data) ->
-    console.log "json_data:", json_data
     reference = ([num.location, num.reference_value] for num in json_data)
     target = ([num.location, num.reference_target] for num in json_data)
     measures = ([num.location, num.measures_level] for num in json_data)
@@ -305,7 +288,6 @@ setPlaceholderTop = (json_data) ->
 
 
 setPlaceholderControl = (control_data) ->
-    console.log "control_data:", control_data
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data)
 
     d4 = undefined

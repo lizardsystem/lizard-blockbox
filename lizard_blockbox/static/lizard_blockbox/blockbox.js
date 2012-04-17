@@ -270,7 +270,6 @@
 
   setPlaceholderTop = function(json_data) {
     var ed_data, measures, num, options, pl_lines, reference, target;
-    console.log("json_data:", json_data);
     reference = (function() {
       var _i, _len, _results;
       _results = [];
@@ -367,7 +366,6 @@
 
   setPlaceholderControl = function(control_data) {
     var d4, d5, measures, measures_controls, num, options, pl_control, pl_lines;
-    console.log("control_data:", control_data);
     measures = (function() {
       var _i, _len, _results;
       _results = [];
