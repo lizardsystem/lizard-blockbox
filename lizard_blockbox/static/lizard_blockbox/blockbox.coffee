@@ -23,11 +23,10 @@ toggleMeasure = (measure_id) ->
         url: $('#blockbox-table').attr('data-measure-toggle-url')
         data:
             'measure_id': measure_id
-        async: false
+        # async: false
         success: (data) ->
-            measure_list.fetch()
             setFlotSeries()
-            # Hack hack hack
+            # TODO: Update checkmark for selected measures in main table.
             $holder = $('<div/>')
             $holder.load '. #page', () ->
                 $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
@@ -54,143 +53,8 @@ class BlockboxRouter extends Backbone.Router
                 $('#blockbox-table').height($("#content").height() - 250)
 
 
-# Currently renders the measures on the left...
-
-# Model
-class Measure extends Backbone.Model
-    defaults:
-        name: "Untitled measure"
-
-
-# Collections
-class MeasureList extends Backbone.Collection
-    model: Measure
-    url: $('#blockbox-table').attr('data-measure-list-url')
-
-# SelectedMeasuresList = Backbone.Collection.extend
-#     model: Measure
-
-
-
-# View for single measure table element
-class MeasureView extends Backbone.View
-    tagName: 'tr'
-
-    events:
-        click: 'toggleMeasure'
-
-    toggleMeasure: (e) ->
-        e.preventDefault()
-        toggleMeasure @model.get('short_name')
-
-    initialize: ->
-        @model.bind 'change', @render, @
-        @
-
-
-    render: ->
-        @$el.html """
-            <td style="cursor:pointer;">
-                <a href="#"
-                   class="blockbox-toggle-measure"
-                   data-measure-id="#{@model.get('short_name')}">
-                        #{@model.get('name') or @model.get('short_name')}
-                </a>
-            </td>
-            <td>
-               #{@model.get('measure_type') or 'Onbekend'}
-            </td>
-            <td>
-                #{@model.get('km_from') or 'Onbekend'}
-            </td>
-        """
-        @
-
-
-# View for single *selected* measure li element
-class SelectedMeasureView extends Backbone.View
-    tagName: 'li'
-
-    initialize: ->
-        @model.bind 'change', @render, @
-        measure_list.bind 'reset', @render, @
-
-    render: ->
-        @$el.html """
-            <a
-            href="#"
-            class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
-            data-measure-id="#{@model.get('short_name')}"
-            data-measure-shortname="#{@model.get('short_name')}">
-                #{@model.get('name') or @model.get('short_name')}
-            </a>
-        """
-
-        if not @model.attributes.selected
-            @$el.hide()
-        else
-            @$el.show()
-
-        @
-
-
-# View for measures list
-
-class MeasureListView extends Backbone.View
-
-    addOne: (measure) ->
-        view = new MeasureView(model:measure)
-        @$el.append(view.render().el)
-        @
-
-    addAll: ->
-        measure_list.each @addOne
-
-    tablesort: ->
-        $('#measures-table-top').tablesorter()
-
-    initialize: ->
-        measure_list.bind 'add', @addOne, @
-        # measure_list.bind 'reset', @addAll, @
-        measure_list.fetch({add:true, success: @tablesort})
-
-    render: ->
-        @
-
-
-# View for *selected* measures list
-SelectedMeasureListView = Backbone.View.extend
-
-    addOne: (measure) ->
-        view = new SelectedMeasureView(model:measure)
-        $(@el).append(view.render().el)
-
-    #redraw: ->
-    #    measure_list.each @addOne
-
-    initialize: ->
-        measure_list.bind 'add', @addOne, @
-        #measure_list.bind 'reset', @redraw, @
-        @
-
-    render: ->
-        @
-
-
-
-measure_list = new MeasureList()
-
-window.measure_list = measure_list
-
-
-window.measureListView = new MeasureListView({el: $('#measures-table')});
-#window.selectedMeasureListView = new SelectedMeasureListView({el: $('#selected-measures-list')});
 window.app_router = new BlockboxRouter
 Backbone.history.start()
-
-
-
-
 
 
 
@@ -211,15 +75,19 @@ showTooltip = (x, y, name, type_name) ->
 
 
 
-setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
+# TODO: url from data attr
+setFlotSeries = () ->
+    json_url = $('#blockbox-table').attr('data-calculated-measures-url')
     $.getJSON json_url, (data) ->
         window.data = data
         setPlaceholderTop data
-        setPlaceholderControl window.measure_list.toJSON()
+        setMeasureSeries()
 
 
-# refreshGraph = ->
-#     $.plot $("#placeholder_top"), ed_data, options
+setMeasureSeries = () ->
+    json_url = $('#blockbox-table').attr('data-measure-list-url')
+    $.getJSON json_url, (data) ->
+        setPlaceholderControl data
 
 
 setPlaceholderTop = (json_data) ->
@@ -240,9 +108,10 @@ setPlaceholderTop = (json_data) ->
         label: "Doelwaarde"
         data: target
         points:
-            show: true
-            symbol: "triangle"
-            radius: 1
+            show: false
+            # show: true
+            # symbol: "triangle"
+            # radius: 1
 
         lines:
             show: true
@@ -253,9 +122,10 @@ setPlaceholderTop = (json_data) ->
         label: "Effect maatregelen"
         data: measures
         points:
-            show: true
-            symbol: "triangle"
-            radius: 2
+            show: false
+            # show: true
+            # symbol: "triangle"
+            # radius: 2
 
         lines:
             show: true
@@ -270,7 +140,7 @@ setPlaceholderTop = (json_data) ->
             transform: (v) -> -v
             inverseTransform: (v) -> -v
             position: "top"
-            
+
         yaxis:
             labelWidth: 21
             reserveSpace: true
@@ -295,12 +165,13 @@ setPlaceholderTop = (json_data) ->
 
     pl_lines = $.plot($("#placeholder_top"), ed_data, options)
 
-    $("#placeholder_top").bind "plotclick", (event, pos, item) ->
-        if item
-            refreshGraph()
+    # $("#placeholder_top").bind "plotclick", (event, pos, item) ->
+    #     if item
+    #         refreshGraph()
 
 
-setPlaceholderControl = (control_data) ->    
+setPlaceholderControl = (control_data) ->
+
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data)
 
     d4 = undefined
@@ -328,7 +199,7 @@ setPlaceholderControl = (control_data) ->
             hoverable: true
             borderWidth: 1
             # labelMargin:-50
-            
+
 
         legend:
             show: true
@@ -376,7 +247,7 @@ setPlaceholderControl = (control_data) ->
         shadowSize: 0
     ]
     pl_control = $.plot($("#placeholder_control"), measures_controls, options)
-    
+
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
         if item
             pl_control.unhighlight item.series, item.datapoint
@@ -387,9 +258,9 @@ setPlaceholderControl = (control_data) ->
                     toggleMeasure measure_id
                     graphTimer = ''
                 graphTimer = setTimeout(callback, 200)
-    
+
     $("#placeholder_control").bind "plothover", (event, pos, item) ->
-    
+
         if item and not hasTooltip
             showTooltip(
                 item.pageX,
@@ -424,6 +295,7 @@ $('.btn.collapse-sidebar').click ->
         $('#placeholder_control_legend').css('height', '100px')
 
         setFlotSeries()
+        #setMeasureSeries()
     ,500)
 
 
@@ -446,6 +318,7 @@ $('.btn.collapse-rightbar').click ->
         $('#placeholder_control_legend').css('height', '100px')
 
         setFlotSeries()
+        #setMeasureSeries()
     ,500)
 
 
@@ -469,15 +342,17 @@ $(window).resize ->
         $('#placeholder_control_legend').css('height', '100px')
 
         setFlotSeries()
+        #setMeasureSeries()
     , 100)
 
 
-$(".sidebar-measure").live 'click', (e) ->
+$(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
     toggleMeasure $(@).attr('data-measure-id')
 
 
 $(document).ready ->
-    window.table_or_map = "map"
     setFlotSeries()
+    #setMeasureSeries()
     $(".chzn-select").chosen()
+    $('#measures-table-top').tablesorter()

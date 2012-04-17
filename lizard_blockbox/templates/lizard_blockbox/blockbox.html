@@ -15,9 +15,6 @@
         src="{{ STATIC_URL }}lizard_blockbox/backbone.js">
     </script>
     <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/backbone.layoutmanager.js">
-    </script>
-    <script type="text/javascript"
         src="{{ STATIC_URL }}deltaportaal/chosen.jquery.js">
     </script>
     <script type="text/javascript"
@@ -34,18 +31,18 @@
 
     <script type="text/javascript">
     var selectControl, selectedFeature;
-     
+
     function JSONLayer(name, json){
         var geojson_format = new OpenLayers.Format.GeoJSON();
         var vector_layer = new OpenLayers.Layer.Vector(name);
         map.addLayer(vector_layer);
         vector_layer.addFeatures(geojson_format.read(json));
     }
-     
+
     function onPopupClose(evt) {
         selectControl.unselect(selectedFeature);
     }
-     
+
     function onFeatureHighlight(feature){
         selectedFeature = feature;
         ff = feature.feature;
@@ -57,14 +54,14 @@
         feature.feature.popup = popup;
         map.addPopup(popup);
     }
-     
-     
+
+
     function onFeatureUnhighlight(feature) {
         map.removePopup(feature.feature.popup);
         feature.feature.popup.destroy();
         feature.feature.popup = null;
     }
-     
+
     function JSONTooltip(name, json) {
         var geojson_format = new OpenLayers.Format.GeoJSON();
         var vector_layer = new OpenLayers.Layer.Vector(name);
@@ -83,8 +80,8 @@
         map.addControl(highlightCtrl);
         highlightCtrl.activate();
     }
-     
-    $().ready(function() {
+
+    $(document).ready(function() {
         $.getJSON("{{ STATIC_URL }}lizard_blockbox/QS.json",
             function(json){
                 JSONTooltip('QS', json);
@@ -101,7 +98,7 @@
                 JSONLayer('Rijntak', json);
             }
         );
-        $.getJSON("/blokkendoos/api/rivers/maas/",
+        $.getJSON("{% url maas_river_json %}",
             function(json){
                 JSONLayer('Maas', json);
             }
@@ -109,10 +106,6 @@
     });
     </script>
 
-    <script type="text/template" id="measure-template">
-        <strong>Measure</strong>
-    </script>
-   
     <!--[if lte IE 8]>
     <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/fxcanvas/jooscript.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/fxcanvas/fxcanvas.js"></script>
@@ -193,6 +186,7 @@
 
   <div id="blockbox-table"
        data-measure-toggle-url="{% url lizard_blockbox_toggle_measure %}"
+       data-calculated-measures-url="{% url calculated_measures_json %}"
        data-measure-list-url="{% url measure_list_json %}">
     <h2>Alle maatregelen</h2>
     <table id="measures-table-top"
@@ -201,6 +195,23 @@
         <tr><th>Naam</th><th>Type</th><th>Start km</th></tr>
       </thead>
       <tbody id="measures-table">
+        {% for measure in view.measures %}
+          <tr>
+            <td style="cursor:pointer;">
+              <a href="#"
+                 class="blockbox-toggle-measure"
+                 data-measure-id="{{ measure.short_name }}">
+                {{ measure.name }}
+                </a>
+            </td>
+            <td>
+               {{ measure.measure_type }}
+            </td>
+            <td>
+                {{ measure.km_from }}
+            </td>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>

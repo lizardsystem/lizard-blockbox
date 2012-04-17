@@ -48,6 +48,22 @@ class BlockboxView(MapView):
                 result.append(measure)
         return result
 
+    # TODO: copy/pasted from selected_measures()
+    def measures(self):
+        measures = models.Measure.objects.all().values(
+            'name', 'short_name', 'measure_type', 'km_from')
+        selected_measures = _selected_measures(self.request)
+        for measure in measures:
+            selected = measure['short_name'] in selected_measures
+            measure['selected'] = selected
+            if not measure['name']:
+                measure['name'] = measure['short_name']
+            if not measure['measure_type']:
+                measure['measure_type'] = 'Onbekend'
+            if not measure['km_from']:
+                measure['km_from'] = 'Onbekend'
+        return measures
+
 
 @never_cache
 def reference_json(request):
