@@ -91,11 +91,14 @@ def calculated_measures_json(request):
     """Fetch measure data and JSON it for a preliminary frontpage graph.
     """
     #XXX Refactor when needed.
-    selected_measures = _selected_measures(request)
-    if not selected_measures:
-        return reference_json(request)
+    #selected_measures = _selected_measures(request)
+    #if not selected_measures:
+    #    return reference_json(request)
+    #measures = models.Measure.objects.filter(short_name__in=selected_measures)
+
+    measures = models.Measure.objects.filter(id__in=(89, 65, 54, 70))
     flooding_chance = models.FloodingChance.objects.filter(name="T250")
-    measures = models.Measure.objects.filter(short_name__in=selected_measures)
+
     water_level_diferences = models.WaterLevelDifference.objects.filter(
         measure__in=measures, flooding_chance=flooding_chance).values(
         'riversegment__location', 'level_difference',

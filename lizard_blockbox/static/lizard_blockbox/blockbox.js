@@ -1,7 +1,8 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, MeasuresMapView, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   ANIMATION_DURATION = 150;
 
@@ -26,9 +27,11 @@
         var $holder;
         setFlotSeries();
         $holder = $('<div/>');
-        return $holder.load('. #page', function() {
-          return $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
+        $holder.load('. #page', function() {
+          $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
+          return measuresMapView.render();
         });
+        return this;
       }
     });
   };
@@ -75,6 +78,78 @@
   window.app_router = new BlockboxRouter;
 
   Backbone.history.start();
+
+  MeasuresMapView = Backbone.View.extend({
+    measures: function() {
+      var _this = this;
+      $.getJSON(this.static_url + 'lizard_blockbox/IVM_deel1.json', function(json) {
+        _this.IVM = JSONTooltip('IVM deel 1', json);
+        return _this.render_measure_IVM();
+      });
+      return $.getJSON(this.static_url + 'lizard_blockbox/QS.json', function(json) {
+        _this.QS = JSONTooltip('QS', json);
+        return _this.render_measure_QS();
+      });
+    },
+    selected_items: function() {
+      var el, _i, _len, _ref, _results;
+      _ref = $("#selected-measures-list li a");
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        _results.push($(el).attr("data-measure-shortname"));
+      }
+      return _results;
+    },
+    render_measure_IVM: function() {
+      var feature, selected_items, _i, _len, _ref, _ref2;
+      selected_items = this.selected_items();
+      _ref = this.IVM.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        feature = _ref[_i];
+        if (_ref2 = feature.attributes.Code_IVM, __indexOf.call(selected_items, _ref2) >= 0) {
+          feature.attributes.selected = true;
+        } else {
+          feature.attributes.selected = false;
+        }
+      }
+      return this.IVM.redraw();
+    },
+    render_measure_QS: function() {
+      var feature, selected_items, _i, _len, _ref, _ref2;
+      selected_items = this.selected_items();
+      _ref = this.QS.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        feature = _ref[_i];
+        if (_ref2 = feature.attributes.code_QS, __indexOf.call(selected_items, _ref2) >= 0) {
+          feature.attributes.selected = true;
+        } else {
+          feature.attributes.selected = false;
+        }
+      }
+      return this.QS.redraw();
+    },
+    rivers: function() {
+      var _this = this;
+      $.getJSON(this.static_url + 'lizard_blockbox/rijntakken.json', function(json) {
+        return JSONLayer('Rijntak', json);
+      });
+      return $.getJSON("/blokkendoos/api/rivers/maas/", function(json) {
+        return JSONLayer('Maas', json);
+      });
+    },
+    initialize: function() {
+      this.static_url = $('#lizard-blockbox-graph').attr('data-static-url');
+      this.measures();
+      return this.rivers();
+    },
+    render: function() {
+      this.render_measure_IVM();
+      return this.render_measure_QS();
+    }
+  });
+
+  measuresMapView = new MeasuresMapView();
 
   showTooltip = function(x, y, name, type_name) {
     return $("<div id=\"tooltip\" class=\"popover top\">\n  <div class=\"popover-inner\">\n    <div class=\"popover-title\"><h3>" + name + "</h3></div>\n    <div class=\"popover-content\">Type: " + type_name + "</div>\n  </div>\n</div>").css({
@@ -266,30 +341,6 @@
           show: false
         },
         color: SQUARE_COLOR
-      }, {
-        label: "Serie 3",
-        data: d4,
-        points: {
-          show: true,
-          symbol: "triangle",
-          radius: 1
-        },
-        lines: {
-          show: false
-        },
-        color: TRIANGLE_COLOR
-      }, {
-        data: d5,
-        points: {
-          show: false
-        },
-        lines: {
-          show: true,
-          lineWidth: 1,
-          radius: 1
-        },
-        color: "gray",
-        shadowSize: 0
       }
     ];
     pl_control = $.plot($("#placeholder_control"), measures_controls, options);
@@ -319,49 +370,8 @@
     });
   };
 
-  $('.btn.collapse-sidebar').click(function() {
+  resize_placeholder = function() {
     var doit;
-    clearTimeout(doit);
-    return doit = setTimeout(function() {
-      $('#placeholder_top_legend').empty();
-      $('#placeholder_top').empty();
-      $('#placeholder_control').empty();
-      $('#placeholder_control_legend').empty();
-      $('#placeholder_top_legend').css('width', '100%');
-      $('#placeholder_top').css('width', '100%');
-      $('#placeholder_control').css('width', '100%');
-      $('#placeholder_control_legend').css('width', '100%');
-      $('#placeholder_top_legend').css('height', '0px');
-      $('#placeholder_top').css('height', '150px');
-      $('#placeholder_control').css('height', '100px');
-      $('#placeholder_control_legend').css('height', '100px');
-      return setFlotSeries();
-    }, 500);
-  });
-
-  $('.btn.collapse-rightbar').click(function() {
-    var doit;
-    clearTimeout(doit);
-    return doit = setTimeout(function() {
-      $('#placeholder_top_legend').empty();
-      $('#placeholder_top').empty();
-      $('#placeholder_control').empty();
-      $('#placeholder_control_legend').empty();
-      $('#placeholder_top_legend').css('width', '100%');
-      $('#placeholder_top').css('width', '100%');
-      $('#placeholder_control').css('width', '100%');
-      $('#placeholder_control_legend').css('width', '100%');
-      $('#placeholder_top_legend').css('height', '0px');
-      $('#placeholder_top').css('height', '150px');
-      $('#placeholder_control').css('height', '100px');
-      $('#placeholder_control_legend').css('height', '100px');
-      return setFlotSeries();
-    }, 500);
-  });
-
-  doit = void 0;
-
-  $(window).resize(function() {
     clearTimeout(doit);
     return doit = setTimeout(function() {
       $('#placeholder_top_legend').empty();
@@ -378,6 +388,20 @@
       $('#placeholder_control_legend').css('height', '100px');
       return setFlotSeries();
     }, 100);
+  };
+
+  $('.btn.collapse-sidebar').click(function() {
+    return resize_placeholder();
+  });
+
+  $('.btn.collapse-rightbar').click(function() {
+    return resize_placeholder();
+  });
+
+  doit = void 0;
+
+  $(window).resize(function() {
+    return resize_placeholder();
   });
 
   $(".blockbox-toggle-measure").live('click', function(e) {
@@ -388,7 +412,8 @@
   $(document).ready(function() {
     setFlotSeries();
     $(".chzn-select").chosen();
-    return $('#measures-table-top').tablesorter();
+    $('#measures-table-top').tablesorter();
+    return this;
   });
 
 }).call(this);

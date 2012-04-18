@@ -2,6 +2,8 @@
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
 
+from django.views.generic.simple import direct_to_template
+
 from lizard_ui.urls import debugmode_urlpatterns
 from lizard_blockbox.views import BlockboxView
 
@@ -30,5 +32,7 @@ urlpatterns = patterns(
     url(r'^api/rivers/maas/',
         'lizard_blockbox.views.maas_river_json',
         name="maas_river_json"),
+    url(r'^lb.html/',
+        direct_to_template, {'template': 'lizard_blockbox/lb.html'}),
     )
 urlpatterns += debugmode_urlpatterns()

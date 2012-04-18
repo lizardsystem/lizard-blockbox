@@ -30,6 +30,8 @@ toggleMeasure = (measure_id) ->
             $holder = $('<div/>')
             $holder.load '. #page', () ->
                 $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
+                measuresMapView.render()
+            @
 
 
 class BlockboxRouter extends Backbone.Router
@@ -54,10 +56,58 @@ class BlockboxRouter extends Backbone.Router
 
 
 window.app_router = new BlockboxRouter
-
 Backbone.history.start()
 
+#View for the OpenLayersMap
+MeasuresMapView = Backbone.View.extend
 
+    measures: ->
+        $.getJSON @static_url + 'lizard_blockbox/IVM_deel1.json', (json) =>
+            @IVM = JSONTooltip 'IVM deel 1', json
+            @render_measure_IVM()
+        $.getJSON @static_url + 'lizard_blockbox/QS.json', (json) =>
+            @QS = JSONTooltip 'QS', json
+            @render_measure_QS()
+
+    selected_items: ->
+        ($(el).attr "data-measure-shortname" for el in $("#selected-measures-list li a"))
+
+
+    render_measure_IVM: ->
+        selected_items = @selected_items()
+        for feature in @IVM.features
+            if feature.attributes.Code_IVM in selected_items
+                feature.attributes.selected = true
+            else
+                feature.attributes.selected = false
+        @IVM.redraw()
+
+    render_measure_QS: ->
+        selected_items = @selected_items()
+        for feature in @QS.features
+            if feature.attributes.code_QS in selected_items
+                feature.attributes.selected = true
+            else
+                feature.attributes.selected = false
+        @QS.redraw()
+
+    rivers: ->
+        $.getJSON @static_url + 'lizard_blockbox/rijntakken.json', (json) =>
+            JSONLayer 'Rijntak', json
+        $.getJSON "/blokkendoos/api/rivers/maas/", (json) =>
+            JSONLayer 'Maas', json
+
+    initialize: ->
+        @static_url = $('#lizard-blockbox-graph').attr 'data-static-url'
+        @measures()
+        @rivers()
+
+    render: ->
+        @render_measure_IVM()
+        @render_measure_QS()
+
+
+measuresMapView = new MeasuresMapView()
 
 #######################################################
 # Graph part                                          #
@@ -76,7 +126,6 @@ showTooltip = (x, y, name, type_name) ->
 
 
 
-# TODO: url from data attr
 setFlotSeries = () ->
     json_url = $('#blockbox-table').attr('data-calculated-measures-url')
     $.getJSON json_url, (data) ->
@@ -222,30 +271,6 @@ setPlaceholderControl = (control_data) ->
             show: false
 
         color: SQUARE_COLOR
-    ,
-        label: "Serie 3"
-        data: d4
-        points:
-            show: true
-            symbol: "triangle"
-            radius: 1
-
-        lines:
-            show: false
-
-        color: TRIANGLE_COLOR
-    ,
-        data: d5
-        points:
-            show: false
-
-        lines:
-            show: true
-            lineWidth: 1
-            radius: 1
-
-        color: "gray"
-        shadowSize: 0
     ]
     pl_control = $.plot($("#placeholder_control"), measures_controls, options)
 
@@ -275,77 +300,36 @@ setPlaceholderControl = (control_data) ->
             $('#tooltip').remove()
 
 
+resize_placeholder = ->
+    clearTimeout doit
+    doit = setTimeout(->
+        $('#placeholder_top_legend').empty()
+        $('#placeholder_top').empty()
+        $('#placeholder_control').empty()
+        $('#placeholder_control_legend').empty()
 
+        $('#placeholder_top_legend').css('width', '100%')
+        $('#placeholder_top').css('width', '100%')
+        $('#placeholder_control').css('width', '100%')
+        $('#placeholder_control_legend').css('width', '100%')
+
+        $('#placeholder_top_legend').css('height', '0px')
+        $('#placeholder_top').css('height', '150px')
+        $('#placeholder_control').css('height', '100px')
+        $('#placeholder_control_legend').css('height', '100px')
+
+        setFlotSeries()
+    ,100)
 
 $('.btn.collapse-sidebar').click ->
-    clearTimeout doit
-    doit = setTimeout(->
-        $('#placeholder_top_legend').empty()
-        $('#placeholder_top').empty()
-        $('#placeholder_control').empty()
-        $('#placeholder_control_legend').empty()
-
-        $('#placeholder_top_legend').css('width', '100%')
-        $('#placeholder_top').css('width', '100%')
-        $('#placeholder_control').css('width', '100%')
-        $('#placeholder_control_legend').css('width', '100%')
-
-        $('#placeholder_top_legend').css('height', '0px')
-        $('#placeholder_top').css('height', '150px')
-        $('#placeholder_control').css('height', '100px')
-        $('#placeholder_control_legend').css('height', '100px')
-
-        setFlotSeries()
-        #setMeasureSeries()
-    ,500)
-
+    resize_placeholder()
 
 $('.btn.collapse-rightbar').click ->
-    clearTimeout doit
-    doit = setTimeout(->
-        $('#placeholder_top_legend').empty()
-        $('#placeholder_top').empty()
-        $('#placeholder_control').empty()
-        $('#placeholder_control_legend').empty()
-
-        $('#placeholder_top_legend').css('width', '100%')
-        $('#placeholder_top').css('width', '100%')
-        $('#placeholder_control').css('width', '100%')
-        $('#placeholder_control_legend').css('width', '100%')
-
-        $('#placeholder_top_legend').css('height', '0px')
-        $('#placeholder_top').css('height', '150px')
-        $('#placeholder_control').css('height', '100px')
-        $('#placeholder_control_legend').css('height', '100px')
-
-        setFlotSeries()
-        #setMeasureSeries()
-    ,500)
-
+    resize_placeholder()
 
 doit = undefined
 $(window).resize ->
-    clearTimeout doit
-    doit = setTimeout(->
-        $('#placeholder_top_legend').empty()
-        $('#placeholder_top').empty()
-        $('#placeholder_control').empty()
-        $('#placeholder_control_legend').empty()
-
-        $('#placeholder_top_legend').css('width', '100%')
-        $('#placeholder_top').css('width', '100%')
-        $('#placeholder_control').css('width', '100%')
-        $('#placeholder_control_legend').css('width', '100%')
-
-        $('#placeholder_top_legend').css('height', '0px')
-        $('#placeholder_top').css('height', '150px')
-        $('#placeholder_control').css('height', '100px')
-        $('#placeholder_control_legend').css('height', '100px')
-
-        setFlotSeries()
-        #setMeasureSeries()
-    , 100)
-
+    resize_placeholder()
 
 $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
@@ -354,6 +338,6 @@ $(".blockbox-toggle-measure").live 'click', (e) ->
 
 $(document).ready ->
     setFlotSeries()
-    #setMeasureSeries()
     $(".chzn-select").chosen()
     $('#measures-table-top').tablesorter()
+    @
