@@ -1,7 +1,8 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, MeasuresMapView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   ANIMATION_DURATION = 150;
 
@@ -226,6 +227,71 @@
     }
   });
 
+  MeasuresMapView = Backbone.View.extend({
+    measures: function() {
+      var _this = this;
+      $.getJSON(this.static_url + 'lizard_blockbox/IVM_deel1.json', function(json) {
+        return _this.IVM = JSONTooltip('IVM deel 1', json);
+      });
+      return $.getJSON(this.static_url + 'lizard_blockbox/QS.json', function(json) {
+        return _this.QS = JSONTooltip('QS', json);
+      });
+    },
+    rivers: function() {
+      var _this = this;
+      $.getJSON(this.static_url + 'lizard_blockbox/rijntakken.json', function(json) {
+        return JSONLayer('Rijntak', json);
+      });
+      return $.getJSON("/blokkendoos/api/rivers/maas/", function(json) {
+        return JSONLayer('Maas', json);
+      });
+    },
+    redraw: function() {
+      var feature, item, selected_items, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
+      selected_items = (function() {
+        var _i, _len, _ref, _results;
+        _ref = measure_list.models;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          if (item.attributes.selected === true) {
+            _results.push(item.attributes.short_name);
+          }
+        }
+        return _results;
+      })();
+      _ref = this.IVM.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        feature = _ref[_i];
+        if (_ref2 = feature.attributes.Code_IVM, __indexOf.call(selected_items, _ref2) >= 0) {
+          feature.attributes.selected = true;
+        } else {
+          feature.attributes.selected = false;
+        }
+      }
+      _ref3 = this.QS.features;
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        feature = _ref3[_j];
+        if (_ref4 = feature.attributes.Code_QS, __indexOf.call(selected_items, _ref4) >= 0) {
+          feature.attributes.selected = true;
+        } else {
+          feature.attributes.selected = false;
+        }
+      }
+      this.IVM.redraw();
+      return this.QS.redraw();
+    },
+    initialize: function() {
+      this.static_url = $('#lizard-blockbox-graph').attr('data-static-url');
+      this.measures();
+      this.rivers();
+      return measure_list.bind('reset', this.render, this);
+    },
+    render: function() {
+      return this.redraw();
+    }
+  });
+
   measure_list = new MeasureList();
 
   window.measure_list = measure_list;
@@ -235,6 +301,8 @@
   });
 
   window.app_router = new BlockboxRouter;
+
+  window.measuresMapView = new MeasuresMapView();
 
   Backbone.history.start();
 

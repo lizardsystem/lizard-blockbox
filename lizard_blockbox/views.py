@@ -52,6 +52,7 @@ def reference_json(request):
     """Fetch the reference and target values for all rivers and JSON them.
     """
 
+    #XXX: Refactor with function calculated_measures_json.
     flooding_chance = models.FloodingChance.objects.filter(name="T250")
     references = models.ReferenceValue.objects.filter(
         flooding_chance=flooding_chance).values(
@@ -60,7 +61,7 @@ def reference_json(request):
     response = HttpResponse(mimetype='application/json')
     json.dump([{'reference_value': 0,
                 'location': i['riversegment__location'],
-                'reference_target': i['target'] - i['reference'],
+                'reference_target': REFERENCE_TARGET,
                 'measures_level': 0}
                for i in references],
               response)

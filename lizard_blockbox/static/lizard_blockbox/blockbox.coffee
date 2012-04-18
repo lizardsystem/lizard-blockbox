@@ -176,7 +176,46 @@ SelectedMeasureListView = Backbone.View.extend
     render: ->
         @
 
+#View for the OpenLayersMap
+MeasuresMapView = Backbone.View.extend
 
+    measures: ->
+        $.getJSON @static_url + 'lizard_blockbox/IVM_deel1.json', (json) =>
+            @IVM = JSONTooltip 'IVM deel 1', json
+        $.getJSON @static_url + 'lizard_blockbox/QS.json', (json) =>
+            @QS = JSONTooltip 'QS', json
+
+    rivers: ->
+        $.getJSON @static_url + 'lizard_blockbox/rijntakken.json', (json) =>
+            JSONLayer 'Rijntak', json
+        $.getJSON "/blokkendoos/api/rivers/maas/", (json) =>
+            JSONLayer 'Maas', json
+
+    redraw: ->
+        selected_items = (item.attributes.short_name for item in measure_list.models when item.attributes.selected == true)
+        for feature in @IVM.features
+            if feature.attributes.Code_IVM in selected_items
+                feature.attributes.selected = true
+            else
+                feature.attributes.selected = false
+
+        for feature in @QS.features
+            if feature.attributes.Code_QS in selected_items
+                feature.attributes.selected = true
+            else
+                feature.attributes.selected = false
+
+        @IVM.redraw()
+        @QS.redraw()
+
+    initialize: ->
+        @static_url = $('#lizard-blockbox-graph').attr 'data-static-url'
+        @measures()
+        @rivers()
+        measure_list.bind 'reset', @render, @
+
+    render: ->
+        @redraw()
 
 measure_list = new MeasureList()
 
@@ -186,6 +225,9 @@ window.measure_list = measure_list
 window.measureListView = new MeasureListView({el: $('#measures-table')});
 #window.selectedMeasureListView = new SelectedMeasureListView({el: $('#selected-measures-list')});
 window.app_router = new BlockboxRouter
+
+window.measuresMapView = new MeasuresMapView()
+
 Backbone.history.start()
 
 
