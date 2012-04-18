@@ -40,3 +40,4 @@ Technologies used
  - Backbone.js to structure the clientside coffeescript
  - Coffeescript to produce more readable code
  - OpenLayers, jQuery, Flot (for the graph)
+ - FxCanvas for making Flot perform reasonably (instead of excanvas)

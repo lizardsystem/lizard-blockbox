@@ -3,12 +3,13 @@
 
 from django.http import HttpResponse
 from django.utils import simplejson as json
+from django.utils.translation import ugettext as _
+from django.views.decorators.cache import never_cache
+from lizard_map.coordinates import transform_point
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
-from django.utils.translation import ugettext as _
 
 from lizard_blockbox import models
-from lizard_map.coordinates import transform_point
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
 REFERENCE_TARGET = -0.10
@@ -47,7 +48,24 @@ class BlockboxView(MapView):
                 result.append(measure)
         return result
 
+    # TODO: copy/pasted from selected_measures()
+    def measures(self):
+        measures = models.Measure.objects.all().values(
+            'name', 'short_name', 'measure_type', 'km_from')
+        selected_measures = _selected_measures(self.request)
+        for measure in measures:
+            selected = measure['short_name'] in selected_measures
+            measure['selected'] = selected
+            if not measure['name']:
+                measure['name'] = measure['short_name']
+            if not measure['measure_type']:
+                measure['measure_type'] = 'Onbekend'
+            if not measure['km_from']:
+                measure['km_from'] = 'Onbekend'
+        return measures
 
+
+@never_cache
 def reference_json(request):
     """Fetch the reference and target values for all rivers and JSON them.
     """
@@ -68,6 +86,7 @@ def reference_json(request):
     return response
 
 
+@never_cache
 def calculated_measures_json(request):
     """Fetch measure data and JSON it for a preliminary frontpage graph.
     """

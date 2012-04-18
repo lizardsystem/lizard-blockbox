@@ -23,11 +23,10 @@ toggleMeasure = (measure_id) ->
         url: $('#blockbox-table').attr('data-measure-toggle-url')
         data:
             'measure_id': measure_id
-        async: false
+        # async: false
         success: (data) ->
-            measure_list.fetch()
             setFlotSeries()
-            # Hack hack hack
+            # TODO: Update checkmark for selected measures in main table.
             $holder = $('<div/>')
             $holder.load '. #page', () ->
                 $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
@@ -54,6 +53,7 @@ class BlockboxRouter extends Backbone.Router
                 $('#blockbox-table').height($("#content").height() - 250)
 
 
+<<<<<<< HEAD
 # Currently renders the measures on the left...
 
 # Model
@@ -224,6 +224,8 @@ window.measure_list = measure_list
 
 window.measureListView = new MeasureListView({el: $('#measures-table')});
 #window.selectedMeasureListView = new SelectedMeasureListView({el: $('#selected-measures-list')});
+=======
+>>>>>>> caaadfbbb642abae47db0d5a31aa8abf7cd69144
 window.app_router = new BlockboxRouter
 
 window.measuresMapView = new MeasuresMapView()
@@ -232,29 +234,9 @@ Backbone.history.start()
 
 
 
-
-
-
-
 #######################################################
 # Graph part                                          #
 #######################################################
-
-# This was an attempt to make the flot graph into a jQ plugin,
-# but time didn't allow it... here's the skeleton:
-
-# $ = jQuery
-#
-# $.fn.flotGraph = (options) ->
-#
-#     defaults =
-#         someDefault: '#ccc'
-#
-#     options = $.extend(defaults, options)
-#
-#     console.log "Bound to", @
-#
-#     initialize: ->
 
 showTooltip = (x, y, name, type_name) ->
     $("""<div id="tooltip" class="popover top">
@@ -269,18 +251,22 @@ showTooltip = (x, y, name, type_name) ->
 
 
 
-setFlotSeries = (json_url="/blokkendoos/api/measures/calculated/") ->
+# TODO: url from data attr
+setFlotSeries = () ->
+    json_url = $('#blockbox-table').attr('data-calculated-measures-url')
     $.getJSON json_url, (data) ->
+        window.data = data
         setPlaceholderTop data
-        setPlaceholderControl window.measure_list.toJSON()
+        setMeasureSeries()
 
 
-# refreshGraph = ->
-#     $.plot $("#placeholder_top"), ed_data, options
+setMeasureSeries = () ->
+    json_url = $('#blockbox-table').attr('data-measure-list-url')
+    $.getJSON json_url, (data) ->
+        setPlaceholderControl data
 
 
 setPlaceholderTop = (json_data) ->
-
     reference = ([num.location, num.reference_value] for num in json_data)
     target = ([num.location, num.reference_target] for num in json_data)
     measures = ([num.location, num.measures_level] for num in json_data)
@@ -298,9 +284,10 @@ setPlaceholderTop = (json_data) ->
         label: "Doelwaarde"
         data: target
         points:
-            show: true
-            symbol: "triangle"
-            radius: 1
+            show: false
+            # show: true
+            # symbol: "triangle"
+            # radius: 1
 
         lines:
             show: true
@@ -311,9 +298,10 @@ setPlaceholderTop = (json_data) ->
         label: "Effect maatregelen"
         data: measures
         points:
-            show: true
-            symbol: "triangle"
-            radius: 2
+            show: false
+            # show: true
+            # symbol: "triangle"
+            # radius: 2
 
         lines:
             show: true
@@ -325,11 +313,23 @@ setPlaceholderTop = (json_data) ->
 
     options =
         xaxis:
+            transform: (v) -> -v
+            inverseTransform: (v) -> -v
             position: "top"
 
-    grid:
-        clickable: true
-        borderWidth: 1
+        yaxis:
+            labelWidth: 21
+            reserveSpace: true
+            position: "left"
+            tickDecimals: 1
+
+        grid:
+            minBorderMargin: 20
+            alignTicksWithAxis: 1
+            clickable: true
+            borderWidth: 1
+            axisMargin: 10
+            # labelMargin:-50
 
     legend:
         show: true
@@ -341,9 +341,13 @@ setPlaceholderTop = (json_data) ->
 
     pl_lines = $.plot($("#placeholder_top"), ed_data, options)
 
+    # $("#placeholder_top").bind "plotclick", (event, pos, item) ->
+    #     if item
+    #         refreshGraph()
 
 
 setPlaceholderControl = (control_data) ->
+
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data)
 
     d4 = undefined
@@ -352,12 +356,26 @@ setPlaceholderControl = (control_data) ->
 
     options =
         xaxis:
+            transform: (v) -> -v
+            inverseTransform: (v) -> -v
+            min: window.data[0].location
+            max: window.data[window.data.length-1].location
+            reserveSpace: true
             position: "bottom"
 
+        yaxis:
+            reserveSpace: true
+            labelWidth: 21
+            position: "left"
+            tickDecimals: 0
+
         grid:
+            minBorderMargin: 20
             clickable: true
             hoverable: true
             borderWidth: 1
+            # labelMargin:-50
+
 
         legend:
             show: true
@@ -406,11 +424,6 @@ setPlaceholderControl = (control_data) ->
     ]
     pl_control = $.plot($("#placeholder_control"), measures_controls, options)
 
-    $("#placeholder_top").bind "plotclick", (event, pos, item) ->
-        if item
-            refreshGraph()
-
-
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
         if item
             pl_control.unhighlight item.series, item.datapoint
@@ -436,21 +449,7 @@ setPlaceholderControl = (control_data) ->
             hasTooltip = ''
             $('#tooltip').remove()
 
-options =
-    xaxis:
-        position: "top"
 
-    grid:
-        clickable: true
-        borderWidth: 1
-
-    legend:
-        show: true
-        noColumns: 4
-        container: $("#placeholder_top_legend")
-        labelFormatter: (label, series) ->
-            cb = label
-            cb
 
 
 $('.btn.collapse-sidebar').click ->
@@ -472,6 +471,7 @@ $('.btn.collapse-sidebar').click ->
         $('#placeholder_control_legend').css('height', '100px')
 
         setFlotSeries()
+        #setMeasureSeries()
     ,500)
 
 
@@ -494,6 +494,7 @@ $('.btn.collapse-rightbar').click ->
         $('#placeholder_control_legend').css('height', '100px')
 
         setFlotSeries()
+        #setMeasureSeries()
     ,500)
 
 
@@ -517,16 +518,17 @@ $(window).resize ->
         $('#placeholder_control_legend').css('height', '100px')
 
         setFlotSeries()
+        #setMeasureSeries()
     , 100)
 
 
-$(".sidebar-measure").live 'click', (e) ->
+$(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
     toggleMeasure $(@).attr('data-measure-id')
 
 
 $(document).ready ->
-    window.table_or_map = "map"
     setFlotSeries()
+    #setMeasureSeries()
     $(".chzn-select").chosen()
-
+    $('#measures-table-top').tablesorter()

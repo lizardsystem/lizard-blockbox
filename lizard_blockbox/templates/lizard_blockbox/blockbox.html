@@ -1,12 +1,4 @@
-{% extends "lizard_map/wms.html" %}
-
-{% load i18n %}
-
-{% block javascript-in-head %}
- {{ block.super }}
-  <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/flot/excanvas.min.js"></script><![endif]-->
-{% endblock %}
-
+{% extends "lizard_map/wms.html" %}{% load i18n %}
 
 {% block javascript %}
    {{ block.super }}
@@ -23,35 +15,24 @@
         src="{{ STATIC_URL }}lizard_blockbox/backbone.js">
     </script>
     <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/backbone.layoutmanager.js">
-    </script>
-    <script type="text/javascript"
         src="{{ STATIC_URL }}deltaportaal/chosen.jquery.js">
     </script>
     <script type="text/javascript"
         src="{{ STATIC_URL }}lizard_blockbox/jquery.tablesorter.js">
     </script>
 
-	<!--script type="text/coffeescript"
-        src="{{ STATIC_URL }}lizard_blockbox/blockbox.coffee">
-    </script-->
-
 {% endblock %}
 
 {% block map-javascript %}
-  {{ block.super }}
-  <!--
+    {{ block.super }}
     <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/graph_with_flot.js">
+        src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
     </script>
-  -->
-   <script type="text/javascript"
-     src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
-   </script>
 
-   <script type="text/javascript">
-	 var selectControl, selectedFeature;
+    <script type="text/javascript">
+    var selectControl, selectedFeature;
 
+<<<<<<< HEAD
 	 function JSONLayer(name, json){
 	     var geojson_format = new OpenLayers.Format.GeoJSON();
 
@@ -60,6 +41,14 @@
          map.addLayer(vector_layer);
 	     vector_layer.addFeatures(geojson_format.read(json));
 	 }
+=======
+    function JSONLayer(name, json){
+        var geojson_format = new OpenLayers.Format.GeoJSON();
+        var vector_layer = new OpenLayers.Layer.Vector(name);
+        map.addLayer(vector_layer);
+        vector_layer.addFeatures(geojson_format.read(json));
+    }
+>>>>>>> caaadfbbb642abae47db0d5a31aa8abf7cd69144
 
     function onPopupClose(evt) {
         selectControl.unselect(selectedFeature);
@@ -83,7 +72,6 @@
         feature.feature.popup.destroy();
         feature.feature.popup = null;
     }
-
 
     function JSONTooltip(name, json) {
         var styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
@@ -123,6 +111,7 @@
         });
         map.addControl(highlightCtrl);
         highlightCtrl.activate();
+<<<<<<< HEAD
 	    return vector_layer;
      }
    </script>
@@ -130,6 +119,40 @@
    <script type="text/template" id="measure-template">
         <strong>Measure</strong>
    </script>
+=======
+    }
+
+    $(document).ready(function() {
+        $.getJSON("{{ STATIC_URL }}lizard_blockbox/QS.json",
+            function(json){
+                JSONTooltip('QS', json);
+            }
+        );
+
+        $.getJSON("{{ STATIC_URL }}lizard_blockbox/IVM_deel1.json",
+            function(json){
+                JSONTooltip('IVM deel 1', json);
+            }
+        );
+        $.getJSON("{{ STATIC_URL }}lizard_blockbox/rijntakken.json",
+            function(json){
+                JSONLayer('Rijntak', json);
+            }
+        );
+        $.getJSON("{% url maas_river_json %}",
+            function(json){
+                JSONLayer('Maas', json);
+            }
+        );
+    });
+    </script>
+
+    <!--[if lte IE 8]>
+    <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/fxcanvas/jooscript.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/fxcanvas/fxcanvas.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/fxcanvas/flash_backend.js"></script>
+    <![endif]-->
+>>>>>>> caaadfbbb642abae47db0d5a31aa8abf7cd69144
 {% endblock %}
 
 {% block css %}
@@ -182,30 +205,35 @@
 {% endblock %}
 
 {% block content %}
+<<<<<<< HEAD
   <div id="lizard-blockbox-graph" class="i-have-height"
 	   data-static-url="{{ STATIC_URL }}">
+=======
+  <div id="lizard-blockbox-graph" class="i-have-height" style="margin-left:5px;">
+>>>>>>> caaadfbbb642abae47db0d5a31aa8abf7cd69144
     {% block lizard-blockbox-graph %}
 
     <div id="placeholder_top_legend"
-         style="width:100%;height:0px;"></div>
+         style="width:98%;height:0px;"></div>
 
     <div id="placeholder_top"
-         style="width:100%;height:150px;"></div>
+         style="width:98%;height:150px;"></div>
     <!-- placeholder_top is the actual graph. -->
 
     <div id="placeholder_control"
-         style="width:100%;height:100px;border-bottom:1px solid #ccc;margin-left:15px;"></div>
+         style="width:98%;height:100px;border-bottom:1px solid #ccc;"></div>
 
     <!-- placeholder_control is the graph part with the measures. -->
 
     <!-- <div id="placeholder_control_legend"
-         style="width:100%;height:0px;"></div> -->
+         style="width:98%;height:0px;"></div> -->
     <!-- Note: this placeholder_control_legend isn't shown right now. -->
     {% endblock %}
   </div>
 
   <div id="blockbox-table"
        data-measure-toggle-url="{% url lizard_blockbox_toggle_measure %}"
+       data-calculated-measures-url="{% url calculated_measures_json %}"
        data-measure-list-url="{% url measure_list_json %}">
     <h2>Alle maatregelen</h2>
     <table id="measures-table-top"
@@ -214,6 +242,23 @@
         <tr><th>Naam</th><th>Type</th><th>Start km</th></tr>
       </thead>
       <tbody id="measures-table">
+        {% for measure in view.measures %}
+          <tr>
+            <td style="cursor:pointer;">
+              <a href="#"
+                 class="blockbox-toggle-measure"
+                 data-measure-id="{{ measure.short_name }}">
+                {{ measure.name }}
+                </a>
+            </td>
+            <td>
+               {{ measure.measure_type }}
+            </td>
+            <td>
+                {{ measure.km_from }}
+            </td>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>

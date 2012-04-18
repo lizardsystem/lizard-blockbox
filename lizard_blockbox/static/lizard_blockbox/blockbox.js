@@ -1,5 +1,9 @@
 (function() {
+<<<<<<< HEAD
   var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, Measure, MeasureList, MeasureListView, MeasureView, MeasuresMapView, SQUARE_COLOR, SelectedMeasureListView, SelectedMeasureView, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measure_list, options, setFlotSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+=======
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+>>>>>>> caaadfbbb642abae47db0d5a31aa8abf7cd69144
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -23,10 +27,8 @@
       data: {
         'measure_id': measure_id
       },
-      async: false,
       success: function(data) {
         var $holder;
-        measure_list.fetch();
         setFlotSeries();
         $holder = $('<div/>');
         return $holder.load('. #page', function() {
@@ -75,6 +77,7 @@
 
   })(Backbone.Router);
 
+<<<<<<< HEAD
   Measure = (function(_super) {
 
     __extends(Measure, _super);
@@ -300,6 +303,8 @@
     el: $('#measures-table')
   });
 
+=======
+>>>>>>> caaadfbbb642abae47db0d5a31aa8abf7cd69144
   window.app_router = new BlockboxRouter;
 
   window.measuresMapView = new MeasuresMapView();
@@ -313,11 +318,21 @@
     }).appendTo("body").fadeIn(200);
   };
 
-  setFlotSeries = function(json_url) {
-    if (json_url == null) json_url = "/blokkendoos/api/measures/calculated/";
+  setFlotSeries = function() {
+    var json_url;
+    json_url = $('#blockbox-table').attr('data-calculated-measures-url');
     return $.getJSON(json_url, function(data) {
+      window.data = data;
       setPlaceholderTop(data);
-      return setPlaceholderControl(window.measure_list.toJSON());
+      return setMeasureSeries();
+    });
+  };
+
+  setMeasureSeries = function() {
+    var json_url;
+    json_url = $('#blockbox-table').attr('data-measure-list-url');
+    return $.getJSON(json_url, function(data) {
+      return setPlaceholderControl(data);
     });
   };
 
@@ -364,9 +379,7 @@
         label: "Doelwaarde",
         data: target,
         points: {
-          show: true,
-          symbol: "triangle",
-          radius: 1
+          show: false
         },
         lines: {
           show: true,
@@ -377,9 +390,7 @@
         label: "Effect maatregelen",
         data: measures,
         points: {
-          show: true,
-          symbol: "triangle",
-          radius: 2
+          show: false
         },
         lines: {
           show: true,
@@ -390,14 +401,29 @@
     ];
     options = {
       xaxis: {
+        transform: function(v) {
+          return -v;
+        },
+        inverseTransform: function(v) {
+          return -v;
+        },
         position: "top"
+      },
+      yaxis: {
+        labelWidth: 21,
+        reserveSpace: true,
+        position: "left",
+        tickDecimals: 1
+      },
+      grid: {
+        minBorderMargin: 20,
+        alignTicksWithAxis: 1,
+        clickable: true,
+        borderWidth: 1,
+        axisMargin: 10
       }
     };
     ({
-      grid: {
-        clickable: true,
-        borderWidth: 1
-      },
       legend: {
         show: true,
         noColumns: 4,
@@ -428,9 +454,25 @@
     pl_lines = void 0;
     options = {
       xaxis: {
+        transform: function(v) {
+          return -v;
+        },
+        inverseTransform: function(v) {
+          return -v;
+        },
+        min: window.data[0].location,
+        max: window.data[window.data.length - 1].location,
+        reserveSpace: true,
         position: "bottom"
       },
+      yaxis: {
+        reserveSpace: true,
+        labelWidth: 21,
+        position: "left",
+        tickDecimals: 0
+      },
       grid: {
+        minBorderMargin: 20,
         clickable: true,
         hoverable: true,
         borderWidth: 1
@@ -486,9 +528,6 @@
       }
     ];
     pl_control = $.plot($("#placeholder_control"), measures_controls, options);
-    $("#placeholder_top").bind("plotclick", function(event, pos, item) {
-      if (item) return refreshGraph();
-    });
     $("#placeholder_control").bind("plotclick", function(event, pos, item) {
       var callback, measure_id, result_id;
       if (item) {
@@ -513,26 +552,6 @@
         return $('#tooltip').remove();
       }
     });
-  };
-
-  options = {
-    xaxis: {
-      position: "top"
-    },
-    grid: {
-      clickable: true,
-      borderWidth: 1
-    },
-    legend: {
-      show: true,
-      noColumns: 4,
-      container: $("#placeholder_top_legend"),
-      labelFormatter: function(label, series) {
-        var cb;
-        cb = label;
-        return cb;
-      }
-    }
   };
 
   $('.btn.collapse-sidebar').click(function() {
@@ -596,15 +615,15 @@
     }, 100);
   });
 
-  $(".sidebar-measure").live('click', function(e) {
+  $(".blockbox-toggle-measure").live('click', function(e) {
     e.preventDefault();
     return toggleMeasure($(this).attr('data-measure-id'));
   });
 
   $(document).ready(function() {
-    window.table_or_map = "map";
     setFlotSeries();
-    return $(".chzn-select").chosen();
+    $(".chzn-select").chosen();
+    return $('#measures-table-top').tablesorter();
   });
 
 }).call(this);
