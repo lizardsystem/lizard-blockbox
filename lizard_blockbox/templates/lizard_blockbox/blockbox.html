@@ -2,6 +2,7 @@
 
 {% block javascript %}
    {{ block.super }}
+
     <script type="text/javascript"
         src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.js">
     </script>
@@ -25,6 +26,9 @@
 
 {% block map-javascript %}
     {{ block.super }}
+    <!--[if lte IE 8]>
+    <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/flot/excanvas.min.js"></script>
+    <![endif]-->
     <script type="text/javascript"
         src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
     </script>
@@ -128,11 +132,6 @@
     });
     </script>
 
-    <!--[if lte IE 8]>
-    <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/fxcanvas/jooscript.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/fxcanvas/fxcanvas.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/fxcanvas/flash_backend.js"></script>
-    <![endif]-->
 {% endblock %}
 
 {% block css %}
