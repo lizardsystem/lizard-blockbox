@@ -152,7 +152,7 @@ def list_measures_json(request):
     measures = models.Measure.objects.all().values(
         'name', 'short_name', 'measure_type', 'km_from')
     all_types = sorted(list(
-            set([measure['measure_type'] for measure in measures])))
+            set(measure['measure_type'] for measure in measures)))
 
     selected_measures = _selected_measures(request)
     for measure in measures:
