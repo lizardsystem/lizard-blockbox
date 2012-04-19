@@ -52,7 +52,9 @@ class BlockboxRouter extends Backbone.Router
         $('a.toggle_map_and_table').attr("href", "#map")
         $('#map').slideUp ANIMATION_DURATION, () ->
             $('#blockbox-table').slideDown ANIMATION_DURATION, () ->
-                $('#blockbox-table').height($("#content").height() - 250)
+                # -39 to not have the table scrollbar behind the footer.
+                # ToDo: Fix this for real in lizard-ui.
+                $('#blockbox-table').height($("#content").height() - 250 - 39)
 
 
 window.app_router = new BlockboxRouter
@@ -71,7 +73,6 @@ MeasuresMapView = Backbone.View.extend
 
     selected_items: ->
         ($(el).attr "data-measure-shortname" for el in $("#selected-measures-list li a"))
-
 
     render_measure_IVM: ->
         selected_items = @selected_items()
@@ -145,9 +146,9 @@ JSONLayer = (name, json) ->
 
 JSONTooltip = (name, json) ->
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
-        fillColor: 'blue'
-        strokeColor: 'blue'
-    , OpenLayers.Feature.Vector.style["default"]))
+            fillColor: 'blue'
+            strokeColor: 'blue'
+        OpenLayers.Feature.Vector.style["default"]))
     styleMap.styles["default"].addRules [ new OpenLayers.Rule(
         filter: new OpenLayers.Filter.Comparison(
             type: OpenLayers.Filter.Comparison.EQUAL_TO
