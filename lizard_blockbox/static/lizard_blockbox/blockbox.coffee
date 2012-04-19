@@ -110,6 +110,74 @@ MeasuresMapView = Backbone.View.extend
 measuresMapView = new MeasuresMapView()
 
 #######################################################
+# OpenLayers GeoJSON graph                            #
+#######################################################
+
+onPopupClose = (evt) ->
+    selectControl.unselect selectedFeature
+
+onFeatureHighlight = (feature) ->
+    selectedFeature = feature
+    ff = feature.feature
+    popup = new OpenLayers.Popup.FramedCloud(
+        "chicken"
+        ff.geometry.getBounds().getCenterLonLat()
+        null
+        "<div style='font-size:.8em'>" + ff.data.titel + "</div>"
+        null
+        false
+        false
+    )
+    feature.feature.popup = popup
+    map.addPopup popup
+
+onFeatureUnhighlight = (feature) ->
+    map.removePopup feature.feature.popup
+    feature.feature.popup.destroy()
+    feature.feature.popup = null
+
+JSONLayer = (name, json) ->
+    geojson_format = new OpenLayers.Format.GeoJSON()
+    vector_layer = new OpenLayers.Layer.Vector(name)
+    map.addLayer(vector_layer)
+    vector_layer.addFeatures(geojson_format.read(json))
+
+
+JSONTooltip = (name, json) ->
+    styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
+        fillColor: 'blue'
+        strokeColor: 'blue'
+    , OpenLayers.Feature.Vector.style["default"]))
+    styleMap.styles["default"].addRules [ new OpenLayers.Rule(
+        filter: new OpenLayers.Filter.Comparison(
+            type: OpenLayers.Filter.Comparison.EQUAL_TO
+            property: "selected"
+            value: true
+        )
+        symbolizer:
+          fillColor: "red"
+          strokeColor: "red"
+    ), new OpenLayers.Rule(elseFilter: true) ]
+    geojson_format = new OpenLayers.Format.GeoJSON()
+    vector_layer = new OpenLayers.Layer.Vector(name,
+        styleMap: styleMap
+    )
+    map.addLayer vector_layer
+    vector_layer.addFeatures geojson_format.read(json)
+    highlightCtrl = new OpenLayers.Control.SelectFeature(vector_layer,
+        hover: true
+        highlightOnly: true
+        renderIntent: "temporary"
+        eventListeners:
+          featurehighlighted: onFeatureHighlight
+          featureunhighlighted: onFeatureUnhighlight
+    )
+    map.addControl highlightCtrl
+    highlightCtrl.activate()
+    vector_layer
+
+
+#######################################################
 # Graph part                                          #
 #######################################################
 

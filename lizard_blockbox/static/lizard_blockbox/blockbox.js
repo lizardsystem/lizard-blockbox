@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, MeasuresMapView, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, JSONLayer, JSONTooltip, MeasuresMapView, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -150,6 +150,74 @@
   });
 
   measuresMapView = new MeasuresMapView();
+
+  onPopupClose = function(evt) {
+    return selectControl.unselect(selectedFeature);
+  };
+
+  onFeatureHighlight = function(feature) {
+    var ff, popup, selectedFeature;
+    selectedFeature = feature;
+    ff = feature.feature;
+    popup = new OpenLayers.Popup.FramedCloud("chicken", ff.geometry.getBounds().getCenterLonLat(), null, "<div style='font-size:.8em'>" + ff.data.titel + "</div>", null, false, false);
+    feature.feature.popup = popup;
+    return map.addPopup(popup);
+  };
+
+  onFeatureUnhighlight = function(feature) {
+    map.removePopup(feature.feature.popup);
+    feature.feature.popup.destroy();
+    return feature.feature.popup = null;
+  };
+
+  JSONLayer = function(name, json) {
+    var geojson_format, vector_layer;
+    geojson_format = new OpenLayers.Format.GeoJSON();
+    vector_layer = new OpenLayers.Layer.Vector(name);
+    map.addLayer(vector_layer);
+    return vector_layer.addFeatures(geojson_format.read(json));
+  };
+
+  JSONTooltip = function(name, json) {
+    var geojson_format, highlightCtrl, styleMap, vector_layer;
+    styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
+      fillColor: 'blue',
+      strokeColor: 'blue'
+    }, OpenLayers.Feature.Vector.style["default"]));
+    styleMap.styles["default"].addRules([
+      new OpenLayers.Rule({
+        filter: new OpenLayers.Filter.Comparison({
+          type: OpenLayers.Filter.Comparison.EQUAL_TO,
+          property: "selected",
+          value: true
+        }),
+        symbolizer: {
+          fillColor: "red",
+          strokeColor: "red"
+        }
+      }), new OpenLayers.Rule({
+        elseFilter: true
+      })
+    ]);
+    geojson_format = new OpenLayers.Format.GeoJSON();
+    vector_layer = new OpenLayers.Layer.Vector(name, {
+      styleMap: styleMap
+    });
+    map.addLayer(vector_layer);
+    vector_layer.addFeatures(geojson_format.read(json));
+    highlightCtrl = new OpenLayers.Control.SelectFeature(vector_layer, {
+      hover: true,
+      highlightOnly: true,
+      renderIntent: "temporary",
+      eventListeners: {
+        featurehighlighted: onFeatureHighlight,
+        featureunhighlighted: onFeatureUnhighlight
+      }
+    });
+    map.addControl(highlightCtrl);
+    highlightCtrl.activate();
+    return vector_layer;
+  };
 
   showTooltip = function(x, y, name, type_name) {
     return $("<div id=\"tooltip\" class=\"popover top\">\n  <div class=\"popover-inner\">\n    <div class=\"popover-title\"><h3>" + name + "</h3></div>\n    <div class=\"popover-content\">Type: " + type_name + "</div>\n  </div>\n</div>").css({
