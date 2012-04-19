@@ -41,12 +41,8 @@ class BlockboxView(MapView):
         measures = models.Measure.objects.all().values(
             'name', 'short_name', 'measure_type', 'km_from')
         selected_measures = _selected_measures(self.request)
-        result = []
-        for measure in measures:
-            selected = measure['short_name'] in selected_measures
-            if selected:
-                result.append(measure)
-        return result
+        return [measure for measure in measures if measure['short_name']
+                in selected_measures]
 
     # TODO: copy/pasted from selected_measures()
     def measures(self):
@@ -91,12 +87,11 @@ def calculated_measures_json(request):
     """Fetch measure data and JSON it for a preliminary frontpage graph.
     """
     #XXX Refactor when needed.
-    #selected_measures = _selected_measures(request)
-    #if not selected_measures:
-    #    return reference_json(request)
-    #measures = models.Measure.objects.filter(short_name__in=selected_measures)
+    selected_measures = _selected_measures(request)
+    if not selected_measures:
+        return reference_json(request)
+    measures = models.Measure.objects.filter(short_name__in=selected_measures)
 
-    measures = models.Measure.objects.filter(id__in=(89, 65, 54, 70))
     flooding_chance = models.FloodingChance.objects.filter(name="T250")
 
     water_level_diferences = models.WaterLevelDifference.objects.filter(
