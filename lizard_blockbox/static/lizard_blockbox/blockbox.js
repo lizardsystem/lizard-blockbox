@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, JSONLayer, JSONTooltip, MeasuresMapView, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, GRAY, JSONLayer, JSONTooltip, MeasuresMapView, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -7,6 +7,8 @@
   ANIMATION_DURATION = 150;
 
   DIAMOND_COLOR = "#105987";
+
+  GRAY = "#c0c0bc";
 
   TRIANGLE_COLOR = "#E78B00";
 
@@ -282,7 +284,7 @@
         lines: {
           show: true
         },
-        color: DIAMOND_COLOR
+        color: GRAY
       }, {
         label: "Doelwaarde",
         data: target,

@@ -10,6 +10,7 @@
 
 ANIMATION_DURATION = 150
 DIAMOND_COLOR = "#105987"
+GRAY = "#c0c0bc"
 TRIANGLE_COLOR = "#E78B00"
 SQUARE_COLOR = "#122F64"
 
@@ -222,7 +223,7 @@ setPlaceholderTop = (json_data) ->
         lines:
             show: true
 
-        color: DIAMOND_COLOR
+        color: GRAY
     ,
         label: "Doelwaarde"
         data: target
