@@ -232,7 +232,8 @@
     var json_url;
     json_url = $('#blockbox-table').attr('data-calculated-measures-url');
     return $.getJSON(json_url, function(data) {
-      window.data = data;
+      window.min_graph_value = data[0].location;
+      window.max_graph_value = data[data.length - 1].location;
       setPlaceholderTop(data);
       return setMeasureSeries();
     });
@@ -317,6 +318,8 @@
         inverseTransform: function(v) {
           return -v;
         },
+        min: window.min_graph_value,
+        max: window.max_graph_value,
         position: "top"
       },
       yaxis: {
@@ -327,7 +330,6 @@
       },
       grid: {
         minBorderMargin: 20,
-        alignTicksWithAxis: 1,
         clickable: true,
         borderWidth: 1,
         axisMargin: 10
@@ -345,7 +347,8 @@
         }
       }
     });
-    return pl_lines = $.plot($("#placeholder_top"), ed_data, options);
+    pl_lines = $.plot($("#placeholder_top"), ed_data, options);
+    return window.topplot = pl_lines;
   };
 
   setPlaceholderControl = function(control_data) {
@@ -370,8 +373,8 @@
         inverseTransform: function(v) {
           return -v;
         },
-        min: window.data[0].location,
-        max: window.data[window.data.length - 1].location,
+        min: window.min_graph_value,
+        max: window.max_graph_value,
         reserveSpace: true,
         position: "bottom"
       },

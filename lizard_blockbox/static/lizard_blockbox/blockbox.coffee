@@ -199,7 +199,9 @@ showTooltip = (x, y, name, type_name) ->
 setFlotSeries = () ->
     json_url = $('#blockbox-table').attr('data-calculated-measures-url')
     $.getJSON json_url, (data) ->
-        window.data = data
+        window.min_graph_value = data[0].location
+        window.max_graph_value = data[data.length-1].location
+
         setPlaceholderTop data
         setMeasureSeries()
 
@@ -259,6 +261,8 @@ setPlaceholderTop = (json_data) ->
         xaxis:
             transform: (v) -> -v
             inverseTransform: (v) -> -v
+            min: window.min_graph_value
+            max: window.max_graph_value
             position: "top"
 
         yaxis:
@@ -269,7 +273,7 @@ setPlaceholderTop = (json_data) ->
 
         grid:
             minBorderMargin: 20
-            alignTicksWithAxis: 1
+            #alignTicksWithAxis: 1
             clickable: true
             borderWidth: 1
             axisMargin: 10
@@ -284,6 +288,7 @@ setPlaceholderTop = (json_data) ->
             cb
 
     pl_lines = $.plot($("#placeholder_top"), ed_data, options)
+    window.topplot = pl_lines
 
     # $("#placeholder_top").bind "plotclick", (event, pos, item) ->
     #     if item
@@ -302,8 +307,8 @@ setPlaceholderControl = (control_data) ->
         xaxis:
             transform: (v) -> -v
             inverseTransform: (v) -> -v
-            min: window.data[0].location
-            max: window.data[window.data.length-1].location
+            min: window.min_graph_value
+            max: window.max_graph_value
             reserveSpace: true
             position: "bottom"
 

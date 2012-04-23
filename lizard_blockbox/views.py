@@ -71,7 +71,8 @@ def reference_json(request):
     references = models.ReferenceValue.objects.filter(
         flooding_chance=flooding_chance).values(
         'riversegment__location', 'reference', 'target')
-
+    references = list(references)
+    references.sort(key=lambda x: x['riversegment__location'])
     response = HttpResponse(mimetype='application/json')
     json.dump([{'reference_value': 0,
                 'location': i['riversegment__location'],
