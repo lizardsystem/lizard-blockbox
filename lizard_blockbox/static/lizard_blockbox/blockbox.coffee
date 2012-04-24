@@ -297,7 +297,9 @@ setPlaceholderTop = (json_data) ->
 
 setPlaceholderControl = (control_data) ->
 
-    measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data)
+    measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected)
+    selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected)
+    non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable)
 
     d4 = undefined
     d5 = undefined
@@ -325,7 +327,6 @@ setPlaceholderControl = (control_data) ->
             borderWidth: 1
             # labelMargin:-50
 
-
         legend:
             show: true
             noColumns: 4
@@ -333,19 +334,36 @@ setPlaceholderControl = (control_data) ->
             labelFormatter: (label, series) ->
                 cb = label
                 cb
-
     measures_controls = [
-        label: "Serie 2"
+        label: "Maatregelen"
         data: measures
         points:
             show: true
             symbol: "square"
             radius: 2
-
         lines:
             show: false
-
         color: SQUARE_COLOR
+    ,
+        label: "Geselecteerde maatregelen"
+        data: selected_measures
+        points:
+            show: true
+            symbol: "square"
+            radius: 4
+        lines:
+            show: false
+        color: SQUARE_COLOR
+    ,
+        label: "Niet-selecteerbare maatregelen"
+        data: non_selectable_measures
+        points:
+            show: true
+            symbol: "square"
+            radius: 2
+        lines:
+            show: false
+        color: GRAY
     ]
     pl_control = $.plot($("#placeholder_control"), measures_controls, options)
 

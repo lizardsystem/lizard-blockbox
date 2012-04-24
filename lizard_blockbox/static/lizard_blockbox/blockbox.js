@@ -352,13 +352,37 @@
   };
 
   setPlaceholderControl = function(control_data) {
-    var d4, d5, measures, measures_controls, num, options, pl_control, pl_lines;
+    var d4, d5, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, selected_measures;
     measures = (function() {
       var _i, _len, _results;
       _results = [];
       for (_i = 0, _len = control_data.length; _i < _len; _i++) {
         num = control_data[_i];
-        _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
+        if (num.selectable && !num.selected) {
+          _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
+        }
+      }
+      return _results;
+    })();
+    selected_measures = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = control_data.length; _i < _len; _i++) {
+        num = control_data[_i];
+        if (num.selected) {
+          _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
+        }
+      }
+      return _results;
+    })();
+    non_selectable_measures = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = control_data.length; _i < _len; _i++) {
+        num = control_data[_i];
+        if (!num.selectable) {
+          _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
+        }
       }
       return _results;
     })();
@@ -403,7 +427,7 @@
     };
     measures_controls = [
       {
-        label: "Serie 2",
+        label: "Maatregelen",
         data: measures,
         points: {
           show: true,
@@ -414,6 +438,30 @@
           show: false
         },
         color: SQUARE_COLOR
+      }, {
+        label: "Geselecteerde maatregelen",
+        data: selected_measures,
+        points: {
+          show: true,
+          symbol: "square",
+          radius: 4
+        },
+        lines: {
+          show: false
+        },
+        color: SQUARE_COLOR
+      }, {
+        label: "Niet-selecteerbare maatregelen",
+        data: non_selectable_measures,
+        points: {
+          show: true,
+          symbol: "square",
+          radius: 2
+        },
+        lines: {
+          show: false
+        },
+        color: GRAY
       }
     ];
     pl_control = $.plot($("#placeholder_control"), measures_controls, options);

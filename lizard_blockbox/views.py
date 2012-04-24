@@ -133,22 +133,42 @@ def _selected_measures(request):
     return request.session[SELECTED_MEASURES_KEY]
 
 
+def _unselectable_measures(request):
+    """Return measure IDs that are not selectable.
+
+    Current implementation is a temporary hack. Just disallow the measure two
+    IDs further down the line...
+
+    """
+    measures_shortnames = list(models.Measure.objects.all().values_list(
+        'short_name', flat=True))
+    unselectable = []
+    for shortname in _selected_measures(request):
+        index = measures_shortnames.index(shortname) + 2
+        if index < len(measures_shortnames):
+            unselectable.append(measures_shortnames[index])
+    print unselectable
+    return unselectable
+
+
 def toggle_measure(request):
     """Toggle a measure on or off."""
     if not request.POST:
         return
     measure_id = request.POST['measure_id']
     selected_measures = _selected_measures(request)
+    unselectable_measures = _unselectable_measures(request)
     if measure_id in selected_measures:
         selected_measures.remove(measure_id)
     else:
-        selected_measures.add(measure_id)
+        if not measure_id in unselectable_measures:
+            selected_measures.add(measure_id)
     request.session[SELECTED_MEASURES_KEY] = selected_measures
     return HttpResponse(json.dumps(list(selected_measures)))
 
 
 def list_measures_json(request):
-    """Return a list with all known measures."""
+    """Return a list with all known measures for the second graph."""
 
     measures = models.Measure.objects.all().values(
         'name', 'short_name', 'measure_type', 'km_from')
@@ -156,9 +176,10 @@ def list_measures_json(request):
             set(measure['measure_type'] for measure in measures)))
 
     selected_measures = _selected_measures(request)
+    unselectable_measures = _unselectable_measures(request)
     for measure in measures:
-        selected = measure['short_name'] in selected_measures
-        measure['selected'] = selected
+        measure['selected'] = measure['short_name'] in selected_measures
+        measure['selectable'] = measure['short_name'] not in unselectable_measures
         measure['type_index'] = all_types.index(measure['measure_type'])
     response = HttpResponse(mimetype='application/json')
     json.dump(list(measures), response)
