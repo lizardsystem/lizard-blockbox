@@ -118,8 +118,8 @@ def calculated_measures_json(request):
 
     for key, value in water_levels.iteritems():
         value['location'] = key
-        value['target_difference'] = (value['reference_target'] -
-                                         value['measures_level'])
+        value['target_difference'] = (value['measures_level'] -
+                                      value['reference_target'])
 
     # Put it in a list because can't figure out how to
     # parse it correctly in coffeescript
