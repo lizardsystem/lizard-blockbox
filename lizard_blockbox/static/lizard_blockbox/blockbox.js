@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, JSONLayer, JSONTooltip, MeasuresMapView, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, JSONLayer, JSONRiverLayer, JSONTooltip, MeasuresMapView, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -101,6 +101,26 @@
       }
       return _results;
     },
+    render_maas: function(maas) {
+      var json_url;
+      if (maas == null) maas = this.Maas;
+      json_url = $('#blockbox-table').attr('data-calculated-measures-url');
+      return $.getJSON(json_url, function(data) {
+        var attributes, feature, num, target_difference, _i, _j, _len, _len2, _ref;
+        target_difference = {};
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          num = data[_i];
+          target_difference[num.location] = num.target_difference;
+        }
+        _ref = maas.features;
+        for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
+          feature = _ref[_j];
+          attributes = feature.attributes;
+          attributes.target_difference = target_difference[attributes.MODELKM];
+        }
+        return maas.redraw();
+      });
+    },
     render_measure_IVM: function() {
       var feature, selected_items, _i, _len, _ref, _ref2;
       selected_items = this.selected_items();
@@ -135,7 +155,8 @@
         return JSONLayer('Rijntak', json);
       });
       return $.getJSON("/blokkendoos/api/rivers/maas/", function(json) {
-        return JSONLayer('Maas', json);
+        _this.Maas = JSONRiverLayer('Maas', json);
+        return _this.render_maas(_this.Maas);
       });
     },
     initialize: function() {
@@ -145,11 +166,14 @@
     },
     render: function() {
       this.render_measure_IVM();
-      return this.render_measure_QS();
+      this.render_measure_QS();
+      return this.render_maas();
     }
   });
 
   measuresMapView = new MeasuresMapView();
+
+  window.mMV = measuresMapView;
 
   onPopupClose = function(evt) {
     return selectControl.unselect(selectedFeature);
@@ -170,6 +194,13 @@
     return feature.feature.popup = null;
   };
 
+  onFeatureToggle = function(feature) {
+    var attr, short_name;
+    attr = feature.attributes;
+    short_name = attr["Code_IVM"] ? attr["Code_IVM"] : attr["code_QS"];
+    return toggleMeasure(short_name);
+  };
+
   JSONLayer = function(name, json) {
     var geojson_format, vector_layer;
     geojson_format = new OpenLayers.Format.GeoJSON();
@@ -178,11 +209,53 @@
     return vector_layer.addFeatures(geojson_format.read(json));
   };
 
+  RiverLayerRule = function(from, to, color) {
+    var rule;
+    rule = new OpenLayers.Rule({
+      filter: new OpenLayers.Filter.Comparison({
+        type: OpenLayers.Filter.Comparison.BETWEEN,
+        property: "target_difference",
+        lowerBoundary: from,
+        upperBoundary: to
+      }),
+      symbolizer: {
+        fillColor: color,
+        strokeColor: color
+      }
+    });
+    return rule;
+  };
+
+  JSONRiverLayer = function(name, json) {
+    var geojson_format, rules, styleMap, vector_layer;
+    rules = [
+      RiverLayerRule(1.00, 1.50, "darkred"), RiverLayerRule(0.50, 1.00, "red"), RiverLayerRule(0.10, 0.50, "salmon"), RiverLayerRule(-0.10, 0.10, "blue"), RiverLayerRule(-0.50, -0.10, "limegreen"), RiverLayerRule(-0.50, -1.00, "green"), RiverLayerRule(-1.00, -1.50, "darkgreen"), new OpenLayers.Rule({
+        elseFilter: true,
+        symbolizer: {
+          fillColor: "black",
+          strokeColor: "black"
+        }
+      })
+    ];
+    styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
+      fillColor: 'black',
+      strokeColor: 'back'
+    }, OpenLayers.Feature.Vector.style["default"]));
+    styleMap.styles["default"].addRules(rules);
+    geojson_format = new OpenLayers.Format.GeoJSON();
+    vector_layer = new OpenLayers.Layer.Vector(name, {
+      styleMap: styleMap
+    });
+    map.addLayer(vector_layer);
+    vector_layer.addFeatures(geojson_format.read(json));
+    return vector_layer;
+  };
+
   JSONTooltip = function(name, json) {
     var geojson_format, highlightCtrl, styleMap, vector_layer;
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
-      fillColor: 'blue',
-      strokeColor: 'blue'
+      fillColor: 'green',
+      strokeColor: 'green'
     }, OpenLayers.Feature.Vector.style["default"]));
     styleMap.styles["default"].addRules([
       new OpenLayers.Rule({
