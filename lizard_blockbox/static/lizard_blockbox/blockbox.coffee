@@ -75,6 +75,17 @@ MeasuresMapView = Backbone.View.extend
     selected_items: ->
         ($(el).attr "data-measure-shortname" for el in $("#selected-measures-list li a"))
 
+    render_maas: (maas = @Maas) ->
+        json_url = $('#blockbox-table').attr('data-calculated-measures-url')
+        $.getJSON json_url, (data) ->
+            target_difference = {}
+            for num in data
+                target_difference[num.location] = num.target_difference
+            for feature in maas.features
+                attributes = feature.attributes
+                attributes.target_difference = target_difference[attributes.MODELKM]
+            maas.redraw()
+
     render_measure_IVM: ->
         selected_items = @selected_items()
         for feature in @IVM.features
@@ -97,7 +108,8 @@ MeasuresMapView = Backbone.View.extend
         $.getJSON @static_url + 'lizard_blockbox/rijntakken.json', (json) =>
             JSONLayer 'Rijntak', json
         $.getJSON "/blokkendoos/api/rivers/maas/", (json) =>
-            JSONLayer 'Maas', json
+            @Maas = JSONRiverLayer 'Maas', json
+            @render_maas(@Maas)
 
     initialize: ->
         @static_url = $('#lizard-blockbox-graph').attr 'data-static-url'
@@ -107,9 +119,12 @@ MeasuresMapView = Backbone.View.extend
     render: ->
         @render_measure_IVM()
         @render_measure_QS()
+        @render_maas()
 
 
 measuresMapView = new MeasuresMapView()
+
+window.mMV = measuresMapView
 
 #######################################################
 # OpenLayers GeoJSON graph                            #
@@ -138,18 +153,67 @@ onFeatureUnhighlight = (feature) ->
     feature.feature.popup.destroy()
     feature.feature.popup = null
 
+onFeatureToggle = (feature) ->
+    attr = feature.attributes
+    short_name = if attr["Code_IVM"] then attr["Code_IVM"] else attr["code_QS"]
+    toggleMeasure short_name
+
 JSONLayer = (name, json) ->
     geojson_format = new OpenLayers.Format.GeoJSON()
     vector_layer = new OpenLayers.Layer.Vector(name)
+    map.addLayer vector_layer
+    vector_layer.addFeatures geojson_format.read(json)
+
+RiverLayerRule = (from, to, color) ->
+    rule = new OpenLayers.Rule(
+        filter: new OpenLayers.Filter.Comparison
+            type: OpenLayers.Filter.Comparison.BETWEEN,
+            property: "target_difference"
+            lowerBoundary: from
+            upperBoundary: to
+        symbolizer:
+            fillColor: color
+            strokeColor: color
+    )
+    rule
+
+JSONRiverLayer = (name, json) ->
+    rules = [
+        RiverLayerRule 1.00, 1.50, "darkred"
+        RiverLayerRule 0.50, 1.00, "red"
+        RiverLayerRule 0.10, 0.50, "salmon"
+        RiverLayerRule -0.10, 0.10, "blue"
+        RiverLayerRule -0.50, -0.10, "limegreen"
+        RiverLayerRule -0.50, -1.00, "green"
+        RiverLayerRule -1.00, -1.50, "darkgreen"
+        new OpenLayers.Rule
+            elseFilter: true
+            symbolizer:
+                fillColor: "black"
+                strokeColor: "black"
+    ]
+
+    styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
+            fillColor: 'black'
+            strokeColor: 'back'
+        OpenLayers.Feature.Vector.style["default"]))
+
+    styleMap.styles["default"].addRules(rules)
+
+    geojson_format = new OpenLayers.Format.GeoJSON()
+    vector_layer = new OpenLayers.Layer.Vector(name,
+        styleMap: styleMap
+    )
     map.addLayer(vector_layer)
     vector_layer.addFeatures(geojson_format.read(json))
-
+    vector_layer
 
 JSONTooltip = (name, json) ->
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
-            fillColor: 'blue'
-            strokeColor: 'blue'
+            fillColor: 'green'
+            strokeColor: 'green'
         OpenLayers.Feature.Vector.style["default"]))
+
     styleMap.styles["default"].addRules [ new OpenLayers.Rule(
         filter: new OpenLayers.Filter.Comparison(
             type: OpenLayers.Filter.Comparison.EQUAL_TO
@@ -160,6 +224,8 @@ JSONTooltip = (name, json) ->
           fillColor: "red"
           strokeColor: "red"
     ), new OpenLayers.Rule(elseFilter: true) ]
+
+
     geojson_format = new OpenLayers.Format.GeoJSON()
     vector_layer = new OpenLayers.Layer.Vector(name,
         styleMap: styleMap
@@ -171,11 +237,22 @@ JSONTooltip = (name, json) ->
         highlightOnly: true
         renderIntent: "temporary"
         eventListeners:
-          featurehighlighted: onFeatureHighlight
-          featureunhighlighted: onFeatureUnhighlight
-    )
+            featurehighlighted: onFeatureHighlight
+            featureunhighlighted: onFeatureUnhighlight
+        )
+
+    # ToDo: Fix selectCtrl, it has problems with hoover and selecting
+    #selectCtrl = new OpenLayers.Control.SelectFeature(vector_layer,
+    #    hover: false
+    #    click: true
+    #    onSelect: onFeatureToggle
+    #)
+    #map.addControl(selectCtrl)
+    #selectCtrl.activate()
+
     map.addControl highlightCtrl
     highlightCtrl.activate()
+
     vector_layer
 
 
@@ -259,8 +336,6 @@ setPlaceholderTop = (json_data) ->
 
     options =
         xaxis:
-            transform: (v) -> -v
-            inverseTransform: (v) -> -v
             min: window.min_graph_value
             max: window.max_graph_value
             position: "top"
@@ -307,8 +382,6 @@ setPlaceholderControl = (control_data) ->
 
     options =
         xaxis:
-            transform: (v) -> -v
-            inverseTransform: (v) -> -v
             min: window.min_graph_value
             max: window.max_graph_value
             reserveSpace: true

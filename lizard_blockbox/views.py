@@ -109,20 +109,21 @@ def calculated_measures_json(request):
             d = {'reference_value': 0,
                  # -0.10 chosen to have some target..
                  'reference_target': REFERENCE_TARGET,
-                 'difference_level': diff['level_difference']}
+                 'measures_level': diff['level_difference']}
         else:
-            d['difference_level'] += diff['level_difference']
+            d['measures_level'] += diff['level_difference']
         water_levels[location] = d
 
     response = HttpResponse(mimetype='application/json')
 
     for key, value in water_levels.iteritems():
         value['location'] = key
-        value['measures_level'] = value['difference_level']
+        value['target_difference'] = (value['measures_level'] -
+                                      value['reference_target'])
 
     # Put it in a list because can't figure out how to
     # parse it correctly in coffeescript
-    json.dump([i for i in water_levels.itervalues()], response)
+    json.dump(list(water_levels.itervalues()), response)
     return response
 
 
