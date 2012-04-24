@@ -336,8 +336,6 @@ setPlaceholderTop = (json_data) ->
 
     options =
         xaxis:
-            transform: (v) -> -v
-            inverseTransform: (v) -> -v
             min: window.min_graph_value
             max: window.max_graph_value
             position: "top"
@@ -382,8 +380,6 @@ setPlaceholderControl = (control_data) ->
 
     options =
         xaxis:
-            transform: (v) -> -v
-            inverseTransform: (v) -> -v
             min: window.min_graph_value
             max: window.max_graph_value
             reserveSpace: true

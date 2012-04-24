@@ -385,12 +385,6 @@
     ];
     options = {
       xaxis: {
-        transform: function(v) {
-          return -v;
-        },
-        inverseTransform: function(v) {
-          return -v;
-        },
         min: window.min_graph_value,
         max: window.max_graph_value,
         position: "top"
@@ -440,12 +434,6 @@
     pl_lines = void 0;
     options = {
       xaxis: {
-        transform: function(v) {
-          return -v;
-        },
-        inverseTransform: function(v) {
-          return -v;
-        },
         min: window.min_graph_value,
         max: window.max_graph_value,
         reserveSpace: true,
