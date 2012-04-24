@@ -75,6 +75,7 @@ def reference_json(request):
     references.sort(key=lambda x: x['riversegment__location'])
     response = HttpResponse(mimetype='application/json')
     json.dump([{'reference_value': 0,
+                'target_difference': REFERENCE_TARGET,
                 'location': i['riversegment__location'],
                 'reference_target': REFERENCE_TARGET,
                 'measures_level': 0}
