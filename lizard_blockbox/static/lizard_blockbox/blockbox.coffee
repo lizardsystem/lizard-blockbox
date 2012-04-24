@@ -10,6 +10,7 @@
 
 ANIMATION_DURATION = 150
 DIAMOND_COLOR = "#105987"
+GRAY = "#c0c0bc"
 TRIANGLE_COLOR = "#E78B00"
 SQUARE_COLOR = "#122F64"
 
@@ -275,7 +276,9 @@ showTooltip = (x, y, name, type_name) ->
 setFlotSeries = () ->
     json_url = $('#blockbox-table').attr('data-calculated-measures-url')
     $.getJSON json_url, (data) ->
-        window.data = data
+        window.min_graph_value = data[0].location
+        window.max_graph_value = data[data.length-1].location
+
         setPlaceholderTop data
         setMeasureSeries()
 
@@ -299,7 +302,7 @@ setPlaceholderTop = (json_data) ->
         lines:
             show: true
 
-        color: DIAMOND_COLOR
+        color: GRAY
     ,
         label: "Doelwaarde"
         data: target
@@ -335,6 +338,8 @@ setPlaceholderTop = (json_data) ->
         xaxis:
             transform: (v) -> -v
             inverseTransform: (v) -> -v
+            min: window.min_graph_value
+            max: window.max_graph_value
             position: "top"
 
         yaxis:
@@ -345,7 +350,7 @@ setPlaceholderTop = (json_data) ->
 
         grid:
             minBorderMargin: 20
-            alignTicksWithAxis: 1
+            #alignTicksWithAxis: 1
             clickable: true
             borderWidth: 1
             axisMargin: 10
@@ -360,6 +365,7 @@ setPlaceholderTop = (json_data) ->
             cb
 
     pl_lines = $.plot($("#placeholder_top"), ed_data, options)
+    window.topplot = pl_lines
 
     # $("#placeholder_top").bind "plotclick", (event, pos, item) ->
     #     if item
@@ -378,8 +384,8 @@ setPlaceholderControl = (control_data) ->
         xaxis:
             transform: (v) -> -v
             inverseTransform: (v) -> -v
-            min: window.data[0].location
-            max: window.data[window.data.length-1].location
+            min: window.min_graph_value
+            max: window.max_graph_value
             reserveSpace: true
             position: "bottom"
 

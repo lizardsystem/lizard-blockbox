@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, JSONLayer, JSONRiverLayer, JSONTooltip, MeasuresMapView, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, GRAY, JSONLayer, JSONRiverLayer, JSONTooltip, MeasuresMapView, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -7,6 +7,8 @@
   ANIMATION_DURATION = 150;
 
   DIAMOND_COLOR = "#105987";
+
+  GRAY = "#c0c0bc";
 
   TRIANGLE_COLOR = "#E78B00";
 
@@ -303,7 +305,8 @@
     var json_url;
     json_url = $('#blockbox-table').attr('data-calculated-measures-url');
     return $.getJSON(json_url, function(data) {
-      window.data = data;
+      window.min_graph_value = data[0].location;
+      window.max_graph_value = data[data.length - 1].location;
       setPlaceholderTop(data);
       return setMeasureSeries();
     });
@@ -355,7 +358,7 @@
         lines: {
           show: true
         },
-        color: DIAMOND_COLOR
+        color: GRAY
       }, {
         label: "Doelwaarde",
         data: target,
@@ -388,6 +391,8 @@
         inverseTransform: function(v) {
           return -v;
         },
+        min: window.min_graph_value,
+        max: window.max_graph_value,
         position: "top"
       },
       yaxis: {
@@ -398,7 +403,6 @@
       },
       grid: {
         minBorderMargin: 20,
-        alignTicksWithAxis: 1,
         clickable: true,
         borderWidth: 1,
         axisMargin: 10
@@ -416,7 +420,8 @@
         }
       }
     });
-    return pl_lines = $.plot($("#placeholder_top"), ed_data, options);
+    pl_lines = $.plot($("#placeholder_top"), ed_data, options);
+    return window.topplot = pl_lines;
   };
 
   setPlaceholderControl = function(control_data) {
@@ -441,8 +446,8 @@
         inverseTransform: function(v) {
           return -v;
         },
-        min: window.data[0].location,
-        max: window.data[window.data.length - 1].location,
+        min: window.min_graph_value,
+        max: window.max_graph_value,
         reserveSpace: true,
         position: "bottom"
       },
