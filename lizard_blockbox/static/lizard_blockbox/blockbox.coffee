@@ -9,10 +9,30 @@
 #######################################################
 
 ANIMATION_DURATION = 150
-DIAMOND_COLOR = "#105987"
+
+# Colors from main theme.
 GRAY = "#c0c0bc"
+BLUE = "#046F96"
+LIGHTBLUE = "#bddfed"
+# Triad color rules from http://kuler.adobe.com based on BLUE.
+RED = "#A31535"
+YELLOW = "#E2D611"
+GREEN = "#635E0D"
+
+# For shades in the map. The light one is the most extreme.
+# Every shade has 25% lighter saturation.
+LIGHTRED = "#A36775"
+MIDDLERED = "#A33E56"
+DARKRED = RED
+LIGHTGREEN = "#63623F"
+MIDDLEGREEN = "#636026"
+DARKGREEN = GREEN
+
+# Original colors
+DIAMOND_COLOR = "#105987"
 TRIANGLE_COLOR = "#E78B00"
 SQUARE_COLOR = "#122F64"
+
 
 graphTimer = ''
 hasTooltip = ''
@@ -27,7 +47,7 @@ toggleMeasure = (measure_id) ->
         # async: false
         success: (data) ->
             setFlotSeries()
-            # TODO: Update checkmark for selected measures in main table.
+           # TODO: Update checkmark for selected measures in main table.
             $holder = $('<div/>')
             $holder.load '. #page', () ->
                 $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
@@ -193,18 +213,13 @@ RiverLayerBorderRule = (to, color) ->
 
 JSONRiverLayer = (name, json) ->
     rules = [
-        RiverLayerRule 1.00, 1.50, "darkred"
-        RiverLayerRule 0.50, 1.00, "red"
-        RiverLayerBorderRule 1.00, "red"
-        RiverLayerRule 0.10, 0.50, "salmon"
-        RiverLayerBorderRule 0.50, "salmon"
-        RiverLayerRule -0.10, 0.10, "blue"
-        RiverLayerBorderRule 0.10, "blue"
-        RiverLayerRule -0.50, -0.10, "limegreen"
-        RiverLayerBorderRule -0.10, "limegreen"
-        RiverLayerRule -0.50, -1.00, "green"
-        RiverLayerBorderRule -1.00, "green"
-        RiverLayerRule -1.00, -1.50, "darkgreen"
+        RiverLayerRule 1.00, 1.50, DARKRED
+        RiverLayerRule 0.50, 1.00, MIDDLERED
+        RiverLayerRule 0.10, 0.50, LIGHTRED
+        RiverLayerRule -0.10, 0.10, BLUE
+        RiverLayerRule -0.50, -0.10, LIGHTGREEN
+        RiverLayerRule -0.50, -1.00, MIDDLEGREEN
+        RiverLayerRule -1.00, -1.50, DARKGREEN
         new OpenLayers.Rule
             elseFilter: true
             symbolizer:
@@ -229,8 +244,8 @@ JSONRiverLayer = (name, json) ->
 
 JSONTooltip = (name, json) ->
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
-            fillColor: 'green'
-            strokeColor: 'green'
+            fillColor: GREEN
+            strokeColor: GREEN
         OpenLayers.Feature.Vector.style["default"]))
 
     styleMap.styles["default"].addRules [ new OpenLayers.Rule(
@@ -240,8 +255,8 @@ JSONTooltip = (name, json) ->
             value: true
         )
         symbolizer:
-          fillColor: "red"
-          strokeColor: "red"
+          fillColor: RED
+          strokeColor: RED
     ), new OpenLayers.Rule(elseFilter: true) ]
 
 
@@ -335,7 +350,7 @@ setPlaceholderTop = (json_data) ->
             show: true
             lineWidth: 2
 
-        color: DIAMOND_COLOR
+        color: BLUE
     ,
         label: "Effect maatregelen"
         data: measures
@@ -349,7 +364,7 @@ setPlaceholderTop = (json_data) ->
             show: true
             lineWidth: 2
 
-        color: TRIANGLE_COLOR
+        color: RED
 
     ]
 
@@ -391,7 +406,9 @@ setPlaceholderTop = (json_data) ->
 
 setPlaceholderControl = (control_data) ->
 
-    measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data)
+    measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected)
+    selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected)
+    non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable)
 
     d4 = undefined
     d5 = undefined
@@ -417,7 +434,6 @@ setPlaceholderControl = (control_data) ->
             borderWidth: 1
             # labelMargin:-50
 
-
         legend:
             show: true
             noColumns: 4
@@ -425,19 +441,36 @@ setPlaceholderControl = (control_data) ->
             labelFormatter: (label, series) ->
                 cb = label
                 cb
-
     measures_controls = [
-        label: "Serie 2"
+        label: "Maatregelen"
         data: measures
         points:
             show: true
             symbol: "square"
             radius: 2
-
         lines:
             show: false
-
-        color: SQUARE_COLOR
+        color: BLUE
+    ,
+        label: "Geselecteerde maatregelen"
+        data: selected_measures
+        points:
+            show: true
+            symbol: "square"
+            radius: 4
+        lines:
+            show: false
+        color: RED
+    ,
+        label: "Niet-selecteerbare maatregelen"
+        data: non_selectable_measures
+        points:
+            show: true
+            symbol: "square"
+            radius: 2
+        lines:
+            show: false
+        color: GRAY
     ]
     pl_control = $.plot($("#placeholder_control"), measures_controls, options)
 

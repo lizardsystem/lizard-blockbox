@@ -1,14 +1,36 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, GRAY, JSONLayer, JSONRiverLayer, JSONTooltip, MeasuresMapView, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   ANIMATION_DURATION = 150;
 
-  DIAMOND_COLOR = "#105987";
-
   GRAY = "#c0c0bc";
+
+  BLUE = "#046F96";
+
+  LIGHTBLUE = "#bddfed";
+
+  RED = "#A31535";
+
+  YELLOW = "#E2D611";
+
+  GREEN = "#635E0D";
+
+  LIGHTRED = "#A36775";
+
+  MIDDLERED = "#A33E56";
+
+  DARKRED = RED;
+
+  LIGHTGREEN = "#63623F";
+
+  MIDDLEGREEN = "#636026";
+
+  DARKGREEN = GREEN;
+
+  DIAMOND_COLOR = "#105987";
 
   TRIANGLE_COLOR = "#E78B00";
 
@@ -247,7 +269,7 @@
   JSONRiverLayer = function(name, json) {
     var geojson_format, rules, styleMap, vector_layer;
     rules = [
-      RiverLayerRule(1.00, 1.50, "darkred"), RiverLayerRule(0.50, 1.00, "red"), RiverLayerBorderRule(1.00, "red"), RiverLayerRule(0.10, 0.50, "salmon"), RiverLayerBorderRule(0.50, "salmon"), RiverLayerRule(-0.10, 0.10, "blue"), RiverLayerBorderRule(0.10, "blue"), RiverLayerRule(-0.50, -0.10, "limegreen"), RiverLayerBorderRule(-0.10, "limegreen"), RiverLayerRule(-0.50, -1.00, "green"), RiverLayerBorderRule(-1.00, "green"), RiverLayerRule(-1.00, -1.50, "darkgreen"), new OpenLayers.Rule({
+      RiverLayerRule(1.00, 1.50, DARKRED), RiverLayerRule(0.50, 1.00, MIDDLERED), RiverLayerRule(0.10, 0.50, LIGHTRED), RiverLayerRule(-0.10, 0.10, BLUE), RiverLayerRule(-0.50, -0.10, LIGHTGREEN), RiverLayerRule(-0.50, -1.00, MIDDLEGREEN), RiverLayerRule(-1.00, -1.50, DARKGREEN), new OpenLayers.Rule({
         elseFilter: true,
         symbolizer: {
           fillColor: "black",
@@ -272,8 +294,8 @@
   JSONTooltip = function(name, json) {
     var geojson_format, highlightCtrl, styleMap, vector_layer;
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
-      fillColor: 'green',
-      strokeColor: 'green'
+      fillColor: GREEN,
+      strokeColor: GREEN
     }, OpenLayers.Feature.Vector.style["default"]));
     styleMap.styles["default"].addRules([
       new OpenLayers.Rule({
@@ -283,8 +305,8 @@
           value: true
         }),
         symbolizer: {
-          fillColor: "red",
-          strokeColor: "red"
+          fillColor: RED,
+          strokeColor: RED
         }
       }), new OpenLayers.Rule({
         elseFilter: true
@@ -385,7 +407,7 @@
           show: true,
           lineWidth: 2
         },
-        color: DIAMOND_COLOR
+        color: BLUE
       }, {
         label: "Effect maatregelen",
         data: measures,
@@ -396,7 +418,7 @@
           show: true,
           lineWidth: 2
         },
-        color: TRIANGLE_COLOR
+        color: RED
       }
     ];
     options = {
@@ -435,13 +457,37 @@
   };
 
   setPlaceholderControl = function(control_data) {
-    var d4, d5, measures, measures_controls, num, options, pl_control, pl_lines;
+    var d4, d5, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, selected_measures;
     measures = (function() {
       var _i, _len, _results;
       _results = [];
       for (_i = 0, _len = control_data.length; _i < _len; _i++) {
         num = control_data[_i];
-        _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
+        if (num.selectable && !num.selected) {
+          _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
+        }
+      }
+      return _results;
+    })();
+    selected_measures = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = control_data.length; _i < _len; _i++) {
+        num = control_data[_i];
+        if (num.selected) {
+          _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
+        }
+      }
+      return _results;
+    })();
+    non_selectable_measures = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = control_data.length; _i < _len; _i++) {
+        num = control_data[_i];
+        if (!num.selectable) {
+          _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
+        }
       }
       return _results;
     })();
@@ -480,7 +526,7 @@
     };
     measures_controls = [
       {
-        label: "Serie 2",
+        label: "Maatregelen",
         data: measures,
         points: {
           show: true,
@@ -490,7 +536,31 @@
         lines: {
           show: false
         },
-        color: SQUARE_COLOR
+        color: BLUE
+      }, {
+        label: "Geselecteerde maatregelen",
+        data: selected_measures,
+        points: {
+          show: true,
+          symbol: "square",
+          radius: 4
+        },
+        lines: {
+          show: false
+        },
+        color: RED
+      }, {
+        label: "Niet-selecteerbare maatregelen",
+        data: non_selectable_measures,
+        points: {
+          show: true,
+          symbol: "square",
+          radius: 2
+        },
+        lines: {
+          show: false
+        },
+        color: GRAY
       }
     ];
     pl_control = $.plot($("#placeholder_control"), measures_controls, options);
