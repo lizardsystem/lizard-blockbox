@@ -27,9 +27,9 @@ class Command(BaseCommand):
         flush = options['flush']
         if flush:
             # Delete all objects from models.
-            for model in ('RiverSegment', 'Scenario', 'Year',
-                          'FloodingChance', 'Measure', 'ReferenceValue',
-                          'WaterLevelDifference'):
+            for model in ('RiverSegment', 'FloodingChance', 'Measure',
+                          'ReferenceValue', 'WaterLevelDifference',
+                          'Reach'):
                 getattr(models, model).objects.all().delete()
 
         if len(args) == 0:
@@ -46,13 +46,8 @@ class Command(BaseCommand):
 
     @transaction.commit_on_success
     def parse_sheet(self, sheet):
-        year = models.Year.objects.get_or_create(year=2050)
-        scenario = models.Scenario.objects.get_or_create(name='Stoom')
+        reach, _ = models.Reach.objects.get_or_create(name='Maas', slug="MA")
         measure = models.Measure.objects.create(short_name=sheet.name)
-        # variables that are not variables for now
-        year = models.Year.objects.get_or_create(year=2150)[0]
-        scenario = models.Scenario.objects.get_or_create(name='Stoom')[0]
-
         flooding_T250, _ = models.FloodingChance.objects.get_or_create(
             name='T250')
         flooding_T1250, _ = models.FloodingChance.objects.get_or_create(
@@ -61,24 +56,29 @@ class Command(BaseCommand):
         for row_nr in xrange(1, sheet.nrows):
             row = sheet.row_values(row_nr)
             location = row[0]
+            #Parse N/Z reaches for river maas, only use north.
+            if isinstance(location, basestring):
+                if not location.endswith('_N'):
+                    # Take only the North reaches
+                    continue
+                else:
+                    location = float(location.strip('_N'))
             # Only use a kilomter resolution, which are integers
             if not location.is_integer():
-                continue
+                    continue
             try:
                 riversegment = models.RiverSegment.objects.get(
-                    location=row[0])
+                    location=location, reach=reach)
             except models.RiverSegment.DoesNotExist:
                 the_geom = transform_point(
                     row[1], row[2], from_proj='rd', to_proj='wgs84')
                 riversegment = models.RiverSegment.objects.create(
-                    location=row[0], the_geom=the_geom)
+                    location=location, the_geom=the_geom, reach=reach)
             # XXX: Named tuple?
             # Easy datastructure for the columns.
             chances = ((flooding_T250, 3, 7), (flooding_T1250, 4, 8))
             for chance in chances:
                 d = {'riversegment': riversegment,
-                     'scenario': scenario,
-                     'year': year,
                      'flooding_chance': chance[0]}
                 #Reference value can differ because
                 #river segments can be defined twice.

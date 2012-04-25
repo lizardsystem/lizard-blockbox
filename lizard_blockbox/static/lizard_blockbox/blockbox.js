@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, GRAY, JSONLayer, JSONRiverLayer, JSONTooltip, MeasuresMapView, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BlockboxRouter, DIAMOND_COLOR, GRAY, JSONLayer, JSONRiverLayer, JSONTooltip, MeasuresMapView, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -88,9 +88,12 @@
         _this.IVM = JSONTooltip('IVM deel 1', json);
         return _this.render_measure_IVM();
       });
-      return $.getJSON(this.static_url + 'lizard_blockbox/QS.json', function(json) {
+      $.getJSON(this.static_url + 'lizard_blockbox/QS.json', function(json) {
         _this.QS = JSONTooltip('QS', json);
         return _this.render_measure_QS();
+      });
+      return $.getJSON(this.static_url + 'lizard_blockbox/PKB_LT_omtrek.json', function(json) {
+        return JSONTooltip('PKB', json);
       });
     },
     selected_items: function() {
@@ -153,9 +156,6 @@
     },
     rivers: function() {
       var _this = this;
-      $.getJSON(this.static_url + 'lizard_blockbox/rijntakken.json', function(json) {
-        return JSONLayer('Rijntak', json);
-      });
       return $.getJSON("/blokkendoos/api/rivers/maas/", function(json) {
         _this.Maas = JSONRiverLayer('Maas', json);
         return _this.render_maas(_this.Maas);
@@ -228,10 +228,26 @@
     return rule;
   };
 
+  RiverLayerBorderRule = function(to, color) {
+    var rule;
+    rule = new OpenLayers.Rule({
+      filter: new OpenLayers.Filter.Comparison({
+        type: OpenLayers.Filter.Comparison.EQUAL_TO,
+        property: "target_difference",
+        value: to
+      }),
+      symbolizer: {
+        fillColor: color,
+        strokeColor: color
+      }
+    });
+    return rule;
+  };
+
   JSONRiverLayer = function(name, json) {
     var geojson_format, rules, styleMap, vector_layer;
     rules = [
-      RiverLayerRule(1.00, 1.50, "darkred"), RiverLayerRule(0.50, 1.00, "red"), RiverLayerRule(0.10, 0.50, "salmon"), RiverLayerRule(-0.10, 0.10, "blue"), RiverLayerRule(-0.50, -0.10, "limegreen"), RiverLayerRule(-0.50, -1.00, "green"), RiverLayerRule(-1.00, -1.50, "darkgreen"), new OpenLayers.Rule({
+      RiverLayerRule(1.00, 1.50, "darkred"), RiverLayerRule(0.50, 1.00, "red"), RiverLayerBorderRule(1.00, "red"), RiverLayerRule(0.10, 0.50, "salmon"), RiverLayerBorderRule(0.50, "salmon"), RiverLayerRule(-0.10, 0.10, "blue"), RiverLayerBorderRule(0.10, "blue"), RiverLayerRule(-0.50, -0.10, "limegreen"), RiverLayerBorderRule(-0.10, "limegreen"), RiverLayerRule(-0.50, -1.00, "green"), RiverLayerBorderRule(-1.00, "green"), RiverLayerRule(-1.00, -1.50, "darkgreen"), new OpenLayers.Rule({
         elseFilter: true,
         symbolizer: {
           fillColor: "black",

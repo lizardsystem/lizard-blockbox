@@ -71,6 +71,8 @@ MeasuresMapView = Backbone.View.extend
         $.getJSON @static_url + 'lizard_blockbox/QS.json', (json) =>
             @QS = JSONTooltip 'QS', json
             @render_measure_QS()
+        $.getJSON @static_url + 'lizard_blockbox/PKB_LT_omtrek.json', (json) =>
+            JSONTooltip 'PKB', json
 
     selected_items: ->
         ($(el).attr "data-measure-shortname" for el in $("#selected-measures-list li a"))
@@ -105,8 +107,8 @@ MeasuresMapView = Backbone.View.extend
         @QS.redraw()
 
     rivers: ->
-        $.getJSON @static_url + 'lizard_blockbox/rijntakken.json', (json) =>
-            JSONLayer 'Rijntak', json
+        #$.getJSON @static_url + 'lizard_blockbox/rijntakken.json', (json) =>
+        #    JSONLayer 'Rijntak', json
         $.getJSON "/blokkendoos/api/rivers/maas/", (json) =>
             @Maas = JSONRiverLayer 'Maas', json
             @render_maas(@Maas)
@@ -177,14 +179,31 @@ RiverLayerRule = (from, to, color) ->
     )
     rule
 
+RiverLayerBorderRule = (to, color) ->
+    rule = new OpenLayers.Rule(
+        filter: new OpenLayers.Filter.Comparison
+            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+            property: "target_difference"
+            value: to
+        symbolizer:
+            fillColor: color
+            strokeColor: color
+    )
+    rule
+
 JSONRiverLayer = (name, json) ->
     rules = [
         RiverLayerRule 1.00, 1.50, "darkred"
         RiverLayerRule 0.50, 1.00, "red"
+        RiverLayerBorderRule 1.00, "red"
         RiverLayerRule 0.10, 0.50, "salmon"
+        RiverLayerBorderRule 0.50, "salmon"
         RiverLayerRule -0.10, 0.10, "blue"
+        RiverLayerBorderRule 0.10, "blue"
         RiverLayerRule -0.50, -0.10, "limegreen"
+        RiverLayerBorderRule -0.10, "limegreen"
         RiverLayerRule -0.50, -1.00, "green"
+        RiverLayerBorderRule -1.00, "green"
         RiverLayerRule -1.00, -1.50, "darkgreen"
         new OpenLayers.Rule
             elseFilter: true

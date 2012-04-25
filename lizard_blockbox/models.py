@@ -14,6 +14,9 @@ class Reach(models.Model):
         blank=False,
         help_text=u"Slug will be automatically generated from the name.")
 
+    def __unicode__(self):
+        return '%s' % self.name
+
 
 class RiverSegment(gis_models.Model):
     """
@@ -22,36 +25,12 @@ class RiverSegment(gis_models.Model):
     """
 
     location = models.IntegerField()
+    reach = models.ForeignKey(Reach)
     the_geom = gis_models.PointField(srid=4326, null=True, blank=True)
     objects = gis_models.GeoManager()
 
     def __unicode__(self):
         return '%i' % self.location
-
-
-class Scenario(models.Model):
-    """
-    A Scenario for the BlockBox.
-
-    """
-
-    name = models.CharField(max_length=100)
-
-    def __unicode__(self):
-        return u'%s' % self.name
-
-
-class Year(models.Model):
-    """A year for the blockbox
-
-    Corresponding values are calculated with respect to this year.
-
-    """
-
-    year = models.IntegerField()
-
-    def __unicode__(self):
-        return u'%i' % self.year
 
 
 class FloodingChance(models.Model):
@@ -94,27 +73,23 @@ class Measure(models.Model):
 class ReferenceValue(models.Model):
     """Reference Value for the water height
 
-    per Riversegment, Measure, Scenario, Year and Flooding Chance.
+    per Riversegment, Measure and Flooding Chance.
 
     """
     riversegment = models.ForeignKey(RiverSegment)
-    scenario = models.ForeignKey(Scenario)
-    year = models.ForeignKey(Year)
     flooding_chance = models.ForeignKey(FloodingChance)
-
     reference = models.FloatField()
     target = models.FloatField()
 
     def __unicode__(self):
-        return '%s %s %s Reference: %s' % (
-            self.riversegment, self.scenario,
-            self.year, self.flooding_chance)
+        return '%s Reference: %s' % (
+            self.riversegment, self.flooding_chance)
 
 
 class WaterLevelDifference(models.Model):
     """Water Level Difference
 
-    per Riversegment, Measure, Scenario, Year and Flooding Chance.
+    per Riversegment, Measure and Flooding Chance.
 
     Dutch: *peilverschil*.
 
@@ -122,14 +97,12 @@ class WaterLevelDifference(models.Model):
 
     riversegment = models.ForeignKey(RiverSegment)
     measure = models.ForeignKey(Measure)
-    scenario = models.ForeignKey(Scenario)
-    year = models.ForeignKey(Year)
     flooding_chance = models.ForeignKey(FloodingChance)
     reference_value = models.ForeignKey(ReferenceValue)
 
     level_difference = models.FloatField()
 
     def __unicode__(self):
-        return '%s %s %s %s Reference: %s Delta: %s' % (
-            self.riversegment, self.measure, self.scenario,
-            self.year, self.flooding_chance, self.level_difference)
+        return '%s %s Reference: %s Difference: %s' % (
+            self.riversegment, self.measure, self.flooding_chance,
+            self.level_difference)
