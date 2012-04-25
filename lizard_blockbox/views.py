@@ -153,6 +153,7 @@ def _unselectable_measures(request):
     return unselectable
 
 
+@never_cache
 def toggle_measure(request):
     """Toggle a measure on or off."""
     if not request.POST:
@@ -169,6 +170,7 @@ def toggle_measure(request):
     return HttpResponse(json.dumps(list(selected_measures)))
 
 
+@never_cache
 def list_measures_json(request):
     """Return a list with all known measures for the second graph."""
 

@@ -26,7 +26,7 @@ urlpatterns = patterns(
     url(r'^api/measures/calculated/',
         'lizard_blockbox.views.calculated_measures_json',
         name="calculated_measures_json"),
-    url(r'^api/measures/list/',
+    url(r'^api/measures/list2/',
         'lizard_blockbox.views.list_measures_json',
         name="measure_list_json"),
     url(r'^api/rivers/maas/',
