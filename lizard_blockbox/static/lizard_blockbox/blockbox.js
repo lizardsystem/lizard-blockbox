@@ -186,9 +186,13 @@
       });
     },
     initialize: function() {
+      var runDelayed;
       this.static_url = $('#lizard-blockbox-graph').attr('data-static-url');
-      this.measures();
-      return this.rivers();
+      runDelayed = function() {
+        this.measures();
+        return this.rivers();
+      };
+      return setTimeout(runDelayed, 500);
     },
     render: function() {
       this.render_measure_IVM();
