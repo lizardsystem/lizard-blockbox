@@ -87,10 +87,10 @@ MeasuresMapView = Backbone.View.extend
     measures: ->
         $.getJSON @static_url + 'lizard_blockbox/IVM_deel1.json', (json) =>
             @IVM = JSONTooltip 'IVM deel 1', json
-            @render_measure_IVM()
+            @render_measure_IVM(@IVM)
         $.getJSON @static_url + 'lizard_blockbox/QS.json', (json) =>
             @QS = JSONTooltip 'QS', json
-            @render_measure_QS()
+            @render_measure_QS(@QS)
         $.getJSON @static_url + 'lizard_blockbox/PKB_LT_omtrek.json', (json) =>
             JSONTooltip 'PKB', json
 
@@ -108,23 +108,23 @@ MeasuresMapView = Backbone.View.extend
                 attributes.target_difference = target_difference[attributes.MODELKM]
             maas.redraw()
 
-    render_measure_IVM: ->
+    render_measure_IVM: (IVM = @IVM) ->
         selected_items = @selected_items()
-        for feature in @IVM.features
+        for feature in IVM.features
             if feature.attributes.Code_IVM in selected_items
                 feature.attributes.selected = true
             else
                 feature.attributes.selected = false
-        @IVM.redraw()
+        IVM.redraw()
 
-    render_measure_QS: ->
+    render_measure_QS: (QS = @QS) ->
         selected_items = @selected_items()
-        for feature in @QS.features
+        for feature in QS.features
             if feature.attributes.code_QS in selected_items
                 feature.attributes.selected = true
             else
                 feature.attributes.selected = false
-        @QS.redraw()
+        QS.redraw()
 
     rivers: ->
         #$.getJSON @static_url + 'lizard_blockbox/rijntakken.json', (json) =>
