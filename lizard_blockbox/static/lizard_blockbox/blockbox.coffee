@@ -135,7 +135,8 @@ MeasuresMapView = Backbone.View.extend
 
     initialize: ->
         @static_url = $('#lizard-blockbox-graph').attr 'data-static-url'
-        runDelayed = ->
+        # xxx
+        runDelayed = =>
             @measures()
             @rivers()
         # Delay in the hope that this is long enough for 'map' to exist.

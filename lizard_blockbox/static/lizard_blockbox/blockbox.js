@@ -186,11 +186,12 @@
       });
     },
     initialize: function() {
-      var runDelayed;
+      var runDelayed,
+        _this = this;
       this.static_url = $('#lizard-blockbox-graph').attr('data-static-url');
       runDelayed = function() {
-        this.measures();
-        return this.rivers();
+        _this.measures();
+        return _this.rivers();
       };
       return setTimeout(runDelayed, 500);
     },
