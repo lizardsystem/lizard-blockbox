@@ -1,6 +1,4 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
-#from collections import defaultdict
-
 from django.http import HttpResponse
 from django.db.models import Sum
 from django.utils import simplejson as json
@@ -22,6 +20,7 @@ class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
     template_name = 'lizard_blockbox/blockbox.html'
     edit_link = '/admin/lizard_blockbox/'
+    require_application_icon_with_permission = True
 
     @property
     def content_actions(self):
@@ -41,7 +40,6 @@ class BlockboxView(MapView):
         return actions
 
     def reaches(self):
-
         reaches = models.Reach.objects.values('name').distinct(
             ).order_by('name')
         for reach in reaches:
