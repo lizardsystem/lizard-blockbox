@@ -12,7 +12,7 @@ from lizard_ui.layout import Action
 from lizard_blockbox import models
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
-REFERENCE_TARGET = -0.10
+REFERENCE_TARGET = -0.11
 
 
 class BlockboxView(MapView):
@@ -84,7 +84,7 @@ def reference_json(request):
     references.sort(key=lambda x: x['riversegment__location'])
     response = HttpResponse(mimetype='application/json')
     json.dump([{'reference_value': 0,
-                'target_difference': REFERENCE_TARGET,
+                'target_difference': -REFERENCE_TARGET,
                 'location': i['riversegment__location'],
                 'reference_target': REFERENCE_TARGET,
                 'measures_level': 0}

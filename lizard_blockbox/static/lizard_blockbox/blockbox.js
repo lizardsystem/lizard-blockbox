@@ -274,17 +274,17 @@
   JSONRiverLayer = function(name, json) {
     var geojson_format, rules, styleMap, vector_layer;
     rules = [
-      RiverLayerRule(1.00, 1.50, DARKRED), RiverLayerRule(0.50, 1.00, MIDDLERED), RiverLayerRule(0.10, 0.50, LIGHTRED), RiverLayerRule(-0.10, 0.10, BLUE), RiverLayerRule(-0.50, -0.10, LIGHTGREEN), RiverLayerRule(-0.50, -1.00, MIDDLEGREEN), RiverLayerRule(-1.00, -1.50, DARKGREEN), new OpenLayers.Rule({
+      RiverLayerRule(1.00, 1.50, DARKRED), RiverLayerRule(0.50, 1.00, MIDDLERED), RiverLayerRule(0.10, 0.50, LIGHTRED), RiverLayerRule(-0.10, 0.10, BLUE), RiverLayerRule(-0.50, -0.10, LIGHTGREEN), RiverLayerRule(-1.00, -0.50, MIDDLEGREEN), RiverLayerRule(-1.50, -1.00, DARKGREEN), new OpenLayers.Rule({
         elseFilter: true,
         symbolizer: {
-          fillColor: "black",
-          strokeColor: "black"
+          fillColor: GRAY,
+          strokeColor: GRAY
         }
       })
     ];
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
-      fillColor: 'black',
-      strokeColor: 'back'
+      fillColor: GRAY,
+      strokeColor: GRAY
     }, OpenLayers.Feature.Vector.style["default"]));
     styleMap.styles["default"].addRules(rules);
     geojson_format = new OpenLayers.Format.GeoJSON();
