@@ -32,7 +32,5 @@ urlpatterns = patterns(
     url(r'^api/rivers/maas/',
         'lizard_blockbox.views.maas_river_json',
         name="maas_river_json"),
-    url(r'^lb.html/',
-        direct_to_template, {'template': 'lizard_blockbox/lb.html'}),
     )
 urlpatterns += debugmode_urlpatterns()

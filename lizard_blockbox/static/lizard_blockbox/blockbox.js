@@ -108,13 +108,13 @@
       var _this = this;
       $.getJSON(this.static_url + 'lizard_blockbox/IVM_deel1.json', function(json) {
         _this.IVM = JSONTooltip('IVM deel 1', json);
-        return _this.render_measure_IVM();
+        return _this.render_measure_IVM(_this.IVM);
       });
       $.getJSON(this.static_url + 'lizard_blockbox/QS.json', function(json) {
         _this.QS = JSONTooltip('QS', json);
-        return _this.render_measure_QS();
+        return _this.render_measure_QS(_this.QS);
       });
-      return $.getJSON(this.static_url + 'lizard_blockbox/PKB_LT.json', function(json) {
+      return $.getJSON(this.static_url + 'lizard_blockbox/PKB_LT_omtrek.json', function(json) {
         return JSONTooltip('PKB', json);
       });
     },
@@ -148,10 +148,11 @@
         return maas.redraw();
       });
     },
-    render_measure_IVM: function() {
+    render_measure_IVM: function(IVM) {
       var feature, selected_items, _i, _len, _ref, _ref2;
+      if (IVM == null) IVM = this.IVM;
       selected_items = this.selected_items();
-      _ref = this.IVM.features;
+      _ref = IVM.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         feature = _ref[_i];
         if (_ref2 = feature.attributes.Code_IVM, __indexOf.call(selected_items, _ref2) >= 0) {
@@ -160,12 +161,13 @@
           feature.attributes.selected = false;
         }
       }
-      return this.IVM.redraw();
+      return IVM.redraw();
     },
-    render_measure_QS: function() {
+    render_measure_QS: function(QS) {
       var feature, selected_items, _i, _len, _ref, _ref2;
+      if (QS == null) QS = this.QS;
       selected_items = this.selected_items();
-      _ref = this.QS.features;
+      _ref = QS.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         feature = _ref[_i];
         if (_ref2 = feature.attributes.code_QS, __indexOf.call(selected_items, _ref2) >= 0) {
@@ -174,7 +176,7 @@
           feature.attributes.selected = false;
         }
       }
-      return this.QS.redraw();
+      return QS.redraw();
     },
     rivers: function() {
       var _this = this;
@@ -184,9 +186,14 @@
       });
     },
     initialize: function() {
+      var runDelayed,
+        _this = this;
       this.static_url = $('#lizard-blockbox-graph').attr('data-static-url');
-      this.measures();
-      return this.rivers();
+      runDelayed = function() {
+        _this.measures();
+        return _this.rivers();
+      };
+      return setTimeout(runDelayed, 500);
     },
     render: function() {
       this.render_measure_IVM();
