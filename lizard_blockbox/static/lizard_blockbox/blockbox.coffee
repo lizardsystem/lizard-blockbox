@@ -135,7 +135,7 @@ MeasuresMapView = Backbone.View.extend
 
     initialize: ->
         @static_url = $('#lizard-blockbox-graph').attr 'data-static-url'
-        # xxx
+        # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
         runDelayed = =>
             @measures()
             @rivers()
