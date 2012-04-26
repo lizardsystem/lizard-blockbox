@@ -48,11 +48,10 @@ class BlockboxView(MapView):
         return reaches
 
     def selected_measures(self):
-        measures = models.Measure.objects.all().values(
-            'name', 'short_name', 'measure_type', 'km_from')
         selected_measures = _selected_measures(self.request)
-        return [measure for measure in measures if measure['short_name']
-                in selected_measures]
+        return models.Measure.objects.filter(
+            short_name__in=selected_measures).values(
+            'name', 'short_name', 'measure_type', 'km_from')
 
     # TODO: copy/pasted from selected_measures()
     def measures(self):
@@ -79,8 +78,9 @@ def calculated_measures_json(request):
 
     selected_river = _selected_river(request)
     reach = models.Reach.objects.filter(name=selected_river
-                                        ).order_by('location')
-    riversegments = models.RiverSegment.objects.filter(reach__in=reach)
+                                        )
+    riversegments = models.RiverSegment.objects.filter(
+        reach__in=reach).order_by('location')
 
     selected_measures = _selected_measures(request)
     measures = models.Measure.objects.filter(short_name__in=selected_measures)
@@ -107,7 +107,7 @@ def calculated_measures_json(request):
 
 def _selected_river(request):
     """Return the selected river"""
-    return 'IJssel'
+    return 'Maas'
 
 
 def _selected_measures(request):
