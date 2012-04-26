@@ -150,8 +150,6 @@ MeasuresMapView = Backbone.View.extend
 
 measuresMapView = new MeasuresMapView()
 
-window.mMV = measuresMapView
-
 #######################################################
 # OpenLayers GeoJSON graph                            #
 #######################################################

@@ -204,8 +204,6 @@
 
   measuresMapView = new MeasuresMapView();
 
-  window.mMV = measuresMapView;
-
   onPopupClose = function(evt) {
     return selectControl.unselect(selectedFeature);
   };
