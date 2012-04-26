@@ -37,6 +37,15 @@ class BlockboxView(MapView):
         actions.insert(0, switch_map_and_table)
         return actions
 
+    def reaches(self):
+
+        reaches = models.Reach.objects.values('name').distinct(
+            ).order_by('name')
+        for reach in reaches:
+            if reach['name'] == 'Maas':
+                reach['selected'] = True
+        return reaches
+
     def selected_measures(self):
         measures = models.Measure.objects.all().values(
             'name', 'short_name', 'measure_type', 'km_from')

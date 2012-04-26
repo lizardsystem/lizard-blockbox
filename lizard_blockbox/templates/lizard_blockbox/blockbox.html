@@ -56,12 +56,10 @@
               class="chzn-select"
               tabindex="2"
               style="width:250px;">
-        <option SELECTED>Maas</option>
-        <option>Waal (tot Vuren)</option>
-        <option>IJsseldelta</option>
-        <option>IJssel (tot Hattem)</option>
-        <option>Boven Rijn</option>
-        <option>Pannerdensch Kanaal</option>
+		{% for reach in view.reaches %}
+          <option {% if reach.selected %}SELECTED{% endif %}
+				  >{{ reach.name }}</option>
+		{% endfor %}
       </select>
     </form>
 

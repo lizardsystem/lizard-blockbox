@@ -26,8 +26,10 @@ class Command(BaseCommand):
                 measure = models.Measure.objects.get(
                     short_name=properties[short_name_key])
             except models.Measure.DoesNotExist:
-                print properties[short_name_key]
+                #print 'Measure not found: %s' % properties[short_name_key]
+                continue
             else:
+                #print 'Found: %s' % properties[short_name_key]
                 measure.name = properties['titel']
                 measure.measure_type = properties['type']
                 measure.traject = properties['traject']

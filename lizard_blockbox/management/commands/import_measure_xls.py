@@ -41,6 +41,7 @@ class Command(BaseCommand):
         map(self.parse, args)
 
     def parse(self, excel):
+        #print 'Workbook: %s' % excel
         wb = xlrd.open_workbook(excel)
         map(self.parse_sheet, wb.sheets())
 
