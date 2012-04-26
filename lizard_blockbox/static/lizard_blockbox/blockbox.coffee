@@ -92,21 +92,22 @@ MeasuresMapView = Backbone.View.extend
             @QS = JSONTooltip 'QS', json
             @render_measure_QS(@QS)
         $.getJSON @static_url + 'lizard_blockbox/PKB_LT.json', (json) =>
-            JSONTooltip 'PKB', json
+            @PKB = JSONTooltip 'PKB', json
+            @render_measure_PKB(@PKB)
 
     selected_items: ->
         ($(el).attr "data-measure-shortname" for el in $("#selected-measures-list li a"))
 
-    render_maas: (maas = @Maas) ->
+    render_rivers: (rivers = @Rivers) ->
         json_url = $('#blockbox-table').attr('data-calculated-measures-url')
         $.getJSON json_url, (data) ->
             target_difference = {}
             for num in data
-                target_difference[num.location] = num.target_difference
-            for feature in maas.features
+                target_difference[num.location_reach] = num.target_difference
+            for feature in rivers.features
                 attributes = feature.attributes
                 attributes.target_difference = target_difference[attributes.MODELKM]
-            maas.redraw()
+            rivers.redraw()
 
     render_measure_IVM: (IVM = @IVM) ->
         selected_items = @selected_items()
@@ -126,12 +127,19 @@ MeasuresMapView = Backbone.View.extend
                 feature.attributes.selected = false
         QS.redraw()
 
+    render_measure_PKB: (PKB = @PKB) ->
+        selected_items = @selected_items()
+        for feature in PKB.features
+            if feature.attributes.code in selected_items
+                feature.attributes.selected = true
+            else
+                feature.attributes.selected = false
+        PKB.redraw()
+
     rivers: ->
-        #$.getJSON @static_url + 'lizard_blockbox/rijntakken.json', (json) =>
-        #    JSONLayer 'Rijntak', json
-        $.getJSON "/blokkendoos/api/rivers/maas/", (json) =>
-            @Maas = JSONRiverLayer 'Maas', json
-            @render_maas(@Maas)
+        $.getJSON "/blokkendoos/api/rivers/", (json) =>
+            @Rivers = JSONRiverLayer 'Rivers', json
+            @render_rivers(@Rivers)
 
     initialize: ->
         @static_url = $('#lizard-blockbox-graph').attr 'data-static-url'
@@ -145,7 +153,8 @@ MeasuresMapView = Backbone.View.extend
     render: ->
         @render_measure_IVM()
         @render_measure_QS()
-        @render_maas()
+        @render_measure_PKB()
+        @render_rivers()
 
 
 measuresMapView = new MeasuresMapView()

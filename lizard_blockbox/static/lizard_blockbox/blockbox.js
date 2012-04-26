@@ -115,7 +115,8 @@
         return _this.render_measure_QS(_this.QS);
       });
       return $.getJSON(this.static_url + 'lizard_blockbox/PKB_LT.json', function(json) {
-        return JSONTooltip('PKB', json);
+        _this.PKB = JSONTooltip('PKB', json);
+        return _this.render_measure_PKB(_this.PKB);
       });
     },
     selected_items: function() {
@@ -128,24 +129,24 @@
       }
       return _results;
     },
-    render_maas: function(maas) {
+    render_rivers: function(rivers) {
       var json_url;
-      if (maas == null) maas = this.Maas;
+      if (rivers == null) rivers = this.Rivers;
       json_url = $('#blockbox-table').attr('data-calculated-measures-url');
       return $.getJSON(json_url, function(data) {
         var attributes, feature, num, target_difference, _i, _j, _len, _len2, _ref;
         target_difference = {};
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           num = data[_i];
-          target_difference[num.location] = num.target_difference;
+          target_difference[num.location_reach] = num.target_difference;
         }
-        _ref = maas.features;
+        _ref = rivers.features;
         for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
           feature = _ref[_j];
           attributes = feature.attributes;
           attributes.target_difference = target_difference[attributes.MODELKM];
         }
-        return maas.redraw();
+        return rivers.redraw();
       });
     },
     render_measure_IVM: function(IVM) {
@@ -178,11 +179,26 @@
       }
       return QS.redraw();
     },
+    render_measure_PKB: function(PKB) {
+      var feature, selected_items, _i, _len, _ref, _ref2;
+      if (PKB == null) PKB = this.PKB;
+      selected_items = this.selected_items();
+      _ref = PKB.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        feature = _ref[_i];
+        if (_ref2 = feature.attributes.code, __indexOf.call(selected_items, _ref2) >= 0) {
+          feature.attributes.selected = true;
+        } else {
+          feature.attributes.selected = false;
+        }
+      }
+      return PKB.redraw();
+    },
     rivers: function() {
       var _this = this;
-      return $.getJSON("/blokkendoos/api/rivers/maas/", function(json) {
-        _this.Maas = JSONRiverLayer('Maas', json);
-        return _this.render_maas(_this.Maas);
+      return $.getJSON("/blokkendoos/api/rivers/", function(json) {
+        _this.Rivers = JSONRiverLayer('Rivers', json);
+        return _this.render_rivers(_this.Rivers);
       });
     },
     initialize: function() {
@@ -198,7 +214,8 @@
     render: function() {
       this.render_measure_IVM();
       this.render_measure_QS();
-      return this.render_maas();
+      this.render_measure_PKB();
+      return this.render_rivers();
     }
   });
 

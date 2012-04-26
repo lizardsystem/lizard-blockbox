@@ -2,9 +2,12 @@
 #from collections import defaultdict
 
 from django.http import HttpResponse
+from django.db.models import Sum
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
+
+
 from lizard_map.coordinates import transform_point
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
@@ -71,74 +74,47 @@ class BlockboxView(MapView):
 
 
 @never_cache
-def reference_json(request):
-    """Fetch the reference and target values for all rivers and JSON them.
-    """
-
-    #XXX: Refactor with function calculated_measures_json.
-    flooding_chance = models.FloodingChance.objects.filter(name="T250")
-    references = models.ReferenceValue.objects.filter(
-        flooding_chance=flooding_chance).values(
-        'riversegment__location', 'reference', 'target')
-    references = list(references)
-    references.sort(key=lambda x: x['riversegment__location'])
-    response = HttpResponse(mimetype='application/json')
-    json.dump([{'reference_value': 0,
-                'target_difference': -REFERENCE_TARGET,
-                'location': i['riversegment__location'],
-                'reference_target': REFERENCE_TARGET,
-                'measures_level': 0}
-               for i in references],
-              response)
-    return response
-
-
-@never_cache
 def calculated_measures_json(request):
-    """Fetch measure data and JSON it for a preliminary frontpage graph.
-    """
-    #XXX Refactor when needed.
+    """Calculate the result of the measures."""
+
+    flooding_chance = models.FloodingChance.objects.get(name="T1250")
+
+    selected_river = _selected_river(request)
+    reach = models.Reach.objects.filter(name=selected_river
+                                        ).order_by('location')
+    riversegments = models.RiverSegment.objects.filter(reach__in=reach)
+
     selected_measures = _selected_measures(request)
-    if not selected_measures:
-        return reference_json(request)
     measures = models.Measure.objects.filter(short_name__in=selected_measures)
 
-    flooding_chance = models.FloodingChance.objects.filter(name="T250")
-
-    water_level_diferences = models.WaterLevelDifference.objects.filter(
-        measure__in=measures, flooding_chance=flooding_chance).values(
-        'riversegment__location', 'level_difference',
-        'reference_value__reference', 'reference_value__target')
-
-    water_levels = {}
-    for diff in water_level_diferences:
-        #XXX: Refactor to use Default dict
-        location = diff['riversegment__location']
-        d = water_levels.get(location)
-        if d is None:
-            d = {'reference_value': 0,
-                 # -0.10 chosen to have some target..
-                 'reference_target': REFERENCE_TARGET,
-                 'measures_level': diff['level_difference']}
-        else:
-            d['measures_level'] += diff['level_difference']
-        water_levels[location] = d
+    water_levels = []
+    for segment in riversegments:
+        measures_level = segment.waterleveldifference_set.filter(
+            measure__in=measures, flooding_chance=flooding_chance
+            ).aggregate(ld=Sum('level_difference'))['ld'] or 0
+        d = {'measures_level': measures_level,
+             'reference_target': REFERENCE_TARGET,
+             'reference_value': 0,
+             'target_difference': measures_level - REFERENCE_TARGET,
+             'location': segment.location,
+             'location_reach': '%i_%s' % (segment.location,
+                                          segment.reach.slug)
+             }
+        water_levels.append(d)
 
     response = HttpResponse(mimetype='application/json')
-
-    for key, value in water_levels.iteritems():
-        value['location'] = key
-        value['target_difference'] = (value['measures_level'] -
-                                      value['reference_target'])
-
-    # Put it in a list because can't figure out how to
-    # parse it correctly in coffeescript
-    json.dump(list(water_levels.itervalues()), response)
+    json.dump(water_levels, response)
     return response
+
+
+def _selected_river(request):
+    """Return the selected river"""
+    return 'IJssel'
 
 
 def _selected_measures(request):
     """Return selected measures."""
+
     if not SELECTED_MEASURES_KEY in request.session:
         request.session[SELECTED_MEASURES_KEY] = set([])
     return request.session[SELECTED_MEASURES_KEY]
@@ -158,7 +134,6 @@ def _unselectable_measures(request):
         index = measures_shortnames.index(shortname) + 2
         if index < len(measures_shortnames):
             unselectable.append(measures_shortnames[index])
-    print unselectable
     return unselectable
 
 
@@ -172,8 +147,7 @@ def toggle_measure(request):
     unselectable_measures = _unselectable_measures(request)
     if measure_id in selected_measures:
         selected_measures.remove(measure_id)
-    else:
-        if not measure_id in unselectable_measures:
+    elif not measure_id in unselectable_measures:
             selected_measures.add(measure_id)
     request.session[SELECTED_MEASURES_KEY] = selected_measures
     return HttpResponse(json.dumps(list(selected_measures)))
@@ -192,19 +166,21 @@ def list_measures_json(request):
     unselectable_measures = _unselectable_measures(request)
     for measure in measures:
         measure['selected'] = measure['short_name'] in selected_measures
-        measure['selectable'] = measure['short_name'] not in unselectable_measures
+        measure['selectable'] = (
+            measure['short_name'] not in unselectable_measures)
         measure['type_index'] = all_types.index(measure['measure_type'])
     response = HttpResponse(mimetype='application/json')
     json.dump(list(measures), response)
     return response
 
 
-def maas_river_json(request):
+def river_json(request):
     """Return the maas kilometers shape in GeoJSON."""
 
     features_geometry = [
         {'type': "Feature",
-         'properties': {'MODELKM': segment.location},
+         'properties': {'MODELKM': '%i_%s' % (segment.location,
+                                              segment.reach.slug)},
          'geometry': json.loads(transform_point(segment.the_geom.x,
                                      segment.the_geom.y,
                                      from_proj='wgs84',
