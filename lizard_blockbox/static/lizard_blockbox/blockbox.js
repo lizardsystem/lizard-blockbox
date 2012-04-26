@@ -114,7 +114,7 @@
         _this.QS = JSONTooltip('QS', json);
         return _this.render_measure_QS();
       });
-      return $.getJSON(this.static_url + 'lizard_blockbox/PKB_LT_omtrek.json', function(json) {
+      return $.getJSON(this.static_url + 'lizard_blockbox/PKB_LT.json', function(json) {
         return JSONTooltip('PKB', json);
       });
     },
@@ -196,8 +196,6 @@
   });
 
   measuresMapView = new MeasuresMapView();
-
-  window.mMV = measuresMapView;
 
   onPopupClose = function(evt) {
     return selectControl.unselect(selectedFeature);

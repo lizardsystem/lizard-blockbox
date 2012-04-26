@@ -91,7 +91,7 @@ MeasuresMapView = Backbone.View.extend
         $.getJSON @static_url + 'lizard_blockbox/QS.json', (json) =>
             @QS = JSONTooltip 'QS', json
             @render_measure_QS()
-        $.getJSON @static_url + 'lizard_blockbox/PKB_LT_omtrek.json', (json) =>
+        $.getJSON @static_url + 'lizard_blockbox/PKB_LT.json', (json) =>
             JSONTooltip 'PKB', json
 
     selected_items: ->
@@ -145,8 +145,6 @@ MeasuresMapView = Backbone.View.extend
 
 
 measuresMapView = new MeasuresMapView()
-
-window.mMV = measuresMapView
 
 #######################################################
 # OpenLayers GeoJSON graph                            #
