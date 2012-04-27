@@ -1,11 +1,12 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
-from django.http import HttpResponse
+import logging
+
+from django.core.cache import cache
 from django.db.models import Sum
+from django.http import HttpResponse
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
-
-
 from lizard_map.coordinates import transform_point
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
@@ -14,6 +15,8 @@ from lizard_blockbox import models
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
 REFERENCE_TARGET = -0.11
+
+logger = logging.getLogger(__name__)
 
 
 class BlockboxView(MapView):
@@ -44,6 +47,7 @@ class BlockboxView(MapView):
             ).order_by('name')
         for reach in reaches:
             if reach['name'] == 'Maas':
+                # TODO
                 reach['selected'] = True
         return reaches
 
@@ -70,35 +74,45 @@ class BlockboxView(MapView):
         return measures
 
 
+def _water_levels(flooding_chance, selected_river, selected_measures):
+    cache_key = (str(flooding_chance) + str(selected_river) +
+                 ''.join(selected_measures))
+    water_levels = cache.get(cache_key)
+    if not water_levels:
+        logger.info("Cache miss for _water_levels")
+        reach = models.Reach.objects.filter(name=selected_river)
+        riversegments = models.RiverSegment.objects.filter(
+            reach__in=reach).order_by('location')
+
+        measures = models.Measure.objects.filter(short_name__in=selected_measures)
+
+        water_levels = []
+        for segment in riversegments:
+            measures_level = segment.waterleveldifference_set.filter(
+                measure__in=measures, flooding_chance=flooding_chance
+                ).aggregate(ld=Sum('level_difference'))['ld'] or 0
+            d = {'measures_level': measures_level,
+                 'reference_target': REFERENCE_TARGET,
+                 'reference_value': 0,
+                 'target_difference': measures_level - REFERENCE_TARGET,
+                 'location': segment.location,
+                 'location_reach': '%i_%s' % (segment.location,
+                                              segment.reach.slug)
+                 }
+            water_levels.append(d)
+        cache.set(cache_key, water_levels, 5 * 60)
+    return water_levels
+
+
 @never_cache
 def calculated_measures_json(request):
     """Calculate the result of the measures."""
-
     flooding_chance = models.FloodingChance.objects.get(name="T1250")
-
     selected_river = _selected_river(request)
-    reach = models.Reach.objects.filter(name=selected_river
-                                        )
-    riversegments = models.RiverSegment.objects.filter(
-        reach__in=reach).order_by('location')
-
     selected_measures = _selected_measures(request)
-    measures = models.Measure.objects.filter(short_name__in=selected_measures)
-
-    water_levels = []
-    for segment in riversegments:
-        measures_level = segment.waterleveldifference_set.filter(
-            measure__in=measures, flooding_chance=flooding_chance
-            ).aggregate(ld=Sum('level_difference'))['ld'] or 0
-        d = {'measures_level': measures_level,
-             'reference_target': REFERENCE_TARGET,
-             'reference_value': 0,
-             'target_difference': measures_level - REFERENCE_TARGET,
-             'location': segment.location,
-             'location_reach': '%i_%s' % (segment.location,
-                                          segment.reach.slug)
-             }
-        water_levels.append(d)
+    water_levels = _water_levels(flooding_chance,
+                                 selected_river,
+                                 selected_measures)
 
     response = HttpResponse(mimetype='application/json')
     json.dump(water_levels, response)
