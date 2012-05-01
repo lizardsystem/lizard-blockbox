@@ -467,7 +467,7 @@ setPlaceholderControl = (control_data) ->
         data: selected_measures
         points:
             show: true
-            symbol: "square"
+            symbol: "diamond"
             radius: 4
         lines:
             show: false
@@ -477,8 +477,8 @@ setPlaceholderControl = (control_data) ->
         data: non_selectable_measures
         points:
             show: true
-            symbol: "square"
-            radius: 2
+            symbol: "cross"
+            radius: 4
         lines:
             show: false
         color: GRAY
