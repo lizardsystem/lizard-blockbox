@@ -112,7 +112,7 @@
     <table id="measures-table-top"
 	   class="table table-striped table-bordered">
       <thead>
-        <tr><th>Naam</th><th>Type</th><th>Start km</th></tr>
+        <tr><th>Naam</th><th>Type</th><th>Start km</th><th>PDF</th></tr>
       </thead>
       <tbody id="measures-table">
         {% for measure in view.measures %}
@@ -130,6 +130,14 @@
             <td>
                 {{ measure.km_from }}
             </td>
+			<td>
+			  {% if measure.pdf %}
+			    <a href="{% url measure_factsheet measure=measure.short_name %}">
+				  ICOON</a>
+			  {% else %}
+				NOTHING
+			  {% endif %}
+			</td>
           </tr>
         {% endfor %}
       </tbody>

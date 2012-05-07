@@ -1,7 +1,10 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 import logging
+import os
 
+from django.conf import settings
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.utils import simplejson as json
@@ -62,16 +65,26 @@ class BlockboxView(MapView):
         measures = models.Measure.objects.all().values(
             'name', 'short_name', 'measure_type', 'km_from')
         selected_measures = _selected_measures(self.request)
+        available_factsheets = self._available_factsheets()
         for measure in measures:
-            selected = measure['short_name'] in selected_measures
-            measure['selected'] = selected
+            measure['selected'] = measure['short_name'] in selected_measures
             if not measure['name']:
                 measure['name'] = measure['short_name']
             if not measure['measure_type']:
                 measure['measure_type'] = 'Onbekend'
             if not measure['km_from']:
                 measure['km_from'] = 'Onbekend'
+            measure['pdf'] = measure['short_name'] in available_factsheets
         return measures
+
+    def _available_factsheets(self):
+        """Return a list of the available factsheets."""
+        return [i.rstrip('.pdf') for i in os.listdir(settings.FACTSHEETS_DIR)
+                if i.endswith('pdf')]
+
+
+def fetch_factsheet(request, short_name):
+    pass
 
 
 def _water_levels(flooding_chance, selected_river, selected_measures):
@@ -84,7 +97,8 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
         riversegments = models.RiverSegment.objects.filter(
             reach__in=reach).order_by('location')
 
-        measures = models.Measure.objects.filter(short_name__in=selected_measures)
+        measures = models.Measure.objects.filter(
+            short_name__in=selected_measures)
 
         water_levels = []
         for segment in riversegments:
