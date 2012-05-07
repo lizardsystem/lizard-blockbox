@@ -51,9 +51,19 @@ toggleMeasure = (measure_id) ->
             $holder = $('<div/>')
             $holder.load '. #page', () ->
                 $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
-                measuresMapView.render()
+            measuresMapView.render()
             @
 
+selectRiver = (river_name) ->
+    $.ajax
+        type: 'POST'
+        url: $('#blockbox-river').data 'select-river-url'
+        data:
+            'river_name': river_name
+        success: (data) ->
+            setFlotSeries()
+            measuresMapView.render()
+            @
 
 class BlockboxRouter extends Backbone.Router
     routes:
@@ -546,9 +556,10 @@ $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
     toggleMeasure $(@).attr('data-measure-id')
 
-
 $(document).ready ->
     setFlotSeries()
-    $(".chzn-select").chosen()
+    $("#blockbox-river .chzn-select").chosen().change(
+        () -> selectRiver @value )
+
     $('#measures-table-top').tablesorter()
     @

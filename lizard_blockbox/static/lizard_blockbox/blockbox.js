@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, selectRiver, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -52,9 +52,24 @@
         setFlotSeries();
         $holder = $('<div/>');
         $holder.load('. #page', function() {
-          $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
-          return measuresMapView.render();
+          return $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
         });
+        measuresMapView.render();
+        return this;
+      }
+    });
+  };
+
+  selectRiver = function(river_name) {
+    return $.ajax({
+      type: 'POST',
+      url: $('#blockbox-river').data('select-river-url'),
+      data: {
+        'river_name': river_name
+      },
+      success: function(data) {
+        setFlotSeries();
+        measuresMapView.render();
         return this;
       }
     });
@@ -653,7 +668,9 @@
 
   $(document).ready(function() {
     setFlotSeries();
-    $(".chzn-select").chosen();
+    $("#blockbox-river .chzn-select").chosen().change(function() {
+      return selectRiver(this.value);
+    });
     $('#measures-table-top').tablesorter();
     return this;
   });

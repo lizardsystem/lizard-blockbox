@@ -12,6 +12,7 @@ from django.views.decorators.cache import never_cache
 from lizard_map.coordinates import transform_point
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
+from lizard_ui.models import ApplicationIcon
 
 from lizard_blockbox import models
 
@@ -80,9 +81,15 @@ class BlockboxView(MapView):
 def fetch_factsheet(request, measure):
     """Return download header for nginx to serve pdf file."""
 
-    # ToDo: Check if viewing is allowed
-    if not measure in _available_factsheets():
+    # ToDo: Better security model based on views...
+    if not ApplicationIcon.objects.filter(url__startswith='/blokkendoos'):
+        # ToDo: Change to 403 with templates
         raise Http404
+
+    if not measure in _available_factsheets():
+        # There is no factsheet for this measure
+        raise Http404
+
     response = HttpResponse()
     # ToDo: Configure nginx
     response['X-Accel-Redirect'] = '/protected/%s.pdf' % measure
@@ -91,8 +98,16 @@ def fetch_factsheet(request, measure):
 
 def _available_factsheets():
     """Return a list of the available factsheets."""
-    return [i.rstrip('.pdf') for i in os.listdir(settings.FACTSHEETS_DIR)
-            if i.endswith('pdf')]
+
+    cache_key = 'available_factsheets'
+    factsheets = cache.get(cache_key)
+    if factsheets:
+        return factsheets
+
+    factsheets = [i.rstrip('.pdf') for i in os.listdir(settings.FACTSHEETS_DIR)
+                  if i.endswith('pdf')]
+    cache.set(cache_key, factsheets, 60 * 60 * 12)
+    return factsheets
 
 
 def _water_levels(flooding_chance, selected_river, selected_measures):
@@ -143,7 +158,10 @@ def calculated_measures_json(request):
 
 def _selected_river(request):
     """Return the selected river"""
-    return 'Maas'
+
+    if not 'river' in request.session:
+        request.session['river'] = 'Maas'
+    return request.session['river']
 
 
 def _selected_measures(request):
@@ -185,6 +203,14 @@ def toggle_measure(request):
             selected_measures.add(measure_id)
     request.session[SELECTED_MEASURES_KEY] = selected_measures
     return HttpResponse(json.dumps(list(selected_measures)))
+
+
+def select_river(request):
+    """Select a river."""
+    if not request.POST:
+        return
+    request.session['river'] = request.POST['river_name']
+    return HttpResponse()
 
 
 @never_cache
