@@ -4,9 +4,8 @@ import os
 
 from django.conf import settings
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
@@ -65,7 +64,7 @@ class BlockboxView(MapView):
         measures = models.Measure.objects.all().values(
             'name', 'short_name', 'measure_type', 'km_from')
         selected_measures = _selected_measures(self.request)
-        available_factsheets = self._available_factsheets()
+        available_factsheets = _available_factsheets()
         for measure in measures:
             measure['selected'] = measure['short_name'] in selected_measures
             if not measure['name']:
@@ -77,14 +76,23 @@ class BlockboxView(MapView):
             measure['pdf'] = measure['short_name'] in available_factsheets
         return measures
 
-    def _available_factsheets(self):
-        """Return a list of the available factsheets."""
-        return [i.rstrip('.pdf') for i in os.listdir(settings.FACTSHEETS_DIR)
-                if i.endswith('pdf')]
+
+def fetch_factsheet(request, measure):
+    """Return download header for nginx to serve pdf file."""
+
+    # ToDo: Check if viewing is allowed
+    if not measure in _available_factsheets():
+        raise Http404
+    response = HttpResponse()
+    # ToDo: Configure nginx
+    response['X-Accel-Redirect'] = '/protected/%s.pdf' % measure
+    return response
 
 
-def fetch_factsheet(request, short_name):
-    pass
+def _available_factsheets():
+    """Return a list of the available factsheets."""
+    return [i.rstrip('.pdf') for i in os.listdir(settings.FACTSHEETS_DIR)
+            if i.endswith('pdf')]
 
 
 def _water_levels(flooding_chance, selected_river, selected_measures):
