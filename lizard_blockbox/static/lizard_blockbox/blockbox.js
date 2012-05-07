@@ -564,7 +564,7 @@
         data: selected_measures,
         points: {
           show: true,
-          symbol: "square",
+          symbol: "diamond",
           radius: 4
         },
         lines: {
@@ -576,8 +576,8 @@
         data: non_selectable_measures,
         points: {
           show: true,
-          symbol: "square",
-          radius: 2
+          symbol: "cross",
+          radius: 4
         },
         lines: {
           show: false
