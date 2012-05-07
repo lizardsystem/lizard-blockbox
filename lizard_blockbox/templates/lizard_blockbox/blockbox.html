@@ -48,20 +48,18 @@
 
 {% block sidebar %}
     <h2>Rivierselectie</h2>
-    <p class="muted">
-      Opmerking: op het moment werkt alleen de Maas.
-    </p>
+	<span>Selecteer een rivier:</span>
     <form id="blockbox-river"
 		  data-select-river-url="{% url lizard_blockbox_select_river %}">
-      <select data-placeholder="Kies een rivier"
-              class="chzn-select"
-              tabindex="2"
-              style="width:250px;">
+	  <select data-placeholder="Kies een rivier"
+			  class="chzn-select"
+			  tabindex="2"
+			  style="width:250px;">
 		{% for reach in view.reaches %}
-          <option {% if reach.selected %}SELECTED{% endif %}
-		  >{{ reach.name }}</option>
+        <option {% if reach.selected %}SELECTED{% endif %}
+				>{{ reach.name }}</option>
 		{% endfor %}
-      </select>
+	  </select>
     </form>
 
     <h3>Geselecteerde maatregelen</h3>
