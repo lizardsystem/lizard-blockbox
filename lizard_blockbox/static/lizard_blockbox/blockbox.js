@@ -396,7 +396,7 @@
   };
 
   setPlaceholderTop = function(json_data) {
-    var ed_data, measures, num, options, pl_lines, reference, target;
+    var ed_data, measures, num, options, pl_lines, reference, selected_river, target;
     reference = (function() {
       var _i, _len, _results;
       _results = [];
@@ -424,6 +424,7 @@
       }
       return _results;
     })();
+    selected_river = $("#blockbox-river .chzn-select")[0].value;
     ed_data = [
       {
         data: reference,
@@ -462,6 +463,20 @@
       xaxis: {
         min: window.min_graph_value,
         max: window.max_graph_value,
+        transform: function(v) {
+          if (selected_river === 'Maas') {
+            return -v;
+          } else {
+            return v;
+          }
+        },
+        inverseTransform: function(v) {
+          if (selected_river === 'Maas') {
+            return -v;
+          } else {
+            return v;
+          }
+        },
         position: "top"
       },
       yaxis: {
@@ -494,7 +509,7 @@
   };
 
   setPlaceholderControl = function(control_data) {
-    var d4, d5, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, selected_measures;
+    var d4, d5, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, selected_measures, selected_river;
     measures = (function() {
       var _i, _len, _results;
       _results = [];
@@ -528,6 +543,7 @@
       }
       return _results;
     })();
+    selected_river = $("#blockbox-river .chzn-select")[0].value;
     d4 = void 0;
     d5 = void 0;
     pl_lines = void 0;
@@ -535,6 +551,20 @@
       xaxis: {
         min: window.min_graph_value,
         max: window.max_graph_value,
+        transform: function(v) {
+          if (selected_river === 'Maas') {
+            return -v;
+          } else {
+            return v;
+          }
+        },
+        inverseTransform: function(v) {
+          if (selected_river === 'Maas') {
+            return -v;
+          } else {
+            return v;
+          }
+        },
         reserveSpace: true,
         position: "bottom"
       },
