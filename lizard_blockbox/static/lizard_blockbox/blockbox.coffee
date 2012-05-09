@@ -41,7 +41,7 @@ hasTooltip = ''
 toggleMeasure = (measure_id) ->
     $.ajax
         type: 'POST'
-        url: $('#blockbox-table').attr('data-measure-toggle-url')
+        url: $('#blockbox-table').data('measure-toggle-url')
         data:
             'measure_id': measure_id
         # async: false
@@ -61,14 +61,14 @@ class BlockboxRouter extends Backbone.Router
         "table":    "table"
 
     map: ->
-        to_table_text = $('.toggle_map_and_table').parent().attr('data-to-table-text')
+        to_table_text = $('.toggle_map_and_table').parent().data('to-table-text')
         $('a.toggle_map_and_table span').text(to_table_text)
         $('a.toggle_map_and_table').attr("href", "#table")
         $('#blockbox-table').slideUp ANIMATION_DURATION, () ->
             $('#map').slideDown(ANIMATION_DURATION)
 
     table: ->
-        to_map_text = $('.toggle_map_and_table').parent().attr('data-to-map-text')
+        to_map_text = $('.toggle_map_and_table').parent().data('to-map-text')
         $('a.toggle_map_and_table span').text(to_map_text)
         $('a.toggle_map_and_table').attr("href", "#map")
         $('#map').slideUp ANIMATION_DURATION, () ->
@@ -96,10 +96,10 @@ MeasuresMapView = Backbone.View.extend
             @render_measure_PKB(@PKB)
 
     selected_items: ->
-        ($(el).attr "data-measure-shortname" for el in $("#selected-measures-list li a"))
+        ($(el).data "measure-shortname" for el in $("#selected-measures-list li a"))
 
     render_rivers: (rivers = @Rivers) ->
-        json_url = $('#blockbox-table').attr('data-calculated-measures-url')
+        json_url = $('#blockbox-table').data('calculated-measures-url')
         $.getJSON json_url, (data) ->
             target_difference = {}
             for num in data
@@ -142,7 +142,7 @@ MeasuresMapView = Backbone.View.extend
             @render_rivers(@Rivers)
 
     initialize: ->
-        @static_url = $('#lizard-blockbox-graph').attr 'data-static-url'
+        @static_url = $('#lizard-blockbox-graph').data 'static-url'
         # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
         runDelayed = =>
             @measures()
@@ -319,7 +319,7 @@ showTooltip = (x, y, name, type_name) ->
 
 
 setFlotSeries = () ->
-    json_url = $('#blockbox-table').attr('data-calculated-measures-url')
+    json_url = $('#blockbox-table').data('calculated-measures-url')
     $.getJSON json_url, (data) ->
         window.min_graph_value = data[0].location
         window.max_graph_value = data[data.length-1].location
@@ -329,7 +329,7 @@ setFlotSeries = () ->
 
 
 setMeasureSeries = () ->
-    json_url = $('#blockbox-table').attr('data-measure-list-url')
+    json_url = $('#blockbox-table').data('measure-list-url')
     $.getJSON json_url, (data) ->
         setPlaceholderControl data
 
@@ -544,7 +544,7 @@ $(window).resize ->
 
 $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
-    toggleMeasure $(@).attr('data-measure-id')
+    toggleMeasure $(@).data('measure-id')
 
 
 $(document).ready ->
