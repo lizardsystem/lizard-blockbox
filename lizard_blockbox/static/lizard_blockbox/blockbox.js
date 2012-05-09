@@ -43,7 +43,7 @@
   toggleMeasure = function(measure_id) {
     return $.ajax({
       type: 'POST',
-      url: $('#blockbox-table').attr('data-measure-toggle-url'),
+      url: $('#blockbox-table').data('measure-toggle-url'),
       data: {
         'measure_id': measure_id
       },
@@ -90,7 +90,7 @@
 
     BlockboxRouter.prototype.map = function() {
       var to_table_text;
-      to_table_text = $('.toggle_map_and_table').parent().attr('data-to-table-text');
+      to_table_text = $('.toggle_map_and_table').parent().data('to-table-text');
       $('a.toggle_map_and_table span').text(to_table_text);
       $('a.toggle_map_and_table').attr("href", "#table");
       return $('#blockbox-table').slideUp(ANIMATION_DURATION, function() {
@@ -100,7 +100,7 @@
 
     BlockboxRouter.prototype.table = function() {
       var to_map_text;
-      to_map_text = $('.toggle_map_and_table').parent().attr('data-to-map-text');
+      to_map_text = $('.toggle_map_and_table').parent().data('to-map-text');
       $('a.toggle_map_and_table span').text(to_map_text);
       $('a.toggle_map_and_table').attr("href", "#map");
       return $('#map').slideUp(ANIMATION_DURATION, function() {
@@ -140,14 +140,14 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];
-        _results.push($(el).attr("data-measure-shortname"));
+        _results.push($(el).data("measure-shortname"));
       }
       return _results;
     },
     render_rivers: function(rivers) {
       var json_url;
       if (rivers == null) rivers = this.Rivers;
-      json_url = $('#blockbox-table').attr('data-calculated-measures-url');
+      json_url = $('#blockbox-table').data('calculated-measures-url');
       return $.getJSON(json_url, function(data) {
         var attributes, feature, num, target_difference, _i, _j, _len, _len2, _ref;
         target_difference = {};
@@ -219,7 +219,7 @@
     initialize: function() {
       var runDelayed,
         _this = this;
-      this.static_url = $('#lizard-blockbox-graph').attr('data-static-url');
+      this.static_url = $('#lizard-blockbox-graph').data('static-url');
       runDelayed = function() {
         _this.measures();
         return _this.rivers();
@@ -378,7 +378,7 @@
 
   setFlotSeries = function() {
     var json_url;
-    json_url = $('#blockbox-table').attr('data-calculated-measures-url');
+    json_url = $('#blockbox-table').data('calculated-measures-url');
     return $.getJSON(json_url, function(data) {
       window.min_graph_value = data[0].location;
       window.max_graph_value = data[data.length - 1].location;
@@ -389,7 +389,7 @@
 
   setMeasureSeries = function() {
     var json_url;
-    json_url = $('#blockbox-table').attr('data-measure-list-url');
+    json_url = $('#blockbox-table').data('measure-list-url');
     return $.getJSON(json_url, function(data) {
       return setPlaceholderControl(data);
     });
@@ -581,7 +581,7 @@
         borderWidth: 1
       },
       legend: {
-        show: true,
+        show: false,
         noColumns: 4,
         container: $("#placeholder_control_legend"),
         labelFormatter: function(label, series) {
@@ -693,7 +693,7 @@
 
   $(".blockbox-toggle-measure").live('click', function(e) {
     e.preventDefault();
-    return toggleMeasure($(this).attr('data-measure-id'));
+    return toggleMeasure($(this).data('measure-id'));
   });
 
   $(document).ready(function() {
