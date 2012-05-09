@@ -464,7 +464,7 @@ setPlaceholderControl = (control_data) ->
             # labelMargin:-50
 
         legend:
-            show: true
+            show: false
             noColumns: 4
             container: $("#placeholder_control_legend")
             labelFormatter: (label, series) ->
