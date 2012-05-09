@@ -51,9 +51,19 @@ toggleMeasure = (measure_id) ->
             $holder = $('<div/>')
             $holder.load '. #page', () ->
                 $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
-                measuresMapView.render()
+            measuresMapView.render()
             @
 
+selectRiver = (river_name) ->
+    $.ajax
+        type: 'POST'
+        url: $('#blockbox-river').data 'select-river-url'
+        data:
+            'river_name': river_name
+        success: (data) ->
+            setFlotSeries()
+            measuresMapView.render()
+            @
 
 class BlockboxRouter extends Backbone.Router
     routes:
@@ -339,6 +349,8 @@ setPlaceholderTop = (json_data) ->
     target = ([num.location, num.reference_target] for num in json_data)
     measures = ([num.location, num.measures_level] for num in json_data)
 
+    selected_river = $("#blockbox-river .chzn-select")[0].value
+
     ed_data = [
         data: reference
         points:
@@ -383,6 +395,8 @@ setPlaceholderTop = (json_data) ->
         xaxis:
             min: window.min_graph_value
             max: window.max_graph_value
+            transform: (v) -> if selected_river == 'Maas' then -v else v
+            inverseTransform: (v) -> if selected_river == 'Maas' then -v else v
             position: "top"
 
         yaxis:
@@ -421,6 +435,8 @@ setPlaceholderControl = (control_data) ->
     selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected)
     non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable)
 
+    selected_river = $("#blockbox-river .chzn-select")[0].value
+
     d4 = undefined
     d5 = undefined
     pl_lines = undefined
@@ -429,6 +445,8 @@ setPlaceholderControl = (control_data) ->
         xaxis:
             min: window.min_graph_value
             max: window.max_graph_value
+            transform: (v) -> if selected_river == 'Maas' then -v else v
+            inverseTransform: (v) -> if selected_river == 'Maas' then -v else v
             reserveSpace: true
             position: "bottom"
 
@@ -546,9 +564,10 @@ $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
     toggleMeasure $(@).data('measure-id')
 
-
 $(document).ready ->
     setFlotSeries()
-    $(".chzn-select").chosen()
+    $("#blockbox-river .chzn-select").chosen().change(
+        () -> selectRiver @value )
+
     $('#measures-table-top').tablesorter()
     @

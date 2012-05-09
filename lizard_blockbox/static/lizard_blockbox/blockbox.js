@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, selectRiver, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -52,9 +52,24 @@
         setFlotSeries();
         $holder = $('<div/>');
         $holder.load('. #page', function() {
-          $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
-          return measuresMapView.render();
+          return $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
         });
+        measuresMapView.render();
+        return this;
+      }
+    });
+  };
+
+  selectRiver = function(river_name) {
+    return $.ajax({
+      type: 'POST',
+      url: $('#blockbox-river').data('select-river-url'),
+      data: {
+        'river_name': river_name
+      },
+      success: function(data) {
+        setFlotSeries();
+        measuresMapView.render();
         return this;
       }
     });
@@ -381,7 +396,7 @@
   };
 
   setPlaceholderTop = function(json_data) {
-    var ed_data, measures, num, options, pl_lines, reference, target;
+    var ed_data, measures, num, options, pl_lines, reference, selected_river, target;
     reference = (function() {
       var _i, _len, _results;
       _results = [];
@@ -409,6 +424,7 @@
       }
       return _results;
     })();
+    selected_river = $("#blockbox-river .chzn-select")[0].value;
     ed_data = [
       {
         data: reference,
@@ -447,6 +463,20 @@
       xaxis: {
         min: window.min_graph_value,
         max: window.max_graph_value,
+        transform: function(v) {
+          if (selected_river === 'Maas') {
+            return -v;
+          } else {
+            return v;
+          }
+        },
+        inverseTransform: function(v) {
+          if (selected_river === 'Maas') {
+            return -v;
+          } else {
+            return v;
+          }
+        },
         position: "top"
       },
       yaxis: {
@@ -479,7 +509,7 @@
   };
 
   setPlaceholderControl = function(control_data) {
-    var d4, d5, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, selected_measures;
+    var d4, d5, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, selected_measures, selected_river;
     measures = (function() {
       var _i, _len, _results;
       _results = [];
@@ -513,6 +543,7 @@
       }
       return _results;
     })();
+    selected_river = $("#blockbox-river .chzn-select")[0].value;
     d4 = void 0;
     d5 = void 0;
     pl_lines = void 0;
@@ -520,6 +551,20 @@
       xaxis: {
         min: window.min_graph_value,
         max: window.max_graph_value,
+        transform: function(v) {
+          if (selected_river === 'Maas') {
+            return -v;
+          } else {
+            return v;
+          }
+        },
+        inverseTransform: function(v) {
+          if (selected_river === 'Maas') {
+            return -v;
+          } else {
+            return v;
+          }
+        },
         reserveSpace: true,
         position: "bottom"
       },
@@ -564,7 +609,7 @@
         data: selected_measures,
         points: {
           show: true,
-          symbol: "square",
+          symbol: "diamond",
           radius: 4
         },
         lines: {
@@ -576,8 +621,8 @@
         data: non_selectable_measures,
         points: {
           show: true,
-          symbol: "square",
-          radius: 2
+          symbol: "cross",
+          radius: 4
         },
         lines: {
           show: false
@@ -653,7 +698,9 @@
 
   $(document).ready(function() {
     setFlotSeries();
-    $(".chzn-select").chosen();
+    $("#blockbox-river .chzn-select").chosen().change(function() {
+      return selectRiver(this.value);
+    });
     $('#measures-table-top').tablesorter();
     return this;
   });

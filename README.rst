@@ -4,14 +4,14 @@ lizard-blockbox
 Introduction
 ------------
 
-Blockbox translates to 'Blokkendoos' in Dutch. 
-Blokkendoos is the name of a Windows (VB) application written by one of our clients. 
+Blockbox translates to 'Blokkendoos' in Dutch.
+Blokkendoos is the name of a Windows (VB) application written by one of our clients.
 
 
 What does it do? (short version)
 --------------------------------
 
-In The Netherlands, we have some large rivers such as the Maas and the IJssel. 
+In The Netherlands, we have some large rivers such as the Maas and the IJssel.
 A bunch of measures can be taken to alter (improve) their characteristics.
 Blokkendoos presents a list of measures which the user can apply on a river to see the effect they will have in a graph and on a map.
 
@@ -41,3 +41,4 @@ Technologies used
  - Coffeescript to produce more readable code
  - OpenLayers, jQuery, Flot (for the graph)
  - FxCanvas for making Flot perform reasonably (instead of excanvas)
+ - X-Accel for serving factsheets

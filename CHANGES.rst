@@ -5,4 +5,5 @@ Changelog of lizard-blockbox
 0.1 (unreleased)
 ----------------
 
-- Initial library skeleton created by nensskel.  [your name]
+- Added factsheets download support
+- Initial library skeleton created by nensskel.  [Roland]

@@ -1,15 +1,18 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 import logging
+import os
 
+from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from lizard_map.coordinates import transform_point
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
+from lizard_ui.models import ApplicationIcon
 
 from lizard_blockbox import models
 
@@ -62,16 +65,49 @@ class BlockboxView(MapView):
         measures = models.Measure.objects.all().values(
             'name', 'short_name', 'measure_type', 'km_from')
         selected_measures = _selected_measures(self.request)
+        available_factsheets = _available_factsheets()
         for measure in measures:
-            selected = measure['short_name'] in selected_measures
-            measure['selected'] = selected
+            measure['selected'] = measure['short_name'] in selected_measures
             if not measure['name']:
                 measure['name'] = measure['short_name']
             if not measure['measure_type']:
                 measure['measure_type'] = 'Onbekend'
             if not measure['km_from']:
                 measure['km_from'] = 'Onbekend'
+            measure['pdf'] = measure['short_name'] in available_factsheets
         return measures
+
+
+def fetch_factsheet(request, measure):
+    """Return download header for nginx to serve pdf file."""
+
+    # ToDo: Better security model based on views...
+    if not ApplicationIcon.objects.filter(url__startswith='/blokkendoos'):
+        # ToDo: Change to 403 with templates
+        raise Http404
+
+    if not measure in _available_factsheets():
+        # There is no factsheet for this measure
+        raise Http404
+
+    response = HttpResponse()
+    # ToDo: Configure nginx
+    response['X-Accel-Redirect'] = '/protected/%s.pdf' % measure
+    return response
+
+
+def _available_factsheets():
+    """Return a list of the available factsheets."""
+
+    cache_key = 'available_factsheets'
+    factsheets = cache.get(cache_key)
+    if factsheets:
+        return factsheets
+
+    factsheets = [i.rstrip('.pdf') for i in os.listdir(settings.FACTSHEETS_DIR)
+                  if i.endswith('pdf')]
+    cache.set(cache_key, factsheets, 60 * 60 * 12)
+    return factsheets
 
 
 def _water_levels(flooding_chance, selected_river, selected_measures):
@@ -84,7 +120,8 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
         riversegments = models.RiverSegment.objects.filter(
             reach__in=reach).order_by('location')
 
-        measures = models.Measure.objects.filter(short_name__in=selected_measures)
+        measures = models.Measure.objects.filter(
+            short_name__in=selected_measures)
 
         water_levels = []
         for segment in riversegments:
@@ -121,7 +158,10 @@ def calculated_measures_json(request):
 
 def _selected_river(request):
     """Return the selected river"""
-    return 'Maas'
+
+    if not 'river' in request.session:
+        request.session['river'] = 'Maas'
+    return request.session['river']
 
 
 def _selected_measures(request):
@@ -163,6 +203,14 @@ def toggle_measure(request):
             selected_measures.add(measure_id)
     request.session[SELECTED_MEASURES_KEY] = selected_measures
     return HttpResponse(json.dumps(list(selected_measures)))
+
+
+def select_river(request):
+    """Select a river."""
+    if not request.POST:
+        return
+    request.session['river'] = request.POST['river_name']
+    return HttpResponse()
 
 
 @never_cache
