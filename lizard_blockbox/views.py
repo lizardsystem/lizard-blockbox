@@ -2,6 +2,8 @@
 import logging
 import os
 
+from hashlib import md5
+
 from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Sum
@@ -115,6 +117,7 @@ def _available_factsheets():
 def _water_levels(flooding_chance, selected_river, selected_measures):
     cache_key = (str(flooding_chance) + str(selected_river) +
                  ''.join(selected_measures))
+    cache_key = md5(cache_key).hexdigest()
     water_levels = cache.get(cache_key)
     if not water_levels:
         logger.info("Cache miss for _water_levels")
