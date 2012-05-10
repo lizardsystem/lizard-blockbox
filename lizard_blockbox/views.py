@@ -93,6 +93,7 @@ def fetch_factsheet(request, measure):
     response = HttpResponse()
     # ToDo: Configure nginx
     response['X-Accel-Redirect'] = '/protected/%s.pdf' % measure
+    response['Content-Type'] = ''
     return response
 
 
