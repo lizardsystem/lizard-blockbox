@@ -2,7 +2,7 @@ lizard-blockbox
 ===============
 
 .. image:: https://secure.travis-ci.org/lizardsystem/lizard-blockbox.png?branch=master
-   :target: http://travis-ci.org/#!/lizardsystem/lizard-blockbox/ 
+   :target: http://travis-ci.org/#!/lizardsystem/lizard-blockbox
 
 Introduction
 ------------
