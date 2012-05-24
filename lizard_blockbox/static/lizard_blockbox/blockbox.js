@@ -121,7 +121,7 @@
   MeasuresMapView = Backbone.View.extend({
     measures: function() {
       var _this = this;
-      $.getJSON(this.static_url + 'lizard_blockbox/IVM_deel1.json', function(json) {
+      $.getJSON(this.static_url + 'lizard_blockbox/IVM.json', function(json) {
         _this.IVM = JSONTooltip('IVM deel 1', json);
         return _this.render_measure_IVM(_this.IVM);
       });

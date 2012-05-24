@@ -95,7 +95,7 @@ Backbone.history.start()
 MeasuresMapView = Backbone.View.extend
 
     measures: ->
-        $.getJSON @static_url + 'lizard_blockbox/IVM_deel1.json', (json) =>
+        $.getJSON @static_url + 'lizard_blockbox/IVM.json', (json) =>
             @IVM = JSONTooltip 'IVM deel 1', json
             @render_measure_IVM(@IVM)
         $.getJSON @static_url + 'lizard_blockbox/QS.json', (json) =>

@@ -2,6 +2,8 @@
 from django.contrib.gis.db import models as gis_models
 from django.db import models
 
+from lizard_blockbox.fields import EmptyStringFloatField
+
 
 class Reach(models.Model):
     """A reach of a river.
@@ -52,12 +54,23 @@ class Measure(models.Model):
 
     """
 
-    name = models.CharField(max_length=100, blank=True, null=True)
+    name = models.TextField(blank=True, null=True)
     short_name = models.CharField(max_length=100, blank=True, null=True)
     measure_type = models.CharField(max_length=100, blank=True, null=True)
-    traject = models.CharField(max_length=100, blank=True, null=True)
-    km_from = models.IntegerField(null=True, blank=True)
-    km_to = models.IntegerField(null=True, blank=True)
+    reach = models.ForeignKey(Reach, blank=True, null=True)
+    riverpart = models.CharField(max_length=100, blank=True, null=True)
+    km_from = EmptyStringFloatField(null=True, blank=True)
+    km_to = EmptyStringFloatField(null=True, blank=True)
+    mhw_profit_cm = EmptyStringFloatField(blank=True, null=True)
+    mhw_profit_m2 = EmptyStringFloatField(blank=True, null=True)
+    investment_costs = EmptyStringFloatField(blank=True, null=True)
+    benefits = EmptyStringFloatField(blank=True, null=True)
+    b_o_costs = EmptyStringFloatField(blank=True, null=True)
+    reinvestment = EmptyStringFloatField(blank=True, null=True)
+    damage = models.CharField(max_length=100, blank=True, null=True)
+    total_costs = EmptyStringFloatField(blank=True, null=True)
+    quality_of_environment = models.CharField(
+        max_length=100, blank=True, null=True)
 
     def __unicode__(self):
         name = self.name or self.short_name
