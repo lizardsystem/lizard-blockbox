@@ -96,7 +96,7 @@ MeasuresMapView = Backbone.View.extend
 
     measures: ->
         $.getJSON @static_url + 'lizard_blockbox/IVM.json', (json) =>
-            @IVM = JSONTooltip 'IVM deel 1', json
+            @IVM = JSONTooltip 'IVM', json
             @render_measure_IVM(@IVM)
         $.getJSON @static_url + 'lizard_blockbox/QS.json', (json) =>
             @QS = JSONTooltip 'QS', json

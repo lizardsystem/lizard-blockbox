@@ -122,7 +122,7 @@
     measures: function() {
       var _this = this;
       $.getJSON(this.static_url + 'lizard_blockbox/IVM.json', function(json) {
-        _this.IVM = JSONTooltip('IVM deel 1', json);
+        _this.IVM = JSONTooltip('IVM', json);
         return _this.render_measure_IVM(_this.IVM);
       });
       $.getJSON(this.static_url + 'lizard_blockbox/QS.json', function(json) {
