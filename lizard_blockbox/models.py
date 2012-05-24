@@ -79,7 +79,6 @@ class ReferenceValue(models.Model):
     riversegment = models.ForeignKey(RiverSegment)
     flooding_chance = models.ForeignKey(FloodingChance)
     reference = models.FloatField()
-    target = models.FloatField()
 
     def __unicode__(self):
         return '%s Reference: %s' % (
