@@ -64,7 +64,7 @@
 
     <h3>Geselecteerde maatregelen</h3>
     <p class="muted">
-      Klik om ze te deselecteren.
+      Klik om een maatregel om hem te deselecteren.
     </p>
     <ul id="selected-measures-list" class="without-bullets">
       {% for measure in view.selected_measures %}
@@ -78,6 +78,13 @@
         </li>
       {% endfor %}
     </ul>
+    <hr />
+    <p class="muted">
+      Ga naar de <a href="{% url lizard_blockbox.selected_measures %}">
+        overzichtspagina over de geselecteerde maatregelen
+      </a> voor meer informatie. Hier kunt u de gekozen set ook bewaren.
+    </p>
+
 {% endblock %}
 
 {% block content %}

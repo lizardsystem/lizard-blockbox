@@ -4,6 +4,8 @@ from django.conf.urls.defaults import url
 
 from lizard_ui.urls import debugmode_urlpatterns
 from lizard_blockbox.views import BlockboxView
+from lizard_blockbox.views import SelectedMeasuresView
+from lizard_blockbox.views import BookmarkedMeasuresView
 
 
 urlpatterns = patterns(
@@ -11,6 +13,12 @@ urlpatterns = patterns(
     url(r'^$',
         BlockboxView.as_view(),
         name='lizard_blockbox.home'),
+    url(r'^geselecteerd/$',
+        SelectedMeasuresView.as_view(),
+        name='lizard_blockbox.selected_measures'),
+    url(r'^geselecteerd/(?P<selected>[^/]+)/$',
+        BookmarkedMeasuresView.as_view(),
+        name='lizard_blockbox.bookmarked_measures'),
     url(r'^table/$',
         BlockboxView.as_view(
             template_name='lizard_blockbox/blockbox-table.html'),
