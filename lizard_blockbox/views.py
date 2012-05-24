@@ -96,11 +96,12 @@ class SelectedMeasuresView(UiView):
         """Return selected measures, sorted per reach."""
         reaches = defaultdict(list)
         measures = models.Measure.objects.filter(
-            short_name__in=self.selected_names()).values()
+            short_name__in=self.selected_names())
         for measure in measures:
-            reach = measure['traject'] or 'unknown'
+            reach = measure.traject or 'unknown'
             reaches[reach].append(measure)
         result = []
+        print models.Measure._meta.fields
         for name, measures in reaches.items():
             reach = {'name': name,
                      'amount': len(measures),

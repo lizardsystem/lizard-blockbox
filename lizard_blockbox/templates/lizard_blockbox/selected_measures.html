@@ -53,9 +53,9 @@
       {% for measure in reach.measures %}
         <h3>{{ measure.name }}</h3>
         <dl>
-          {% for key, value in measure.items %}
-          <dt>{% trans key %}</dt>
-          <dd>{{ value }}</dd>
+          {% for field in measure.pretty %}
+          <dt>{{ field.label }}</dt>
+          <dd>{{ field.value }}</dd>
           {% endfor %}
         </dl>
       {% endfor %}

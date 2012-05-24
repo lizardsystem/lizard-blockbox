@@ -1,6 +1,7 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from django.contrib.gis.db import models as gis_models
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 
 class Reach(models.Model):
@@ -52,16 +53,51 @@ class Measure(models.Model):
 
     """
 
-    name = models.CharField(max_length=100, blank=True, null=True)
-    short_name = models.CharField(max_length=100, blank=True, null=True)
-    measure_type = models.CharField(max_length=100, blank=True, null=True)
-    traject = models.CharField(max_length=100, blank=True, null=True)
-    km_from = models.IntegerField(null=True, blank=True)
-    km_to = models.IntegerField(null=True, blank=True)
+    name = models.CharField(
+        _('name'),
+        max_length=100,
+        blank=True,
+        null=True)
+    short_name = models.CharField(
+        _('short name'),
+        max_length=100,
+        blank=True,
+        null=True)
+    measure_type = models.CharField(
+        _('measure type'),
+        max_length=100,
+        blank=True,
+        null=True)
+    traject = models.CharField(
+        _('traject'),
+        max_length=100,
+        blank=True,
+        null=True)
+    km_from = models.IntegerField(
+        _('from km'),
+        null=True,
+        blank=True)
+    km_to = models.IntegerField(
+        _('to km'),
+        null=True,
+        blank=True)
 
     def __unicode__(self):
         name = self.name or self.short_name
         return u'%s' % name
+
+    def pretty(self):
+        """Return list with verbose name + value for every field for the view.
+        """
+        ignore = ['id', 'name']
+        result = []
+        for field in self._meta.fields:
+            if field.name in ignore:
+                continue
+            result.append({'label': field.verbose_name,
+                           'name': field.name,
+                           'value': getattr(self, field.name)})
+        return result
 
     class Meta:
         permissions = (("can_view_blockbox", "Can view blockbox"),)

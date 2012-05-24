@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-11 07:14-0500\n"
+"POT-Creation-Date: 2012-05-24 18:51-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,38 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: views.py:24
+#: models.py:57
+msgid "name"
+msgstr ""
+
+#: models.py:62
+msgid "short name"
+msgstr ""
+
+#: models.py:67
+msgid "measure type"
+msgstr ""
+
+#: models.py:72
+msgid "traject"
+msgstr ""
+
+#: models.py:77
+msgid "from km"
+msgstr ""
+
+#: models.py:81
+msgid "to km"
+msgstr ""
+
+#: views.py:38
 msgid "Show table"
 msgstr ""
 
-#: views.py:25
+#: views.py:39
 msgid "Show map"
 msgstr ""
 
-#: views.py:28
+#: views.py:42
 msgid "Switch between a graph+map view and a graph+table view."
 msgstr ""
