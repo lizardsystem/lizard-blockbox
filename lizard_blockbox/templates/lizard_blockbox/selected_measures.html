@@ -46,7 +46,6 @@
   <div id="textual">
     <h1>Geselecteerde maatregelen</h1>
     {% for reach in view.measures_per_reach %}
-      <pre>{{ reach }}</pre>
       <h2>
         {{ reach.name }}
         <span class="muted">({{ reach.amount }} maatregelen)</span>
