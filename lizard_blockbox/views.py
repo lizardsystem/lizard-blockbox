@@ -241,7 +241,7 @@ def _selected_river(request):
 
     if not 'river' in request.session:
         #XXX: Get a correct selected river if the river is unselected.
-        reaches = models.Reach.objects.values('name').distinct(
+        reaches = models.NamedReach.objects.values('name').distinct(
             ).order_by('name')
         request.session['river'] = reaches[0]['name']
     return request.session['river']

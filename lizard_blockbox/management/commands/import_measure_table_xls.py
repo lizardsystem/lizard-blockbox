@@ -27,7 +27,7 @@ class Command(BaseCommand):
     @transaction.commit_on_success
     def parse_sheet(self, sheet):
         col_names = (
-            'name', 'short_name',  'measure_type', 'km_from', 'km_to',
+            'name', 'short_name', 'measure_type', 'km_from', 'km_to',
             'reach', 'riverpart', 'mhw_profit_cm', 'mhw_profit_m2',
             'investment_costs', 'benefits', 'b_o_costs', 'reinvestment',
             'damage', 'total_costs', 'quality_of_environment'
