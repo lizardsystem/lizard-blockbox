@@ -13,6 +13,7 @@ from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from lizard_map.coordinates import transform_point
+from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
 from lizard_ui.models import ApplicationIcon
@@ -80,6 +81,17 @@ class BlockboxView(MapView):
                 measure['km_from'] = 'Onbekend'
             measure['pdf'] = measure['short_name'] in available_factsheets
         return measures
+
+    @property
+    def legends(self):
+        result = super(BlockboxView, self).legends
+
+        return result
+
+
+class FlotLegend(Legend):
+    """UI widget for a flot graph legend."""
+    template_name = 'lizard_map/legend_item.html'
 
 
 class SelectedMeasuresView(UiView):
