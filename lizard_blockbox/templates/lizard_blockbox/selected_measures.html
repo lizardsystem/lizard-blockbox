@@ -1,0 +1,71 @@
+{% extends "lizard_ui/lizardbase.html" %}{% load i18n %}
+
+{% block javascript %}
+   {{ block.super }}
+
+    <script type="text/javascript"
+        src="{{ STATIC_URL }}lizard_blockbox/jquery.tablesorter.js">
+    </script>
+
+{% endblock %}
+
+{% block map-javascript %}
+    {{ block.super }}
+    <script type="text/javascript"
+        src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
+    </script>
+{% endblock %}
+
+{% block css %}
+  {{ block.super }}
+  <link rel="stylesheet"
+        href="{{ STATIC_URL }}lizard_blockbox/lizard_blockbox.css"
+        type="text/css"
+        media="screen, projection" />
+{% endblock css %}
+
+{% block sidebar %}
+  {% if view.to_bookmark_url %}
+    <h2>Selectie bewaren</h2>
+    <p>
+      De gekozen set maatregelen kan met
+      <a href="{{ view.to_bookmark_url }}">een speciale url</a> bewaard en gedeeld worden.
+    </p>
+  {% else %}
+    <h2>Bewaarde selectie</h2>
+    <p>
+      Om deze set maatregelen te delen kunt u simpelweg de URL doormailen. Om
+      hem te bewaren, maak een bladwijzer (<i>bookmark</i>) naar deze pagina
+      aan.
+    </p>
+
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div id="textual">
+    <h1>Geselecteerde maatregelen</h1>
+    {% for reach in view.measures_per_reach %}
+      <h2>
+        {{ reach.name }}
+        <span class="muted">({{ reach.amount }} maatregelen)</span>
+      </h2>
+      {% for measure in reach.measures %}
+        <h3>{{ measure.name }}</h3>
+        <dl>
+          {% for field in measure.pretty %}
+          <dt>{{ field.label }}</dt>
+          <dd>{{ field.value }}</dd>
+          {% endfor %}
+        </dl>
+      {% endfor %}
+    {% endfor %}
+
+    <h2>Kosten</h2>
+    <p>TODO</p>
+
+  </div>
+{% endblock %}
+
+{% block orthogonal-actions %}
+{% endblock orthogonal-actions %}

@@ -2,11 +2,12 @@
 import logging
 import operator
 import os
-
 from hashlib import md5
+from collections import defaultdict
 
 from django.conf import settings
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
 from django.utils import simplejson as json
@@ -15,6 +16,7 @@ from django.views.decorators.cache import never_cache
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
 from lizard_ui.models import ApplicationIcon
+from lizard_ui.views import UiView
 
 from lizard_blockbox import models
 
@@ -78,6 +80,71 @@ class BlockboxView(MapView):
                 measure['km_from'] = 'Onbekend'
             measure['pdf'] = measure['short_name'] in available_factsheets
         return measures
+
+
+class SelectedMeasuresView(UiView):
+    """Show info on the selected measures."""
+    template_name = 'lizard_blockbox/selected_measures.html'
+    # require_application_icon_with_permission = True
+    page_title = "Geselecteerde blokkendoos maatregelen"
+
+    def selected_names(self):
+        """Return set of selected measures from session."""
+        return _selected_measures(self.request)
+
+    def measures_per_reach(self):
+        """Return selected measures, sorted per reach."""
+        reaches = defaultdict(list)
+        measures = models.Measure.objects.filter(
+            short_name__in=self.selected_names())
+        for measure in measures:
+            reach = measure.traject or 'unknown'
+            reaches[reach].append(measure)
+        result = []
+        print models.Measure._meta.fields
+        for name, measures in reaches.items():
+            reach = {'name': name,
+                     'amount': len(measures),
+                     'measures': measures}
+            result.append(reach)
+        result.sort(key=lambda x: x['amount'], reverse=True)
+        return result
+
+    @property
+    def to_bookmark_url(self):
+        """Return URL with the selected measures stored in the URL."""
+        short_names = sorted(list(self.selected_names()))
+        selected = ','.join(short_names)
+        url = reverse('lizard_blockbox.bookmarked_measures',
+                kwargs={'selected': selected})
+        return url
+
+    @property
+    def breadcrumbs(self):
+        result = super(SelectedMeasuresView, self).breadcrumbs
+        result.append(Action(name=self.page_title))
+        return result
+
+
+class BookmarkedMeasuresView(SelectedMeasuresView):
+    """Show info on the measures as selected by the URL."""
+    to_bookmark_url = None
+
+    @property
+    def page_title(self):
+        return "Bewaarde blokkendoos maatregelen (%s stuks)" % (
+            len(self.selected_names()))
+
+    def selected_names(self):
+        """Return set of selected measures from URL info.
+
+        The last part of the url, extracted as 'selected', is a
+        comma-separated string with shortnames.
+
+        """
+        comma_separated = self.kwargs['selected']
+        short_names = comma_separated.split(',')
+        return set(short_names)
 
 
 def fetch_factsheet(request, measure):
