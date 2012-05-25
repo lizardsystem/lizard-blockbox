@@ -250,12 +250,14 @@ def calculated_measures_json(request):
 
 def _selected_river(request):
     """Return the selected river"""
-
+    available_reaches = models.NamedReach.objects.values('name').distinct(
+        ).order_by('name')
     if not 'river' in request.session:
-        #XXX: Get a correct selected river if the river is unselected.
-        reaches = models.NamedReach.objects.values('name').distinct(
-            ).order_by('name')
-        request.session['river'] = reaches[0]['name']
+        request.session['river'] = available_reaches[0]['name']
+    if request.session['river'] not in available_reaches:
+        logger.warn("Selected river %s doesn't exist anymore.",
+                    request.session['river'])
+        request.session['river'] = available_reaches[0]['name']
     return request.session['river']
 
 
