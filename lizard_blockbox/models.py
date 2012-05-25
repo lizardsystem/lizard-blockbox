@@ -39,6 +39,9 @@ class NamedReach(models.Model):
     """
     name = models.CharField(max_length=100)
 
+    def __unicode__(self):
+        return self.name
+
 
 class SubsetReach(models.Model):
     """A subset Reach
