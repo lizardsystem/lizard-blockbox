@@ -211,7 +211,7 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
                 models.RiverSegment.objects.filter(reach=element.reach,
                     location__range=(element.km_from, element.km_to)))
 
-        #Join the querysets in segments_join into one.
+        # Join the querysets in segments_join into one.
         riversegments = reduce(operator.or_, segments_join)
         riversegments = riversegments.distinct().order_by('location')
 
