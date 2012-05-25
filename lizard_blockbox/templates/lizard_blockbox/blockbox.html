@@ -152,9 +152,6 @@
 {% endblock %}
 
 
-{% block content-actions %}
-
-{# A place to add the river selection dropdown? #}
-
-{{ block.super }}
-{% endblock %}
+{% block orthogonal-actions %}
+  {% include "lizard_blockbox/scenario-actions.html" %}
+{% endblock orthogonal-actions %}
