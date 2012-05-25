@@ -11,13 +11,9 @@ class Reach(models.Model):
     Dutch: *riviertak*.
 
     """
-    name = models.CharField(max_length=100)
     slug = models.SlugField(
         blank=False,
-        help_text=u"Slug will be automatically generated from the name.")
-
-    def __unicode__(self):
-        return '%s' % self.name
+        help_text=u"Slug.")
 
 
 class RiverSegment(gis_models.Model):
@@ -33,6 +29,26 @@ class RiverSegment(gis_models.Model):
 
     def __unicode__(self):
         return '%i' % self.location
+
+
+class NamedReach(models.Model):
+    """A named Reach, a collection of reaches.
+
+    Dutch: *riviertak*.
+    """
+    name = models.CharField(max_length=100)
+
+
+class SubsetReach(models.Model):
+    """A subset Reach
+
+    a definition of start, end kilometers and the Reach name.
+    """
+
+    reach = models.ForeignKey(Reach)
+    named_reach = models.ForeignKey(NamedReach)
+    km_from = models.IntegerField()
+    km_to = models.IntegerField()
 
 
 class FloodingChance(models.Model):

@@ -211,7 +211,7 @@
     },
     rivers: function() {
       var _this = this;
-      return $.getJSON("/blokkendoos/api/rivers/", function(json) {
+      return $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json', function(json) {
         _this.Rivers = JSONRiverLayer('Rivers', json);
         return _this.render_rivers(_this.Rivers);
       });

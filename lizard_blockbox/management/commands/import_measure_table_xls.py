@@ -44,11 +44,5 @@ class Command(BaseCommand):
             measure, _ = models.Measure.objects.get_or_create(
                 short_name=row_values[col_index['short_name']])
 
-            for k, v in default_values.iteritems():
-                try:
-                    setattr(measure, k, v)
-                    measure.save()
-                except Exception, e:
-                    import ipdb; ipdb.set_trace()
-
-
+            models.Measure.objects.filter(id=measure.id).update(
+                **default_values)

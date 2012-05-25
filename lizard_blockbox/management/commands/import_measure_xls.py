@@ -28,7 +28,7 @@ class Command(BaseCommand):
             # Delete all objects from models.
             for model in ('RiverSegment', 'FloodingChance', 'Measure',
                           'ReferenceValue', 'WaterLevelDifference',
-                          'Reach'):
+                          'Reach', 'NamedReach', 'SubsetReach'):
                 getattr(models, model).objects.all().delete()
 
         if len(args) == 0:
@@ -58,8 +58,7 @@ class Command(BaseCommand):
             location, reference, _, difference, reach_slug = \
                 sheet.row_values(row_nr)
 
-            reach, _ = models.Reach.objects.get_or_create(
-                slug=reach_slug, defaults={'name': reach_slug})
+            reach, _ = models.Reach.objects.get_or_create(slug=reach_slug)
 
             #The Meuse has both North and South (Z) kilometers with the same
             #kilometer identifier.

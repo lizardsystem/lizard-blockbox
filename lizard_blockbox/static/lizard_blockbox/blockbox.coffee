@@ -147,7 +147,7 @@ MeasuresMapView = Backbone.View.extend
         PKB.redraw()
 
     rivers: ->
-        $.getJSON "/blokkendoos/api/rivers/", (json) =>
+        $.getJSON @static_url + 'lizard_blockbox/kilometers.json', (json) =>
             @Rivers = JSONRiverLayer 'Rivers', json
             @render_rivers(@Rivers)
 
