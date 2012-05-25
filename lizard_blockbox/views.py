@@ -1,5 +1,6 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 import logging
+import operator
 import os
 from hashlib import md5
 from collections import defaultdict
@@ -12,7 +13,6 @@ from django.http import Http404, HttpResponse
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
-from lizard_map.coordinates import transform_point
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
@@ -51,12 +51,12 @@ class BlockboxView(MapView):
         return actions
 
     def reaches(self):
-        reaches = models.Reach.objects.values('name').distinct(
-            ).order_by('name')
-        for reach in reaches:
-            if reach['name'] == 'Maas':
-                # TODO
-                reach['selected'] = True
+        reaches = models.NamedReach.objects.all().values('name'
+                                                         ).order_by('name')
+        #XXX: Get a correct selected river
+        reach = reaches[0]
+        reach['selected'] = True
+
         return reaches
 
     def selected_measures(self):
@@ -200,9 +200,17 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
     water_levels = cache.get(cache_key)
     if not water_levels:
         logger.info("Cache miss for _water_levels")
-        reach = models.Reach.objects.filter(name=selected_river)
-        riversegments = models.RiverSegment.objects.filter(
-            reach__in=reach).order_by('location')
+        reach = models.NamedReach.objects.get(name=selected_river)
+        subset_reaches = reach.subsetreach_set.all()
+        segments_join = []
+        for element in subset_reaches:
+            segments_join.append(
+                models.RiverSegment.objects.filter(reach=element.reach,
+                    location__range=(element.km_from, element.km_to)))
+
+        #Join the querysets in segments_join into one.
+        riversegments = reduce(operator.or_, segments_join)
+        riversegments = riversegments.distinct().order_by('location')
 
         measures = models.Measure.objects.filter(
             short_name__in=selected_measures)
@@ -225,9 +233,9 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
     return water_levels
 
 
-@never_cache
 def calculated_measures_json(request):
     """Calculate the result of the measures."""
+
     flooding_chance = models.FloodingChance.objects.get(name="T1250")
     selected_river = _selected_river(request)
     selected_measures = _selected_measures(request)
@@ -244,7 +252,10 @@ def _selected_river(request):
     """Return the selected river"""
 
     if not 'river' in request.session:
-        request.session['river'] = 'Maas'
+        #XXX: Get a correct selected river if the river is unselected.
+        reaches = models.Reach.objects.values('name').distinct(
+            ).order_by('name')
+        request.session['river'] = reaches[0]['name']
     return request.session['river']
 
 
@@ -252,7 +263,7 @@ def _selected_measures(request):
     """Return selected measures."""
 
     if not SELECTED_MEASURES_KEY in request.session:
-        request.session[SELECTED_MEASURES_KEY] = set([])
+        request.session[SELECTED_MEASURES_KEY] = set()
     return request.session[SELECTED_MEASURES_KEY]
 
 
@@ -315,23 +326,4 @@ def list_measures_json(request):
         measure['type_index'] = all_types.index(measure['measure_type'])
     response = HttpResponse(mimetype='application/json')
     json.dump(list(measures), response)
-    return response
-
-
-def river_json(request):
-    """Return the maas kilometers shape in GeoJSON."""
-
-    features_geometry = [
-        {'type': "Feature",
-         'properties': {'MODELKM': '%i_%s' % (segment.location,
-                                              segment.reach.slug)},
-         'geometry': json.loads(transform_point(segment.the_geom.x,
-                                     segment.the_geom.y,
-                                     from_proj='wgs84',
-                                     to_proj='google').json)
-         } for segment in models.RiverSegment.objects.all()]
-
-    response = HttpResponse(mimetype='application/json')
-    json.dump({'type': 'FeatureCollection',
-               'features': features_geometry}, response)
     return response

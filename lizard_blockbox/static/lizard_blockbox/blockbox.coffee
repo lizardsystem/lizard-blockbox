@@ -95,8 +95,8 @@ Backbone.history.start()
 MeasuresMapView = Backbone.View.extend
 
     measures: ->
-        $.getJSON @static_url + 'lizard_blockbox/IVM_deel1.json', (json) =>
-            @IVM = JSONTooltip 'IVM deel 1', json
+        $.getJSON @static_url + 'lizard_blockbox/IVM.json', (json) =>
+            @IVM = JSONTooltip 'IVM', json
             @render_measure_IVM(@IVM)
         $.getJSON @static_url + 'lizard_blockbox/QS.json', (json) =>
             @QS = JSONTooltip 'QS', json
@@ -147,7 +147,7 @@ MeasuresMapView = Backbone.View.extend
         PKB.redraw()
 
     rivers: ->
-        $.getJSON "/blokkendoos/api/rivers/", (json) =>
+        $.getJSON @static_url + 'lizard_blockbox/kilometers.json', (json) =>
             @Rivers = JSONRiverLayer 'Rivers', json
             @render_rivers(@Rivers)
 

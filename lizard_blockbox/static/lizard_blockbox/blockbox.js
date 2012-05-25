@@ -121,8 +121,8 @@
   MeasuresMapView = Backbone.View.extend({
     measures: function() {
       var _this = this;
-      $.getJSON(this.static_url + 'lizard_blockbox/IVM_deel1.json', function(json) {
-        _this.IVM = JSONTooltip('IVM deel 1', json);
+      $.getJSON(this.static_url + 'lizard_blockbox/IVM.json', function(json) {
+        _this.IVM = JSONTooltip('IVM', json);
         return _this.render_measure_IVM(_this.IVM);
       });
       $.getJSON(this.static_url + 'lizard_blockbox/QS.json', function(json) {
@@ -211,7 +211,7 @@
     },
     rivers: function() {
       var _this = this;
-      return $.getJSON("/blokkendoos/api/rivers/", function(json) {
+      return $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json', function(json) {
         _this.Rivers = JSONRiverLayer('Rivers', json);
         return _this.render_rivers(_this.Rivers);
       });

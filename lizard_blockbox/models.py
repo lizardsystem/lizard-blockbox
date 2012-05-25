@@ -3,6 +3,8 @@ from django.contrib.gis.db import models as gis_models
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from lizard_blockbox.fields import EmptyStringFloatField
+
 
 class Reach(models.Model):
     """A reach of a river.
@@ -10,13 +12,9 @@ class Reach(models.Model):
     Dutch: *riviertak*.
 
     """
-    name = models.CharField(max_length=100)
     slug = models.SlugField(
         blank=False,
-        help_text=u"Slug will be automatically generated from the name.")
-
-    def __unicode__(self):
-        return '%s' % self.name
+        help_text=u"Slug.")
 
 
 class RiverSegment(gis_models.Model):
@@ -32,6 +30,26 @@ class RiverSegment(gis_models.Model):
 
     def __unicode__(self):
         return '%i' % self.location
+
+
+class NamedReach(models.Model):
+    """A named Reach, a collection of reaches.
+
+    Dutch: *riviertak*.
+    """
+    name = models.CharField(max_length=100)
+
+
+class SubsetReach(models.Model):
+    """A subset Reach
+
+    a definition of start, end kilometers and the Reach name.
+    """
+
+    reach = models.ForeignKey(Reach)
+    named_reach = models.ForeignKey(NamedReach)
+    km_from = models.IntegerField()
+    km_to = models.IntegerField()
 
 
 class FloodingChance(models.Model):
@@ -68,11 +86,6 @@ class Measure(models.Model):
         max_length=100,
         blank=True,
         null=True)
-    traject = models.CharField(
-        _('traject'),
-        max_length=100,
-        blank=True,
-        null=True)
     km_from = models.IntegerField(
         _('from km'),
         null=True,
@@ -81,6 +94,19 @@ class Measure(models.Model):
         _('to km'),
         null=True,
         blank=True)
+
+    reach = models.ForeignKey(Reach, blank=True, null=True)
+    riverpart = models.CharField(max_length=100, blank=True, null=True)
+    mhw_profit_cm = EmptyStringFloatField(blank=True, null=True)
+    mhw_profit_m2 = EmptyStringFloatField(blank=True, null=True)
+    investment_costs = EmptyStringFloatField(blank=True, null=True)
+    benefits = EmptyStringFloatField(blank=True, null=True)
+    b_o_costs = EmptyStringFloatField(blank=True, null=True)
+    reinvestment = EmptyStringFloatField(blank=True, null=True)
+    damage = models.CharField(max_length=100, blank=True, null=True)
+    total_costs = EmptyStringFloatField(blank=True, null=True)
+    quality_of_environment = models.CharField(
+        max_length=100, blank=True, null=True)
 
     def __unicode__(self):
         name = self.name or self.short_name
@@ -115,7 +141,6 @@ class ReferenceValue(models.Model):
     riversegment = models.ForeignKey(RiverSegment)
     flooding_chance = models.ForeignKey(FloodingChance)
     reference = models.FloatField()
-    target = models.FloatField()
 
     def __unicode__(self):
         return '%s Reference: %s' % (
