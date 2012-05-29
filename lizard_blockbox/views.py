@@ -52,10 +52,10 @@ class BlockboxView(MapView):
 
     def reaches(self):
         reaches = models.NamedReach.objects.all().values('name')
-        #XXX: Get a correct selected river
-        reach = reaches[0]
-        reach['selected'] = True
-
+        selected_river = _selected_river(self.request)
+        for reach in reaches:
+            if reach['name'] == selected_river:
+                reach['selected'] = True
         return reaches
 
     def selected_measures(self):
@@ -67,20 +67,20 @@ class BlockboxView(MapView):
     def measure_headers(self):
         """Return headers for measures table."""
         measure = models.Measure.objects.all()[0]
-        headers = ['Naam']
-        headers += [field['label'] for field in measure.pretty()]
-        headers.append('PDF')
-        return headers
+        return [field['label'] for field in measure.pretty()]
 
     def measures(self):
         measures = models.Measure.objects.all()
         selected_measures = _selected_measures(self.request)
         available_factsheets = _available_factsheets()
+        # selected_river = _selected_river(self.request)
         result = []
         for measure_obj in measures:
             measure = {}
             measure['fields'] = measure_obj.pretty()
             measure['selected'] = measure_obj.short_name in selected_measures
+            # measure['in_selected_river'] = (
+            #     measure_obj.riverpart == selected_river)
             measure['name'] = unicode(measure_obj)
             if measure_obj.short_name in available_factsheets:
                 measure['pdf_link'] = reverse(

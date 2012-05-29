@@ -50,16 +50,16 @@
     <h2>Rivierselectie</h2>
 	<span>Selecteer een rivier:</span>
     <form id="blockbox-river"
-		  data-select-river-url="{% url lizard_blockbox_select_river %}">
-	  <select data-placeholder="Kies een rivier"
-			  class="chzn-select"
-			  tabindex="2"
-			  style="width:250px;">
-		{% for reach in view.reaches %}
-        <option {% if reach.selected %}SELECTED{% endif %}
-				>{{ reach.name }}</option>
-		{% endfor %}
-	  </select>
+	  data-select-river-url="{% url lizard_blockbox_select_river %}">
+      <select data-placeholder="Kies een rivier"
+	      class="chzn-select"
+	      tabindex="2"
+	      style="width:250px;">
+	{% for reach in view.reaches %}
+          <option {% if reach.selected %}SELECTED{% endif %}
+		  >{{ reach.name }}</option>
+        {% endfor %}
+      </select>
     </form>
 
     <h3>Geselecteerde maatregelen</h3>
@@ -119,9 +119,12 @@
 	   class="table table-striped table-bordered">
       <thead>
         <tr>
+          <th>Naam</th>
           {% for header in view.measure_headers %}
             <th>{{ header }}</th>
           {% endfor %}
+          <th>PDF</th>
+          <th>Geselecteerd</th>
         </tr>
       </thead>
       <tbody id="measures-table">
@@ -142,6 +145,11 @@
 	        <a href="{{ measure.pdf_link }}">
 		  <i class="icon-file"></i>Download
                 </a>
+	      {% endif %}
+	    </td>
+	    <td>
+	      {% if measure.selected %}
+	      <i class="icon-ok"></i>Ja
 	      {% endif %}
 	    </td>
           </tr>
