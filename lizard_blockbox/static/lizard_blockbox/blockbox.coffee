@@ -95,15 +95,9 @@ Backbone.history.start()
 MeasuresMapView = Backbone.View.extend
 
     measures: ->
-        $.getJSON @static_url + 'lizard_blockbox/IVM.json', (json) =>
-            @IVM = JSONTooltip 'IVM', json
-            @render_measure_IVM(@IVM)
-        $.getJSON @static_url + 'lizard_blockbox/QS.json', (json) =>
-            @QS = JSONTooltip 'QS', json
-            @render_measure_QS(@QS)
-        $.getJSON @static_url + 'lizard_blockbox/PKB_LT.json', (json) =>
-            @PKB = JSONTooltip 'PKB', json
-            @render_measure_PKB(@PKB)
+        $.getJSON @static_url + 'lizard_blockbox/measures.json', (json) =>
+            @measures = JSONTooltip 'Maatregelen', json
+            @render_measures(@measures)
 
     selected_items: ->
         ($(el).data "measure-shortname" for el in $("#selected-measures-list li a"))
@@ -119,32 +113,14 @@ MeasuresMapView = Backbone.View.extend
                 attributes.target_difference = target_difference[attributes.MODELKM]
             rivers.redraw()
 
-    render_measure_IVM: (IVM = @IVM) ->
+    render_measures: (measures = @measures) ->
         selected_items = @selected_items()
-        for feature in IVM.features
-            if feature.attributes.Code_IVM in selected_items
-                feature.attributes.selected = true
-            else
-                feature.attributes.selected = false
-        IVM.redraw()
-
-    render_measure_QS: (QS = @QS) ->
-        selected_items = @selected_items()
-        for feature in QS.features
-            if feature.attributes.code_QS in selected_items
-                feature.attributes.selected = true
-            else
-                feature.attributes.selected = false
-        QS.redraw()
-
-    render_measure_PKB: (PKB = @PKB) ->
-        selected_items = @selected_items()
-        for feature in PKB.features
+        for feature in measures.features
             if feature.attributes.code in selected_items
                 feature.attributes.selected = true
             else
                 feature.attributes.selected = false
-        PKB.redraw()
+        measures.redraw()
 
     rivers: ->
         $.getJSON @static_url + 'lizard_blockbox/kilometers.json', (json) =>
@@ -161,9 +137,7 @@ MeasuresMapView = Backbone.View.extend
         setTimeout(runDelayed, 500)
 
     render: ->
-        @render_measure_IVM()
-        @render_measure_QS()
-        @render_measure_PKB()
+        @render_measures()
         @render_rivers()
 
 
@@ -198,7 +172,7 @@ onFeatureUnhighlight = (feature) ->
 
 onFeatureToggle = (feature) ->
     attr = feature.attributes
-    short_name = if attr["Code_IVM"] then attr["Code_IVM"] else attr["code_QS"]
+    short_name = attr["code"]
     toggleMeasure short_name
 
 JSONLayer = (name, json) ->
