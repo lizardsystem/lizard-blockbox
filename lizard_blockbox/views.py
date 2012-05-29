@@ -64,22 +64,30 @@ class BlockboxView(MapView):
             short_name__in=selected_measures).values(
             'name', 'short_name', 'measure_type', 'km_from')
 
-    # TODO: copy/pasted from selected_measures()
+    def measure_headers(self):
+        """Return headers for measures table."""
+        measure = models.Measure.objects.all()[0]
+        headers = ['Naam']
+        headers += [field['label'] for field in measure.pretty()]
+        headers.append('PDF')
+        return headers
+
     def measures(self):
-        measures = models.Measure.objects.all().values(
-            'name', 'short_name', 'measure_type', 'km_from')
+        measures = models.Measure.objects.all()
         selected_measures = _selected_measures(self.request)
         available_factsheets = _available_factsheets()
-        for measure in measures:
-            measure['selected'] = measure['short_name'] in selected_measures
-            if not measure['name']:
-                measure['name'] = measure['short_name']
-            if not measure['measure_type']:
-                measure['measure_type'] = 'Onbekend'
-            if not measure['km_from']:
-                measure['km_from'] = 'Onbekend'
-            measure['pdf'] = measure['short_name'] in available_factsheets
-        return measures
+        result = []
+        for measure_obj in measures:
+            measure = {}
+            measure['fields'] = measure_obj.pretty()
+            measure['selected'] = measure_obj.short_name in selected_measures
+            measure['name'] = unicode(measure_obj)
+            if measure_obj.short_name in available_factsheets:
+                measure['pdf_link'] = reverse(
+                    'measure_factsheet',
+                    kwargs={'measure': measure_obj.short_name})
+            result.append(measure)
+        return result
 
     @property
     def legends(self):
