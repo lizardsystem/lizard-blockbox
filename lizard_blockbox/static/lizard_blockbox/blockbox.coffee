@@ -34,6 +34,8 @@ TRIANGLE_COLOR = "#E78B00"
 SQUARE_COLOR = "#122F64"
 
 
+STROKEWIDTH = 5
+
 graphTimer = ''
 hasTooltip = ''
 
@@ -191,6 +193,7 @@ RiverLayerRule = (from, to, color) ->
         symbolizer:
             fillColor: color
             strokeColor: color
+            strokeWidth: STROKEWIDTH
     )
     rule
 
@@ -207,6 +210,8 @@ RiverLayerBorderRule = (to, color) ->
     rule
 
 JSONRiverLayer = (name, json) ->
+    console.log "json:", json
+    console.log "name:", name
     rules = [
         RiverLayerRule 1.00, 1.50, DARKRED
         RiverLayerRule 0.50, 1.00, MIDDLERED
@@ -220,13 +225,15 @@ JSONRiverLayer = (name, json) ->
             symbolizer:
                 fillColor: GRAY
                 strokeColor: GRAY
+                strokeWidth: STROKEWIDTH
     ]
 
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
             fillColor: GRAY
             strokeColor: GRAY
+            strokeWidth: STROKEWIDTH
         OpenLayers.Feature.Vector.style["default"]))
-
+    
     styleMap.styles["default"].addRules(rules)
 
     geojson_format = new OpenLayers.Format.GeoJSON()
