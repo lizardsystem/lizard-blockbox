@@ -509,9 +509,9 @@ setPlaceholderControl = (control_data) ->
                     item.series.data[item.dataIndex][2]
                     item.series.data[item.dataIndex][4]
                 )
-          else
-              $("#tooltip").remove()
-              previousPoint = null
+        else
+            $("#tooltip").remove()
+            previousPoint = null
 
 
 
