@@ -9,13 +9,6 @@
 
 {% endblock %}
 
-{% block map-javascript %}
-    {{ block.super }}
-    <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
-    </script>
-{% endblock %}
-
 {% block css %}
   {{ block.super }}
   <link rel="stylesheet"
@@ -43,7 +36,7 @@
 {% endblock %}
 
 {% block content %}
-  <div id="textual">
+  <div class="textual-content give-me-height">
     <h1>Geselecteerde maatregelen</h1>
     {% for reach in view.measures_per_reach %}
       <h2>

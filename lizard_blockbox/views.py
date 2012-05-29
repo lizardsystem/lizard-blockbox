@@ -109,8 +109,11 @@ class SelectedMeasuresView(UiView):
         measures = models.Measure.objects.filter(
             short_name__in=self.selected_names())
         for measure in measures:
-            reach = measure.traject or 'unknown'
-            reaches[reach].append(measure)
+            if measure.reach:
+                reach_name = measure.reach.slug
+            else:
+                reach_name = 'unknown'
+            reaches[reach_name].append(measure)
         result = []
         print models.Measure._meta.fields
         for name, measures in reaches.items():
@@ -207,7 +210,7 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
             location__range=(element.km_from, element.km_to))
                          for element in subset_reaches)
 
-        #Join the querysets in segments_join into one.
+        # Join the querysets in segments_join into one.
         riversegments = reduce(operator.or_, segments_join)
         riversegments = riversegments.distinct().order_by('location')
 
@@ -249,12 +252,14 @@ def calculated_measures_json(request):
 
 def _selected_river(request):
     """Return the selected river"""
-
+    available_reaches = models.NamedReach.objects.values_list(
+        'name', flat=True).distinct().order_by('name')
     if not 'river' in request.session:
-        #XXX: Get a correct selected river if the river is unselected.
-        reaches = models.NamedReach.objects.values('name').distinct(
-            ).order_by('name')
-        request.session['river'] = reaches[0]['name']
+        request.session['river'] = available_reaches[0]
+    if request.session['river'] not in available_reaches:
+        logger.warn("Selected river %s doesn't exist anymore.",
+                    request.session['river'])
+        request.session['river'] = available_reaches[0]
     return request.session['river']
 
 
