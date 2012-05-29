@@ -124,17 +124,9 @@
   MeasuresMapView = Backbone.View.extend({
     measures: function() {
       var _this = this;
-      $.getJSON(this.static_url + 'lizard_blockbox/IVM.json', function(json) {
-        _this.IVM = JSONTooltip('IVM', json);
-        return _this.render_measure_IVM(_this.IVM);
-      });
-      $.getJSON(this.static_url + 'lizard_blockbox/QS.json', function(json) {
-        _this.QS = JSONTooltip('QS', json);
-        return _this.render_measure_QS(_this.QS);
-      });
-      return $.getJSON(this.static_url + 'lizard_blockbox/PKB_LT.json', function(json) {
-        _this.PKB = JSONTooltip('PKB', json);
-        return _this.render_measure_PKB(_this.PKB);
+      return $.getJSON(this.static_url + 'lizard_blockbox/measures.json', function(json) {
+        _this.measures = JSONTooltip('Maatregelen', json);
+        return _this.render_measures(_this.measures);
       });
     },
     selected_items: function() {
@@ -169,47 +161,13 @@
         return rivers.redraw();
       });
     },
-    render_measure_IVM: function(IVM) {
+    render_measures: function(measures) {
       var feature, selected_items, _i, _len, _ref, _ref1;
-      if (IVM == null) {
-        IVM = this.IVM;
+      if (measures == null) {
+        measures = this.measures;
       }
       selected_items = this.selected_items();
-      _ref = IVM.features;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        feature = _ref[_i];
-        if (_ref1 = feature.attributes.Code_IVM, __indexOf.call(selected_items, _ref1) >= 0) {
-          feature.attributes.selected = true;
-        } else {
-          feature.attributes.selected = false;
-        }
-      }
-      return IVM.redraw();
-    },
-    render_measure_QS: function(QS) {
-      var feature, selected_items, _i, _len, _ref, _ref1;
-      if (QS == null) {
-        QS = this.QS;
-      }
-      selected_items = this.selected_items();
-      _ref = QS.features;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        feature = _ref[_i];
-        if (_ref1 = feature.attributes.code_QS, __indexOf.call(selected_items, _ref1) >= 0) {
-          feature.attributes.selected = true;
-        } else {
-          feature.attributes.selected = false;
-        }
-      }
-      return QS.redraw();
-    },
-    render_measure_PKB: function(PKB) {
-      var feature, selected_items, _i, _len, _ref, _ref1;
-      if (PKB == null) {
-        PKB = this.PKB;
-      }
-      selected_items = this.selected_items();
-      _ref = PKB.features;
+      _ref = measures.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         feature = _ref[_i];
         if (_ref1 = feature.attributes.code, __indexOf.call(selected_items, _ref1) >= 0) {
@@ -218,7 +176,7 @@
           feature.attributes.selected = false;
         }
       }
-      return PKB.redraw();
+      return measures.redraw();
     },
     rivers: function() {
       var _this = this;
@@ -238,9 +196,7 @@
       return setTimeout(runDelayed, 500);
     },
     render: function() {
-      this.render_measure_IVM();
-      this.render_measure_QS();
-      this.render_measure_PKB();
+      this.render_measures();
       return this.render_rivers();
     }
   });
@@ -269,7 +225,7 @@
   onFeatureToggle = function(feature) {
     var attr, short_name;
     attr = feature.attributes;
-    short_name = attr["Code_IVM"] ? attr["Code_IVM"] : attr["code_QS"];
+    short_name = attr["code"];
     return toggleMeasure(short_name);
   };
 

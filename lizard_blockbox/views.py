@@ -51,8 +51,7 @@ class BlockboxView(MapView):
         return actions
 
     def reaches(self):
-        reaches = models.NamedReach.objects.all().values('name'
-                                                         ).order_by('name')
+        reaches = models.NamedReach.objects.all().values('name')
         #XXX: Get a correct selected river
         reach = reaches[0]
         reach['selected'] = True
@@ -205,11 +204,11 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
         logger.info("Cache miss for _water_levels")
         reach = models.NamedReach.objects.get(name=selected_river)
         subset_reaches = reach.subsetreach_set.all()
-        segments_join = []
-        for element in subset_reaches:
-            segments_join.append(
-                models.RiverSegment.objects.filter(reach=element.reach,
-                    location__range=(element.km_from, element.km_to)))
+
+        segments_join = (models.RiverSegment.objects.filter(
+            reach=element.reach,
+            location__range=(element.km_from, element.km_to))
+                         for element in subset_reaches)
 
         # Join the querysets in segments_join into one.
         riversegments = reduce(operator.or_, segments_join)
