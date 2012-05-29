@@ -477,6 +477,8 @@ setPlaceholderControl = (control_data) ->
             show: true
             symbol: "square"
             radius: 2
+            fill: 1
+            fillColor: BLUE
         lines:
             show: false
         color: BLUE
@@ -487,6 +489,7 @@ setPlaceholderControl = (control_data) ->
             show: true
             symbol: "diamond"
             radius: 4
+            fill: true
         lines:
             show: false
         color: RED
@@ -514,19 +517,28 @@ setPlaceholderControl = (control_data) ->
                     graphTimer = ''
                 graphTimer = setTimeout(callback, 200)
 
-    $("#placeholder_control").bind "plothover", (event, pos, item) ->
 
-        if item and not hasTooltip
-            showTooltip(
-                item.pageX,
-                item.pageY,
-                item.series.data[item.dataIndex][2]
-                item.series.data[item.dataIndex][4]
-            )
-            hasTooltip = 'yep'
-        else
-            hasTooltip = ''
-            $('#tooltip').remove()
+    # This trick with previousPoint is neccessary to prevent tooltip flickering!
+    previousPoint = null
+    $("#placeholder_control").bind "plothover", (event, pos, item) ->
+        if item
+            if previousPoint != item.dataIndex
+                previousPoint = item.dataIndex
+                
+                $("#tooltip").remove()
+                x = item.datapoint[0].toFixed(2)
+                y = item.datapoint[1].toFixed(2)
+        
+                showTooltip(
+                    item.pageX, 
+                    item.pageY, 
+                    item.series.data[item.dataIndex][2]
+                    item.series.data[item.dataIndex][4]
+                )
+          else
+              $("#tooltip").remove()
+              previousPoint = null
+
 
 
 resize_placeholder = ->
