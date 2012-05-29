@@ -16,6 +16,13 @@ class Reach(models.Model):
         blank=False,
         help_text=u"Slug.")
 
+    def __unicode__(self):
+        return self.slug
+
+    class Meta:
+        verbose_name = _('reach')
+        verbose_name_plural = _('reaches')
+
 
 class RiverSegment(gis_models.Model):
     """
@@ -75,40 +82,51 @@ class Measure(models.Model):
     """
 
     name = models.CharField(
-        _('name'),
+        'Titel',
         max_length=100,
         blank=True,
         null=True)
     short_name = models.CharField(
-        _('short name'),
+        'Code',
         max_length=100,
         blank=True,
         null=True)
     measure_type = models.CharField(
-        _('measure type'),
+        'Type',
         max_length=100,
         blank=True,
         null=True)
     km_from = models.IntegerField(
-        _('from km'),
+        'Km van',
         null=True,
         blank=True)
     km_to = models.IntegerField(
-        _('to km'),
+        'Km tot',
         null=True,
         blank=True)
 
-    reach = models.ForeignKey(Reach, blank=True, null=True)
-    riverpart = models.CharField(max_length=100, blank=True, null=True)
-    mhw_profit_cm = EmptyStringFloatField(blank=True, null=True)
-    mhw_profit_m2 = EmptyStringFloatField(blank=True, null=True)
-    investment_costs = EmptyStringFloatField(blank=True, null=True)
-    benefits = EmptyStringFloatField(blank=True, null=True)
-    b_o_costs = EmptyStringFloatField(blank=True, null=True)
-    reinvestment = EmptyStringFloatField(blank=True, null=True)
-    damage = models.CharField(max_length=100, blank=True, null=True)
-    total_costs = EmptyStringFloatField(blank=True, null=True)
+    reach = models.ForeignKey(
+        Reach, blank=True, null=True, verbose_name=_('reach'))
+    riverpart = models.CharField(
+        'Rivierdeel', max_length=100, blank=True, null=True)
+    mhw_profit_cm = EmptyStringFloatField(
+        'MHW winst cm', blank=True, null=True)
+    mhw_profit_m2 = EmptyStringFloatField(
+        'MHW winst m2', blank=True, null=True)
+    investment_costs = EmptyStringFloatField(
+        'Kosten investering', blank=True, null=True)
+    benefits = EmptyStringFloatField(
+        'Baten', blank=True, null=True)
+    b_o_costs = EmptyStringFloatField(
+        'Kosten B&O', blank=True, null=True)
+    reinvestment = EmptyStringFloatField(
+        'Herinvestering', blank=True, null=True)
+    damage = models.CharField(
+        'Schade', max_length=100, blank=True, null=True)
+    total_costs = EmptyStringFloatField(
+        'Kosten totaal', blank=True, null=True)
     quality_of_environment = models.CharField(
+        'Ruimtelijke kwaliteit',
         max_length=100, blank=True, null=True)
 
     def __unicode__(self):

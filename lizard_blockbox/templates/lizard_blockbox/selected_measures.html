@@ -48,7 +48,7 @@
         <dl>
           {% for field in measure.pretty %}
           <dt>{{ field.label }}</dt>
-          <dd>{{ field.value }}</dd>
+          <dd>{% firstof field.value "Onbekend" %}</dd>
           {% endfor %}
         </dl>
       {% endfor %}
