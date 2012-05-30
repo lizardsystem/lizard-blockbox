@@ -83,7 +83,7 @@ class Measure(models.Model):
 
     name = models.CharField(
         'Titel',
-        max_length=100,
+        max_length=200,
         blank=True,
         null=True)
     short_name = models.CharField(
