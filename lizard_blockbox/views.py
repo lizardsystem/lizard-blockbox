@@ -258,6 +258,29 @@ def calculated_measures_json(request):
     return response
 
 
+def city_locations_json(request):
+    """Return the city locations for the selected river."""
+
+    selected_river = _selected_river(request)
+    reach = models.NamedReach.objects.get(name=selected_river)
+    subset_reaches = reach.subsetreach_set.all()
+    segments_join = (models.CityLocation.objects.filter(
+            reach=element.reach,
+            km__range=(element.km_from, element.km_to))
+                     for element in subset_reaches)
+
+    # Join the querysets in segments_join into one.
+    city_locations = reduce(operator.or_, segments_join)
+    city_locations = city_locations.distinct().order_by('km')
+
+    json_list = [[km, city] for km, city in
+                 city_locations.values_list('km', 'city')]
+
+    response = HttpResponse(mimetype='application/json')
+    json.dump(json_list, response)
+    return response
+
+
 def _selected_river(request):
     """Return the selected river"""
     available_reaches = models.NamedReach.objects.values_list(

@@ -62,6 +62,17 @@ class SubsetReach(models.Model):
     km_to = models.IntegerField()
 
 
+class CityLocation(models.Model):
+    """River City locations."""
+
+    reach = models.ForeignKey(Reach)
+    city = models.CharField(max_length=100)
+    km = models.IntegerField()
+
+    def __unicode__(self):
+        return u'city: {city}, km: {km}'.format(**self.__dict__)
+
+
 class FloodingChance(models.Model):
     """The FloodingChance
 
