@@ -502,7 +502,13 @@ setPlaceholderControl = (control_data) ->
     # This trick with previousPoint is neccessary to prevent tooltip flickering!
     previousPoint = null
     $("#placeholder_control").bind "plothover", (event, pos, item) ->
+
         if item
+            # Shuffles the tooltip to the left when it gets too close to
+            # the right of the browser window:
+            if item.pageX > ($(window).width() - 300)
+                item.pageX = item.pageX - 300
+            
             if previousPoint != item.dataIndex
                 previousPoint = item.dataIndex
                 
