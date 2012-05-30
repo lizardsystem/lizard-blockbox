@@ -33,6 +33,9 @@ DIAMOND_COLOR = "#105987"
 TRIANGLE_COLOR = "#E78B00"
 SQUARE_COLOR = "#122F64"
 
+# City dot color
+PURPLE = "#E01B6A"
+BLACK = "#000000"
 
 STROKEWIDTH = 5
 
@@ -296,6 +299,21 @@ JSONTooltip = (name, json) ->
 # Graph part                                          #
 #######################################################
 
+showLabel = (x, y, contents) ->
+    $('<div id="label">#{contents}</div>').css(
+        position: 'absolute',
+        display: 'none',
+        top: y + 5,
+        left: x + 250,
+        border: '1px solid #fdd',
+        padding: '2px',
+        'background-color': '#fee',
+        opacity: 0.80
+    )
+
+
+
+
 showTooltip = (x, y, name, type_name) ->
     $("""<div id="tooltip" class="popover top">
            <div class="popover-inner">
@@ -321,14 +339,18 @@ setFlotSeries = () ->
 
 setMeasureSeries = () ->
     json_url = $('#blockbox-table').data('measure-list-url')
+    cities_list_url = $('#blockbox-table').data('cities-list-url')
     $.getJSON json_url, (data) ->
-        setPlaceholderControl data
+        $.getJSON cities_list_url, (cities) ->
+            setPlaceholderControl data, cities
+
 
 
 setPlaceholderTop = (json_data) ->
     reference = ([num.location, num.reference_value] for num in json_data)
     target = ([num.location, num.reference_target] for num in json_data)
     measures = ([num.location, num.measures_level] for num in json_data)
+    cities = ([num.location, num.city] for num in json_data)
 
     selected_river = $("#blockbox-river .chzn-select")[0].value
 
@@ -372,6 +394,10 @@ setPlaceholderTop = (json_data) ->
 
     ]
 
+    # tickFormatter = (val, axis) ->
+    #     val+10
+    # 
+
     options =
         xaxis:
             min: window.min_graph_value
@@ -410,11 +436,12 @@ setPlaceholderTop = (json_data) ->
     #         refreshGraph()
 
 
-setPlaceholderControl = (control_data) ->
+setPlaceholderControl = (control_data, cities_data) ->
 
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected)
     selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected)
     non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable)
+    cities = ([city[0], 15, city[1], city[1], "Stad"] for city in cities_data)
 
     selected_river = $("#blockbox-river .chzn-select")[0].value
 
@@ -452,6 +479,20 @@ setPlaceholderControl = (control_data) ->
                 cb = label
                 cb
     measures_controls = [
+
+        label: "Steden"
+        data: cities
+        points:
+            show: true
+            symbol: "circle"
+            radius: 3
+            fill: 1
+            fillColor: BLACK
+        lines:
+            show: false
+        color: BLACK
+    ,
+        
         label: "Maatregelen"
         data: measures
         points:
@@ -486,9 +527,17 @@ setPlaceholderControl = (control_data) ->
         color: GRAY
     ]
     pl_control = $.plot($("#placeholder_control"), measures_controls, options)
+    
+    
+    # (city[0], city[1], city[2]) for city in pl_control.getData()[0].data
+    # showLabel(city[0], city[1], city[2]) for city in pl_control.getData()[0].data
+
+    # showLabel(city[0], city[1], city[2]) for city in pl_control.getData()[0].data
 
     $("#placeholder_control").bind "plotclick", (event, pos, item) ->
         if item
+            if item.series.label is "Steden"
+                return
             pl_control.unhighlight item.series, item.datapoint
             result_id = item.series.data[item.dataIndex][1]
             measure_id = item.series.data[item.dataIndex][3]
@@ -504,6 +553,7 @@ setPlaceholderControl = (control_data) ->
     $("#placeholder_control").bind "plothover", (event, pos, item) ->
 
         if item
+
             # Shuffles the tooltip to the left when it gets too close to
             # the right of the browser window:
             if item.pageX > ($(window).width() - 300)
@@ -515,7 +565,7 @@ setPlaceholderControl = (control_data) ->
                 $("#tooltip").remove()
                 x = item.datapoint[0].toFixed(2)
                 y = item.datapoint[1].toFixed(2)
-        
+
                 showTooltip(
                     item.pageX, 
                     item.pageY, 
