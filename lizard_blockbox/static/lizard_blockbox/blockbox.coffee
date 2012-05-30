@@ -233,7 +233,7 @@ JSONRiverLayer = (name, json) ->
             strokeColor: GRAY
             strokeWidth: STROKEWIDTH
         OpenLayers.Feature.Vector.style["default"]))
-    
+
     styleMap.styles["default"].addRules(rules)
 
     geojson_format = new OpenLayers.Format.GeoJSON()
@@ -394,13 +394,11 @@ setPlaceholderTop = (json_data) ->
             axisMargin: 10
             # labelMargin:-50
 
-    legend:
-        show: true
-        noColumns: 4
-        container: $("#placeholder_top_legend")
-        labelFormatter: (label, series) ->
-            cb = label
-            cb
+        legend:
+            container: $("#placeholder_top_legend")
+            labelFormatter: (label, series) ->
+                cb = label
+                cb
 
     pl_lines = $.plot($("#placeholder_top"), ed_data, options)
     window.topplot = pl_lines
@@ -445,12 +443,11 @@ setPlaceholderControl = (control_data) ->
             # labelMargin:-50
 
         legend:
-            show: false
-            noColumns: 4
-            container: $("#placeholder_control_legend")
+            container: $("#measures_legend")
             labelFormatter: (label, series) ->
                 cb = label
                 cb
+
     measures_controls = [
         label: "Maatregelen"
         data: measures
@@ -505,14 +502,14 @@ setPlaceholderControl = (control_data) ->
         if item
             if previousPoint != item.dataIndex
                 previousPoint = item.dataIndex
-                
+
                 $("#tooltip").remove()
                 x = item.datapoint[0].toFixed(2)
                 y = item.datapoint[1].toFixed(2)
-        
+
                 showTooltip(
-                    item.pageX, 
-                    item.pageY, 
+                    item.pageX,
+                    item.pageY,
                     item.series.data[item.dataIndex][2]
                     item.series.data[item.dataIndex][4]
                 )
@@ -525,23 +522,17 @@ setPlaceholderControl = (control_data) ->
 resize_placeholder = ->
     clearTimeout doit
     doit = setTimeout(->
-        $('#placeholder_top_legend').empty()
         $('#placeholder_top').empty()
         $('#placeholder_control').empty()
-        $('#placeholder_control_legend').empty()
 
-        $('#placeholder_top_legend').css('width', '100%')
         $('#placeholder_top').css('width', '100%')
         $('#placeholder_control').css('width', '100%')
-        $('#placeholder_control_legend').css('width', '100%')
 
-        $('#placeholder_top_legend').css('height', '0px')
         $('#placeholder_top').css('height', '150px')
         $('#placeholder_control').css('height', '100px')
-        $('#placeholder_control_legend').css('height', '100px')
 
         setFlotSeries()
-    ,100)
+    ,200)
 
 $('.btn.collapse-sidebar').click ->
     resize_placeholder()

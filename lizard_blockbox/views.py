@@ -91,14 +91,21 @@ class BlockboxView(MapView):
 
     @property
     def legends(self):
-        result = super(BlockboxView, self).legends
-
+        result_graph_legend = FlotLegend(
+            name="Effecten grafiek",
+            div_id='placeholder_top_legend')
+        measures_legend = FlotLegend(
+            name="Maatregelselectie grafiek",
+            div_id='measures_legend')
+        result = [result_graph_legend, measures_legend]
+        result += super(BlockboxView, self).legends
         return result
 
 
 class FlotLegend(Legend):
     """UI widget for a flot graph legend."""
-    template_name = 'lizard_map/legend_item.html'
+    template_name = 'lizard_blockbox/flot_legend_item.html'
+    div_id = None
 
 
 class SelectedMeasuresView(UiView):

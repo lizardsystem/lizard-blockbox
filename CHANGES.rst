@@ -5,6 +5,8 @@ Changelog of lizard-blockbox
 0.1 (unreleased)
 ----------------
 
+- Added legend for Flot graphs in the right-hand sidebar. [Reinout]
+
 - Added selected measures page, including a bookmarkable one. [Reinout]
 
 - Added dynamic graph, a map with the measure locations and river
