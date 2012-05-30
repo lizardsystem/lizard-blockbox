@@ -199,3 +199,22 @@ class WaterLevelDifference(models.Model):
         return '%s %s Reference: %s Difference: %s' % (
             self.riversegment, self.measure, self.flooding_chance,
             self.level_difference)
+
+
+class Vertex(models.Model):
+    """Vertex
+
+    Dutch: *hoekpunt*.
+    """
+
+    name = models.CharField(max_length=100)
+    named_reaches = models.ManyToManyField(
+        NamedReach, null=True, blank=True)
+
+
+class VertexValue(models.Model):
+    """Vertex Value for a specific location."""
+
+    vertex = models.ForeignKey(Vertex)
+    riversegment = models.ForeignKey(RiverSegment)
+    value = models.FloatField()
