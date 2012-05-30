@@ -620,6 +620,9 @@
     return $("#placeholder_control").bind("plothover", function(event, pos, item) {
       var x, y;
       if (item) {
+        if (item.pageX > ($(window).width() - 300)) {
+          item.pageX = item.pageX - 300;
+        }
         if (previousPoint !== item.dataIndex) {
           previousPoint = item.dataIndex;
           $("#tooltip").remove();
