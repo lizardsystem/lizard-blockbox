@@ -28,7 +28,8 @@ class Command(BaseCommand):
             # Delete all objects from models.
             for model in ('RiverSegment', 'FloodingChance', 'Measure',
                           'ReferenceValue', 'WaterLevelDifference',
-                          'Reach', 'NamedReach', 'SubsetReach'):
+                          'Reach', 'NamedReach', 'SubsetReach',
+                          'CityLocation', 'Vertex', 'VertexValue'):
                 getattr(models, model).objects.all().delete()
 
         if len(args) == 0:

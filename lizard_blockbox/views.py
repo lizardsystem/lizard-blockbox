@@ -20,6 +20,7 @@ from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
 
 from lizard_blockbox import models
+from lizard_blockbox.utils import namedreach2riversegments
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
 REFERENCE_TARGET = -0.11
@@ -217,20 +218,11 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
     water_levels = cache.get(cache_key)
     if not water_levels:
         logger.info("Cache miss for _water_levels")
-        reach = models.NamedReach.objects.get(name=selected_river)
-        subset_reaches = reach.subsetreach_set.all()
-
-        segments_join = (models.RiverSegment.objects.filter(
-            reach=element.reach,
-            location__range=(element.km_from, element.km_to))
-                         for element in subset_reaches)
-
-        # Join the querysets in segments_join into one.
-        riversegments = reduce(operator.or_, segments_join)
-        riversegments = riversegments.distinct().order_by('location')
 
         measures = models.Measure.objects.filter(
             short_name__in=selected_measures)
+
+        riversegments = namedreach2riversegments(selected_river)
 
         water_levels = []
         for segment in riversegments:
@@ -243,8 +235,14 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
                  'target_difference': measures_level - REFERENCE_TARGET,
                  'location': segment.location,
                  'location_reach': '%i_%s' % (segment.location,
-                                              segment.reach.slug)
+                                              segment.reach.slug),
                  }
+            try:
+                city = models.CityLocation.objects.get(km=segment.location, reach=segment.reach)
+            except models.CityLocation.DoesNotExist:
+                pass
+            else:
+                d['city'] = city.city
             water_levels.append(d)
         cache.set(cache_key, water_levels, 5 * 60)
     return water_levels
@@ -255,6 +253,7 @@ def calculated_measures_json(request):
 
     flooding_chance = models.FloodingChance.objects.get(name="T1250")
     selected_river = _selected_river(request)
+    
     selected_measures = _selected_measures(request)
     water_levels = _water_levels(flooding_chance,
                                  selected_river,
@@ -262,6 +261,29 @@ def calculated_measures_json(request):
 
     response = HttpResponse(mimetype='application/json')
     json.dump(water_levels, response)
+    return response
+
+
+def city_locations_json(request):
+    """Return the city locations for the selected river."""
+
+    selected_river = _selected_river(request)
+    reach = models.NamedReach.objects.get(name=selected_river)
+    subset_reaches = reach.subsetreach_set.all()
+    segments_join = (models.CityLocation.objects.filter(
+            reach=element.reach,
+            km__range=(element.km_from, element.km_to))
+                     for element in subset_reaches)
+
+    # Join the querysets in segments_join into one.
+    city_locations = reduce(operator.or_, segments_join)
+    city_locations = city_locations.distinct().order_by('km')
+
+    json_list = [[km, city] for km, city in
+                 city_locations.values_list('km', 'city')]
+
+    response = HttpResponse(mimetype='application/json')
+    json.dump(json_list, response)
     return response
 
 

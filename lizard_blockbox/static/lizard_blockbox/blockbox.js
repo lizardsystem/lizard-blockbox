@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, selectRiver, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, selectRiver, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showLabel, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -35,6 +35,10 @@
   TRIANGLE_COLOR = "#E78B00";
 
   SQUARE_COLOR = "#122F64";
+
+  PURPLE = "#E01B6A";
+
+  BLACK = "#000000";
 
   STROKEWIDTH = 5;
 
@@ -336,6 +340,19 @@
     return vector_layer;
   };
 
+  showLabel = function(x, y, contents) {
+    return $('<div id="label">#{contents}</div>').css({
+      position: 'absolute',
+      display: 'none',
+      top: y + 5,
+      left: x + 250,
+      border: '1px solid #fdd',
+      padding: '2px',
+      'background-color': '#fee',
+      opacity: 0.80
+    });
+  };
+
   showTooltip = function(x, y, name, type_name) {
     return $("<div id=\"tooltip\" class=\"popover top\">\n  <div class=\"popover-inner\">\n    <div class=\"popover-title\"><h3>" + name + "</h3></div>\n    <div class=\"popover-content\">Type: " + type_name + "</div>\n  </div>\n</div>").css({
       top: y - 35,
@@ -355,15 +372,18 @@
   };
 
   setMeasureSeries = function() {
-    var json_url;
+    var cities_list_url, json_url;
     json_url = $('#blockbox-table').data('measure-list-url');
+    cities_list_url = $('#blockbox-table').data('cities-list-url');
     return $.getJSON(json_url, function(data) {
-      return setPlaceholderControl(data);
+      return $.getJSON(cities_list_url, function(cities) {
+        return setPlaceholderControl(data, cities);
+      });
     });
   };
 
   setPlaceholderTop = function(json_data) {
-    var ed_data, measures, num, options, pl_lines, reference, selected_river, target;
+    var cities, ed_data, measures, num, options, pl_lines, reference, selected_river, target;
     reference = (function() {
       var _i, _len, _results;
       _results = [];
@@ -388,6 +408,15 @@
       for (_i = 0, _len = json_data.length; _i < _len; _i++) {
         num = json_data[_i];
         _results.push([num.location, num.measures_level]);
+      }
+      return _results;
+    })();
+    cities = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = json_data.length; _i < _len; _i++) {
+        num = json_data[_i];
+        _results.push([num.location, num.city]);
       }
       return _results;
     })();
@@ -471,8 +500,8 @@
     return window.topplot = pl_lines;
   };
 
-  setPlaceholderControl = function(control_data) {
-    var d4, d5, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, previousPoint, selected_measures, selected_river;
+  setPlaceholderControl = function(control_data, cities_data) {
+    var cities, city, d4, d5, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, previousPoint, selected_measures, selected_river;
     measures = (function() {
       var _i, _len, _results;
       _results = [];
@@ -503,6 +532,15 @@
         if (!num.selectable) {
           _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
         }
+      }
+      return _results;
+    })();
+    cities = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = cities_data.length; _i < _len; _i++) {
+        city = cities_data[_i];
+        _results.push([city[0], 15, city[1], city[1], "Stad"]);
       }
       return _results;
     })();
@@ -554,6 +592,20 @@
     };
     measures_controls = [
       {
+        label: "Steden",
+        data: cities,
+        points: {
+          show: true,
+          symbol: "circle",
+          radius: 3,
+          fill: 1,
+          fillColor: BLACK
+        },
+        lines: {
+          show: false
+        },
+        color: BLACK
+      }, {
         label: "Maatregelen",
         data: measures,
         points: {
@@ -598,6 +650,7 @@
     $("#placeholder_control").bind("plotclick", function(event, pos, item) {
       var callback, measure_id, result_id;
       if (item) {
+        if (item.series.label === "Steden") return;
         pl_control.unhighlight(item.series, item.datapoint);
         result_id = item.series.data[item.dataIndex][1];
         measure_id = item.series.data[item.dataIndex][3];
@@ -614,6 +667,7 @@
     return $("#placeholder_control").bind("plothover", function(event, pos, item) {
       var x, y;
       if (item) {
+        if (item.pageX > ($(window).width() - 300)) item.pageX = item.pageX - 300;
         if (previousPoint !== item.dataIndex) {
           previousPoint = item.dataIndex;
           $("#tooltip").remove();

@@ -62,6 +62,17 @@ class SubsetReach(models.Model):
     km_to = models.IntegerField()
 
 
+class CityLocation(models.Model):
+    """River City locations."""
+
+    reach = models.ForeignKey(Reach)
+    city = models.CharField(max_length=100)
+    km = models.IntegerField()
+
+    def __unicode__(self):
+        return u'city: {city}, km: {km}'.format(**self.__dict__)
+
+
 class FloodingChance(models.Model):
     """The FloodingChance
 
@@ -188,3 +199,22 @@ class WaterLevelDifference(models.Model):
         return '%s %s Reference: %s Difference: %s' % (
             self.riversegment, self.measure, self.flooding_chance,
             self.level_difference)
+
+
+class Vertex(models.Model):
+    """Vertex
+
+    Dutch: *hoekpunt*.
+    """
+
+    name = models.CharField(max_length=100)
+    named_reaches = models.ManyToManyField(
+        NamedReach, null=True, blank=True)
+
+
+class VertexValue(models.Model):
+    """Vertex Value for a specific location."""
+
+    vertex = models.ForeignKey(Vertex)
+    riversegment = models.ForeignKey(RiverSegment)
+    value = models.FloatField()
