@@ -107,6 +107,7 @@ class FlotLegend(Legend):
     """UI widget for a flot graph legend."""
     template_name = 'lizard_blockbox/flot_legend_item.html'
     div_id = None
+    labels = None  # Only used for label explanation of y axis measure kinds.
 
 
 class SelectedMeasuresView(UiView):
@@ -237,6 +238,7 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
                  'location_reach': '%i_%s' % (segment.location,
                                               segment.reach.slug),
                  }
+            # This next part can probably go.
             try:
                 city = models.CityLocation.objects.get(km=segment.location, reach=segment.reach)
             except models.CityLocation.DoesNotExist:
@@ -332,11 +334,28 @@ def toggle_measure(request):
         return
     measure_id = request.POST['measure_id']
     selected_measures = _selected_measures(request)
+    # Fix for empty u'' that somehow showed up.
+    available_shortnames = list(models.Measure.objects.all().values_list(
+            'short_name', flat=True))
+    to_remove = []
+    for shortname in selected_measures:
+        if shortname not in available_shortnames:
+            to_remove.append(shortname)
+            logger.warn(
+                "Removed unavailable shortname %r from selected measures.",
+                shortname)
+    if to_remove:
+        selected_measures = selected_measures - set(to_remove)
+        request.session[SELECTED_MEASURES_KEY] = selected_measures
+
     unselectable_measures = _unselectable_measures(request)
     if measure_id in selected_measures:
         selected_measures.remove(measure_id)
+    elif measure_id not in available_shortnames:
+        logger.error("Non-existing shortname %r passed to toggle_measure",
+                     measure_id)
     elif not measure_id in unselectable_measures:
-            selected_measures.add(measure_id)
+        selected_measures.add(measure_id)
     request.session[SELECTED_MEASURES_KEY] = selected_measures
     return HttpResponse(json.dumps(list(selected_measures)))
 
@@ -357,6 +376,12 @@ def list_measures_json(request):
         'name', 'short_name', 'measure_type', 'km_from')
     all_types = sorted(list(
             set(measure['measure_type'] for measure in measures)))
+    single_characters = []
+    for measure_type in all_types:
+        if measure_type is None:
+            single_characters.append('x')
+        else:
+            single_characters.append(measure_type[0].lower())
 
     selected_measures = _selected_measures(request)
     unselectable_measures = _unselectable_measures(request)
@@ -365,6 +390,7 @@ def list_measures_json(request):
         measure['selectable'] = (
             measure['short_name'] not in unselectable_measures)
         measure['type_index'] = all_types.index(measure['measure_type'])
+        measure['type_indicator'] = single_characters[measure['type_index']]
     response = HttpResponse(mimetype='application/json')
     json.dump(list(measures), response)
     return response
