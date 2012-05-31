@@ -238,7 +238,8 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
                                               segment.reach.slug),
                  }
             try:
-                city = models.CityLocation.objects.get(km=segment.location, reach=segment.reach)
+                city = models.CityLocation.objects.get(
+                    km=segment.location, reach=segment.reach)
             except models.CityLocation.DoesNotExist:
                 pass
             else:
@@ -253,7 +254,7 @@ def calculated_measures_json(request):
 
     flooding_chance = models.FloodingChance.objects.get(name="T1250")
     selected_river = _selected_river(request)
-    
+
     selected_measures = _selected_measures(request)
     water_levels = _water_levels(flooding_chance,
                                  selected_river,
