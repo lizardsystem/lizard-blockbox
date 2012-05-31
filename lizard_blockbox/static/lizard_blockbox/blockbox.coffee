@@ -374,6 +374,9 @@ setMeasureResultsGraph = (json_data) ->
     selected_river = $("#blockbox-river .chzn-select")[0].value
 
     ed_data = [
+        label: "Hoekpunt"
+        # Vertex is in NAP, reference too. Reference is zero, by definition,
+        # so from both we subtract the vertex.
         data: vertex
         points:
             show: false
@@ -384,12 +387,11 @@ setMeasureResultsGraph = (json_data) ->
         color: GRAY
     ,
         label: "Doelwaarde"
+        # This one is always, per definition, zero. This is what we should
+        # reach.
         data: reference
         points:
             show: false
-            # show: true
-            # symbol: "triangle"
-            # radius: 1
 
         lines:
             show: true
@@ -398,12 +400,11 @@ setMeasureResultsGraph = (json_data) ->
         color: BLUE
     ,
         label: "Effect maatregelen"
+        # All measures are mostly negative, so we add them to the vertex,
+        # which pulls it downwards in the direction of the reference value.
         data: measures
         points:
             show: false
-            # show: true
-            # symbol: "triangle"
-            # radius: 2
 
         lines:
             show: true

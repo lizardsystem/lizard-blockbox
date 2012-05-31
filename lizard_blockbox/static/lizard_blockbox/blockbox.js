@@ -454,6 +454,7 @@
     selected_river = $("#blockbox-river .chzn-select")[0].value;
     ed_data = [
       {
+        label: "Hoekpunt",
         data: vertex,
         points: {
           show: false
