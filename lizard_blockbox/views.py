@@ -83,6 +83,7 @@ class BlockboxView(MapView):
             # measure['in_selected_river'] = (
             #     measure_obj.riverpart == selected_river)
             measure['name'] = unicode(measure_obj)
+            measure['short_name'] = measure_obj.short_name
             if measure_obj.short_name in available_factsheets:
                 measure['pdf_link'] = reverse(
                     'measure_factsheet',
