@@ -61,6 +61,17 @@
         {% endfor %}
       </select>
     </form>
+	<span>Selecteer een hoekpunt:</span>
+    <form id="blockbox-vertex"
+	  data-select-vertex-url="{% url lizard_blockbox_select_vertex %}"
+	  data-update-vertex-url="{% url lizard_blockbox_select_vertex %}">
+      <select data-placeholder="Kies een hoekpunt"
+	      class="chzn-select"
+	      tabindex="2"
+	      style="width:250px;">
+      </select>
+    </form>
+
 
     <h3>Geselecteerde maatregelen</h3>
     <p class="muted">

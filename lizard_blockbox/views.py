@@ -291,11 +291,19 @@ def city_locations_json(request):
 def vertex_json(request):
     selected_river = _selected_river(request)
     vertexes = models.Vertex.objects.filter(named_reaches__name=selected_river)
-    items = ('id', 'name')
-    json_list = [dict(zip(items, i)) for i in vertexes.values_list(*items)]
+    to_json = dict(vertexes.values_list('id', 'name').order_by('name'))
     response = HttpResponse(mimetype='application/json')
-    json.dump(json_list, response)
+    json.dump(to_json, response)
     return response
+
+
+def select_vertex(request):
+    """Select the vertex."""
+
+    if not request.POST:
+        return
+    request.session['vertex'] = request.POST['id']
+    return HttpResponse()
 
 
 def _selected_river(request):

@@ -70,6 +70,27 @@ selectRiver = (river_name) ->
             measuresMapView.render()
             @
 
+selectVertex = (vertex_id) ->
+    $.ajax
+        type: 'POST'
+        url: $('#blockbox-vertex').data 'select-vertex-url'
+        data:
+            'vertex': vertex_id
+        sucess: (data) ->
+            setFlotSeries()
+            measuresMapView.render()
+            @
+
+updateVertex = ->
+    $.getJSON($('#blockbox-vertex').data('update-vertex-url'), (data) ->
+        options = for id, name of data
+            "<option value='#{id}'>#{name}</option>"
+        html=options.join ""
+        console.log html
+        $('#blockbox-vertex select').html html
+        $('#blockbox-vertex .chzn-select').trigger "liszt:updated"
+        )
+
 class BlockboxRouter extends Backbone.Router
     routes:
         "map":      "map"
@@ -213,8 +234,6 @@ RiverLayerBorderRule = (to, color) ->
     rule
 
 JSONRiverLayer = (name, json) ->
-    console.log "json:", json
-    console.log "name:", name
     rules = [
         RiverLayerRule 1.00, 1.50, DARKRED
         RiverLayerRule 0.50, 1.00, MIDDLERED
@@ -604,7 +623,13 @@ $(".blockbox-toggle-measure").live 'click', (e) ->
 $(document).ready ->
     setFlotSeries()
     $("#blockbox-river .chzn-select").chosen().change(
-        () -> selectRiver @value )
+        () ->
+            selectRiver @value
+            updateVertex())
+    updateVertex()
+
+    $("#blockbox-vertex .chzn-select").chosen().change(
+        () -> selectVertex @value )
 
     $('#measures-table-top').tablesorter()
     @

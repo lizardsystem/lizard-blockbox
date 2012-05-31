@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_graphs, selectRiver, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, showLabel, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, showLabel, showTooltip, toggleMeasure, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -78,6 +78,40 @@
         measuresMapView.render();
         return this;
       }
+    });
+  };
+
+  selectVertex = function(vertex_id) {
+    return $.ajax({
+      type: 'POST',
+      url: $('#blockbox-vertex').data('select-vertex-url'),
+      data: {
+        'vertex': vertex_id
+      },
+      sucess: function(data) {
+        setFlotSeries();
+        measuresMapView.render();
+        return this;
+      }
+    });
+  };
+
+  updateVertex = function() {
+    return $.getJSON($('#blockbox-vertex').data('update-vertex-url'), function(data) {
+      var html, id, name, options;
+      options = (function() {
+        var _results;
+        _results = [];
+        for (id in data) {
+          name = data[id];
+          _results.push("<option value='" + id + "'>" + name + "</option>");
+        }
+        return _results;
+      })();
+      html = options.join("");
+      console.log(html);
+      $('#blockbox-vertex select').html(html);
+      return $('#blockbox-vertex .chzn-select').trigger("liszt:updated");
     });
   };
 
@@ -272,8 +306,6 @@
 
   JSONRiverLayer = function(name, json) {
     var geojson_format, rules, styleMap, vector_layer;
-    console.log("json:", json);
-    console.log("name:", name);
     rules = [
       RiverLayerRule(1.00, 1.50, DARKRED), RiverLayerRule(0.50, 1.00, MIDDLERED), RiverLayerRule(0.10, 0.50, LIGHTRED), RiverLayerRule(-0.10, 0.10, BLUE), RiverLayerRule(-0.50, -0.10, LIGHTGREEN), RiverLayerRule(-1.00, -0.50, MIDDLEGREEN), RiverLayerRule(-1.50, -1.00, DARKGREEN), new OpenLayers.Rule({
         elseFilter: true,
@@ -716,7 +748,12 @@
   $(document).ready(function() {
     setFlotSeries();
     $("#blockbox-river .chzn-select").chosen().change(function() {
-      return selectRiver(this.value);
+      selectRiver(this.value);
+      return updateVertex();
+    });
+    updateVertex();
+    $("#blockbox-vertex .chzn-select").chosen().change(function() {
+      return selectVertex(this.value);
     });
     $('#measures-table-top').tablesorter();
     return this;
