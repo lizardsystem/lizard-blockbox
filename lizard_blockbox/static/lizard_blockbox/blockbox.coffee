@@ -333,7 +333,7 @@ setFlotSeries = () ->
         window.min_graph_value = data[0].location
         window.max_graph_value = data[data.length-1].location
 
-        setPlaceholderTop data
+        setMeasureResultsGraph data
         setMeasureSeries()
 
 
@@ -342,11 +342,11 @@ setMeasureSeries = () ->
     cities_list_url = $('#blockbox-table').data('cities-list-url')
     $.getJSON json_url, (data) ->
         $.getJSON cities_list_url, (cities) ->
-            setPlaceholderControl data, cities
+            setMeasureGraph data, cities
 
 
 
-setPlaceholderTop = (json_data) ->
+setMeasureResultsGraph = (json_data) ->
     reference = ([num.location, num.reference_value] for num in json_data)
     target = ([num.location, num.reference_target] for num in json_data)
     measures = ([num.location, num.measures_level] for num in json_data)
@@ -396,7 +396,7 @@ setPlaceholderTop = (json_data) ->
 
     # tickFormatter = (val, axis) ->
     #     val+10
-    # 
+    #
 
     options =
         xaxis:
@@ -421,20 +421,20 @@ setPlaceholderTop = (json_data) ->
             # labelMargin:-50
 
         legend:
-            container: $("#placeholder_top_legend")
+            container: $("#measure_results_graph_legend")
             labelFormatter: (label, series) ->
                 cb = label
                 cb
 
-    pl_lines = $.plot($("#placeholder_top"), ed_data, options)
+    pl_lines = $.plot($("#measure_results_graph"), ed_data, options)
     window.topplot = pl_lines
 
-    # $("#placeholder_top").bind "plotclick", (event, pos, item) ->
+    # $("#measure_results_graph").bind "plotclick", (event, pos, item) ->
     #     if item
     #         refreshGraph()
 
 
-setPlaceholderControl = (control_data, cities_data) ->
+setMeasureGraph = (control_data, cities_data) ->
 
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected)
     selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected)
@@ -489,7 +489,7 @@ setPlaceholderControl = (control_data, cities_data) ->
             show: false
         color: BLACK
     ,
-        
+
         label: "Maatregelen"
         data: measures
         points:
@@ -523,15 +523,15 @@ setPlaceholderControl = (control_data, cities_data) ->
             show: false
         color: GRAY
     ]
-    pl_control = $.plot($("#placeholder_control"), measures_controls, options)
-    
-    
+    pl_control = $.plot($("#measure_graph"), measures_controls, options)
+
+
     # (city[0], city[1], city[2]) for city in pl_control.getData()[0].data
     # showLabel(city[0], city[1], city[2]) for city in pl_control.getData()[0].data
 
     # showLabel(city[0], city[1], city[2]) for city in pl_control.getData()[0].data
 
-    $("#placeholder_control").bind "plotclick", (event, pos, item) ->
+    $("#measure_graph").bind "plotclick", (event, pos, item) ->
         if item
             if item.series.label is "Steden"
                 return
@@ -547,7 +547,7 @@ setPlaceholderControl = (control_data, cities_data) ->
 
     # This trick with previousPoint is neccessary to prevent tooltip flickering!
     previousPoint = null
-    $("#placeholder_control").bind "plothover", (event, pos, item) ->
+    $("#measure_graph").bind "plothover", (event, pos, item) ->
 
         if item
 
@@ -555,7 +555,7 @@ setPlaceholderControl = (control_data, cities_data) ->
             # the right of the browser window:
             if item.pageX > ($(window).width() - 300)
                 item.pageX = item.pageX - 300
-            
+
             if previousPoint != item.dataIndex
                 previousPoint = item.dataIndex
 
@@ -575,30 +575,30 @@ setPlaceholderControl = (control_data, cities_data) ->
 
 
 
-resize_placeholder = ->
+resize_graphs = ->
     clearTimeout doit
     doit = setTimeout(->
-        $('#placeholder_top').empty()
-        $('#placeholder_control').empty()
+        $('#measure_results_graph').empty()
+        $('#measure_graph').empty()
 
-        $('#placeholder_top').css('width', '100%')
-        $('#placeholder_control').css('width', '100%')
+        $('#measure_results_graph').css('width', '100%')
+        $('#measure_graph').css('width', '100%')
 
-        $('#placeholder_top').css('height', '150px')
-        $('#placeholder_control').css('height', '100px')
+        $('#measure_results_graph').css('height', '150px')
+        $('#measure_graph').css('height', '100px')
 
         setFlotSeries()
     ,200)
 
 $('.btn.collapse-sidebar').click ->
-    resize_placeholder()
+    resize_graphs()
 
 $('.btn.collapse-rightbar').click ->
-    resize_placeholder()
+    resize_graphs()
 
 doit = undefined
 $(window).resize ->
-    resize_placeholder()
+    resize_graphs()
 
 $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()

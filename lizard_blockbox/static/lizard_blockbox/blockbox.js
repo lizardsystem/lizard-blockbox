@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_placeholder, selectRiver, setFlotSeries, setMeasureSeries, setPlaceholderControl, setPlaceholderTop, showLabel, showTooltip, toggleMeasure,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_graphs, selectRiver, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, showLabel, showTooltip, toggleMeasure,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -366,7 +366,7 @@
     return $.getJSON(json_url, function(data) {
       window.min_graph_value = data[0].location;
       window.max_graph_value = data[data.length - 1].location;
-      setPlaceholderTop(data);
+      setMeasureResultsGraph(data);
       return setMeasureSeries();
     });
   };
@@ -377,12 +377,12 @@
     cities_list_url = $('#blockbox-table').data('cities-list-url');
     return $.getJSON(json_url, function(data) {
       return $.getJSON(cities_list_url, function(cities) {
-        return setPlaceholderControl(data, cities);
+        return setMeasureGraph(data, cities);
       });
     });
   };
 
-  setPlaceholderTop = function(json_data) {
+  setMeasureResultsGraph = function(json_data) {
     var cities, ed_data, measures, num, options, pl_lines, reference, selected_river, target;
     reference = (function() {
       var _i, _len, _results;
@@ -488,7 +488,7 @@
         axisMargin: 10
       },
       legend: {
-        container: $("#placeholder_top_legend"),
+        container: $("#measure_results_graph_legend"),
         labelFormatter: function(label, series) {
           var cb;
           cb = label;
@@ -496,11 +496,11 @@
         }
       }
     };
-    pl_lines = $.plot($("#placeholder_top"), ed_data, options);
+    pl_lines = $.plot($("#measure_results_graph"), ed_data, options);
     return window.topplot = pl_lines;
   };
 
-  setPlaceholderControl = function(control_data, cities_data) {
+  setMeasureGraph = function(control_data, cities_data) {
     var cities, city, d4, d5, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, previousPoint, selected_measures, selected_river;
     measures = (function() {
       var _i, _len, _results;
@@ -646,8 +646,8 @@
         color: GRAY
       }
     ];
-    pl_control = $.plot($("#placeholder_control"), measures_controls, options);
-    $("#placeholder_control").bind("plotclick", function(event, pos, item) {
+    pl_control = $.plot($("#measure_graph"), measures_controls, options);
+    $("#measure_graph").bind("plotclick", function(event, pos, item) {
       var callback, measure_id, result_id;
       if (item) {
         if (item.series.label === "Steden") return;
@@ -664,7 +664,7 @@
       }
     });
     previousPoint = null;
-    return $("#placeholder_control").bind("plothover", function(event, pos, item) {
+    return $("#measure_graph").bind("plothover", function(event, pos, item) {
       var x, y;
       if (item) {
         if (item.pageX > ($(window).width() - 300)) item.pageX = item.pageX - 300;
@@ -682,32 +682,32 @@
     });
   };
 
-  resize_placeholder = function() {
+  resize_graphs = function() {
     var doit;
     clearTimeout(doit);
     return doit = setTimeout(function() {
-      $('#placeholder_top').empty();
-      $('#placeholder_control').empty();
-      $('#placeholder_top').css('width', '100%');
-      $('#placeholder_control').css('width', '100%');
-      $('#placeholder_top').css('height', '150px');
-      $('#placeholder_control').css('height', '100px');
+      $('#measure_results_graph').empty();
+      $('#measure_graph').empty();
+      $('#measure_results_graph').css('width', '100%');
+      $('#measure_graph').css('width', '100%');
+      $('#measure_results_graph').css('height', '150px');
+      $('#measure_graph').css('height', '100px');
       return setFlotSeries();
     }, 200);
   };
 
   $('.btn.collapse-sidebar').click(function() {
-    return resize_placeholder();
+    return resize_graphs();
   });
 
   $('.btn.collapse-rightbar').click(function() {
-    return resize_placeholder();
+    return resize_graphs();
   });
 
   doit = void 0;
 
   $(window).resize(function() {
-    return resize_placeholder();
+    return resize_graphs();
   });
 
   $(".blockbox-toggle-measure").live('click', function(e) {

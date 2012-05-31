@@ -94,7 +94,7 @@ class BlockboxView(MapView):
     def legends(self):
         result_graph_legend = FlotLegend(
             name="Effecten grafiek",
-            div_id='placeholder_top_legend')
+            div_id='measure_results_graph_legend')
         measures_legend = FlotLegend(
             name="Maatregelselectie grafiek",
             div_id='measures_legend')
@@ -253,7 +253,7 @@ def calculated_measures_json(request):
 
     flooding_chance = models.FloodingChance.objects.get(name="T1250")
     selected_river = _selected_river(request)
-    
+
     selected_measures = _selected_measures(request)
     water_levels = _water_levels(flooding_chance,
                                  selected_river,
