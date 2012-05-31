@@ -88,7 +88,7 @@
       data: {
         'vertex': vertex_id
       },
-      sucess: function(data) {
+      success: function(data) {
         setFlotSeries();
         measuresMapView.render();
         return this;
@@ -415,17 +415,17 @@
   };
 
   setMeasureResultsGraph = function(json_data) {
-    var cities, ed_data, measures, num, options, pl_lines, reference, selected_river, target;
-    reference = (function() {
+    var cities, ed_data, measures, num, options, pl_lines, reference, selected_river, vertex;
+    vertex = (function() {
       var _i, _len, _results;
       _results = [];
       for (_i = 0, _len = json_data.length; _i < _len; _i++) {
         num = json_data[_i];
-        _results.push([num.location, num.reference_value]);
+        _results.push([num.location, num.vertex_level]);
       }
       return _results;
     })();
-    target = (function() {
+    reference = (function() {
       var _i, _len, _results;
       _results = [];
       for (_i = 0, _len = json_data.length; _i < _len; _i++) {
@@ -455,7 +455,7 @@
     selected_river = $("#blockbox-river .chzn-select")[0].value;
     ed_data = [
       {
-        data: reference,
+        data: vertex,
         points: {
           show: false
         },
@@ -465,7 +465,7 @@
         color: GRAY
       }, {
         label: "Doelwaarde",
-        data: target,
+        data: reference,
         points: {
           show: false
         },
