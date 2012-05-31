@@ -584,9 +584,6 @@ resize_graphs = ->
         $('#measure_results_graph').css('width', '100%')
         $('#measure_graph').css('width', '100%')
 
-        $('#measure_results_graph').css('height', '150px')
-        $('#measure_graph').css('height', '100px')
-
         setFlotSeries()
     ,200)
 

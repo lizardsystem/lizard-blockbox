@@ -690,8 +690,6 @@
       $('#measure_graph').empty();
       $('#measure_results_graph').css('width', '100%');
       $('#measure_graph').css('width', '100%');
-      $('#measure_results_graph').css('height', '150px');
-      $('#measure_graph').css('height', '100px');
       return setFlotSeries();
     }, 200);
   };
