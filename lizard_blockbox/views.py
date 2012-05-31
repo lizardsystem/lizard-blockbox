@@ -96,9 +96,19 @@ class BlockboxView(MapView):
         result_graph_legend = FlotLegend(
             name="Effecten grafiek",
             div_id='measure_results_graph_legend')
+        all_types = models.Measure.objects.all().values_list(
+            'measure_type', flat=True)
+        labels = []
+        for measure_type in set(all_types):
+            if measure_type is None:
+                labels.append(['x', 'Onbekend'])
+            else:
+                labels.append([measure_type[0].lower(), measure_type])
+        labels.sort()
         measures_legend = FlotLegend(
             name="Maatregelselectie grafiek",
-            div_id='measures_legend')
+            div_id='measures_legend',
+            labels=labels)
         result = [result_graph_legend, measures_legend]
         result += super(BlockboxView, self).legends
         return result
@@ -108,7 +118,7 @@ class FlotLegend(Legend):
     """UI widget for a flot graph legend."""
     template_name = 'lizard_blockbox/flot_legend_item.html'
     div_id = None
-    labels = None  # Only used for label explanation of y axis measure kinds.
+    labels = {}  # Only used for label explanation of y axis measure kinds.
 
 
 class SelectedMeasuresView(UiView):
@@ -394,15 +404,21 @@ def list_measures_json(request):
 
     measures = models.Measure.objects.all().values(
         'name', 'short_name', 'measure_type', 'km_from')
-    all_types = sorted(list(
-            set(measure['measure_type'] for measure in measures)))
+    for measure in measures:
+        if not measure['measure_type']:
+            measure['measure_type'] = 'Onbekend'
+    all_types = list(
+            set(measure['measure_type'] for measure in measures))
+    all_types[all_types.index('Onbekend')] = 'XOnbekend'
+    all_types.sort()
+    all_types.reverse()
+    all_types[all_types.index('XOnbekend')] = 'Onbekend'
     single_characters = []
     for measure_type in all_types:
-        if measure_type is None:
+        if measure_type is 'Onbekend':
             single_characters.append('x')
         else:
             single_characters.append(measure_type[0].lower())
-
     selected_measures = _selected_measures(request)
     unselectable_measures = _unselectable_measures(request)
     for measure in measures:

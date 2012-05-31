@@ -2,3 +2,14 @@
 <h3>{{ legend.name }}</h3>
 <div id="{{ legend.div_id }}"
      style="width:198px;height:100px;">&nbsp;</div>
+{% if legend.labels %}
+  <p>
+    <b>Maatregel types</b>
+  </p>
+  <dl>
+    {% for character, label in legend.labels %}
+      <dt>{{ character }}</dt>
+      <dd>{{ label }}</dd>
+    {% endfor %}
+  </dl>
+{% endif %}
