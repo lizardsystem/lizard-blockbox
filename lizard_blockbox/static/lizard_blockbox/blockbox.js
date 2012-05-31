@@ -109,7 +109,6 @@
         return _results;
       })();
       html = options.join("");
-      console.log(html);
       $('#blockbox-vertex select').html(html);
       return $('#blockbox-vertex .chzn-select').trigger("liszt:updated");
     });
@@ -590,7 +589,6 @@
       }
       return _results;
     })();
-    console.log(yticks);
     selected_river = $("#blockbox-river .chzn-select")[0].value;
     d4 = void 0;
     d5 = void 0;
