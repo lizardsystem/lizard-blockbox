@@ -288,6 +288,16 @@ def city_locations_json(request):
     return response
 
 
+def vertex_json(request):
+    selected_river = _selected_river(request)
+    vertexes = models.Vertex.objects.filter(named_reaches__name=selected_river)
+    items = ('id', 'name')
+    json_list = [dict(zip(items, i)) for i in vertexes.values_list(*items)]
+    response = HttpResponse(mimetype='application/json')
+    json.dump(json_list, response)
+    return response
+
+
 def _selected_river(request):
     """Return the selected river"""
     available_reaches = models.NamedReach.objects.values_list(
