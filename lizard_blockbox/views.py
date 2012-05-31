@@ -240,7 +240,8 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
                  }
             # This next part can probably go.
             try:
-                city = models.CityLocation.objects.get(km=segment.location, reach=segment.reach)
+                city = models.CityLocation.objects.get(
+                    km=segment.location, reach=segment.reach)
             except models.CityLocation.DoesNotExist:
                 pass
             else:
@@ -287,6 +288,24 @@ def city_locations_json(request):
     response = HttpResponse(mimetype='application/json')
     json.dump(json_list, response)
     return response
+
+
+def vertex_json(request):
+    selected_river = _selected_river(request)
+    vertexes = models.Vertex.objects.filter(named_reaches__name=selected_river)
+    to_json = dict(vertexes.values_list('id', 'name').order_by('name'))
+    response = HttpResponse(mimetype='application/json')
+    json.dump(to_json, response)
+    return response
+
+
+def select_vertex(request):
+    """Select the vertex."""
+
+    if not request.POST:
+        return
+    request.session['vertex'] = request.POST['id']
+    return HttpResponse()
 
 
 def _selected_river(request):
