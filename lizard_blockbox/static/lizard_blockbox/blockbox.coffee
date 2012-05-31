@@ -86,7 +86,6 @@ updateVertex = ->
         options = for id, name of data
             "<option value='#{id}'>#{name}</option>"
         html=options.join ""
-        console.log html
         $('#blockbox-vertex select').html html
         $('#blockbox-vertex .chzn-select').trigger "liszt:updated"
         )
@@ -465,7 +464,6 @@ setMeasureGraph = (control_data, cities_data) ->
     for measure in control_data
         label_mapping[measure.type_index] = measure.type_indicator
     yticks = ([key, value] for key, value of label_mapping)
-    console.log(yticks)
 
     selected_river = $("#blockbox-river .chzn-select")[0].value
     d4 = undefined
