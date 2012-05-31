@@ -108,17 +108,22 @@
 	   class="table table-striped table-bordered">
       <thead>
         <tr>
+          <th>Geselecteerd</th>
           <th>Naam</th>
           {% for header in view.measure_headers %}
             <th>{{ header }}</th>
           {% endfor %}
           <th>PDF</th>
-          <th>Geselecteerd</th>
         </tr>
       </thead>
       <tbody id="measures-table">
         {% for measure in view.measures %}
           <tr>
+	    <td>
+	      {% if measure.selected %}
+	      <i class="icon-ok"></i>Ja
+	      {% endif %}
+	    </td>
             <td style="cursor:pointer;">
               <a href="#"
                  class="blockbox-toggle-measure"
@@ -134,11 +139,6 @@
 	        <a href="{{ measure.pdf_link }}">
 		  <i class="icon-file"></i>Download
                 </a>
-	      {% endif %}
-	    </td>
-	    <td>
-	      {% if measure.selected %}
-	      <i class="icon-ok"></i>Ja
 	      {% endif %}
 	    </td>
           </tr>

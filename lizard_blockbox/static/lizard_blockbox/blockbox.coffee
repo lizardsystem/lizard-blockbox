@@ -213,8 +213,6 @@ RiverLayerBorderRule = (to, color) ->
     rule
 
 JSONRiverLayer = (name, json) ->
-    console.log "json:", json
-    console.log "name:", name
     rules = [
         RiverLayerRule 1.00, 1.50, DARKRED
         RiverLayerRule 0.50, 1.00, MIDDLERED
@@ -246,6 +244,7 @@ JSONRiverLayer = (name, json) ->
     map.addLayer(vector_layer)
     vector_layer.addFeatures(geojson_format.read(json))
     vector_layer
+
 
 JSONTooltip = (name, json) ->
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
@@ -439,10 +438,15 @@ setMeasureGraph = (control_data, cities_data) ->
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected)
     selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected)
     non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable)
-    cities = ([city[0], 15, city[1], city[1], "Stad"] for city in cities_data)
+    cities = ([city[0], 8, city[1], city[1], "Stad"] for city in cities_data)
+
+    label_mapping = {}
+    for measure in control_data
+        label_mapping[measure.type_index] = measure.type_indicator
+    yticks = ([key, value] for key, value of label_mapping)
+    console.log(yticks)
 
     selected_river = $("#blockbox-river .chzn-select")[0].value
-
     d4 = undefined
     d5 = undefined
     pl_lines = undefined
@@ -451,6 +455,7 @@ setMeasureGraph = (control_data, cities_data) ->
         xaxis:
             min: window.min_graph_value
             max: window.max_graph_value
+            # TODO: add transform for the now-differently-named maas sections.
             transform: (v) -> if selected_river == 'Maas' then -v else v
             inverseTransform: (v) -> if selected_river == 'Maas' then -v else v
             reserveSpace: true
@@ -461,6 +466,7 @@ setMeasureGraph = (control_data, cities_data) ->
             labelWidth: 21
             position: "left"
             tickDecimals: 0
+            ticks: yticks
 
         grid:
             minBorderMargin: 20
@@ -471,9 +477,6 @@ setMeasureGraph = (control_data, cities_data) ->
 
         legend:
             container: $("#measures_legend")
-            labelFormatter: (label, series) ->
-                cb = label
-                cb
 
     measures_controls = [
 

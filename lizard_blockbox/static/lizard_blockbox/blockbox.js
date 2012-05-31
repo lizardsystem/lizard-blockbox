@@ -272,8 +272,6 @@
 
   JSONRiverLayer = function(name, json) {
     var geojson_format, rules, styleMap, vector_layer;
-    console.log("json:", json);
-    console.log("name:", name);
     rules = [
       RiverLayerRule(1.00, 1.50, DARKRED), RiverLayerRule(0.50, 1.00, MIDDLERED), RiverLayerRule(0.10, 0.50, LIGHTRED), RiverLayerRule(-0.10, 0.10, BLUE), RiverLayerRule(-0.50, -0.10, LIGHTGREEN), RiverLayerRule(-1.00, -0.50, MIDDLEGREEN), RiverLayerRule(-1.50, -1.00, DARKGREEN), new OpenLayers.Rule({
         elseFilter: true,
@@ -501,7 +499,7 @@
   };
 
   setMeasureGraph = function(control_data, cities_data) {
-    var cities, city, d4, d5, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, previousPoint, selected_measures, selected_river;
+    var cities, city, d4, d5, key, label_mapping, measure, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, previousPoint, selected_measures, selected_river, value, yticks, _i, _len;
     measures = (function() {
       var _i, _len, _results;
       _results = [];
@@ -540,10 +538,25 @@
       _results = [];
       for (_i = 0, _len = cities_data.length; _i < _len; _i++) {
         city = cities_data[_i];
-        _results.push([city[0], 15, city[1], city[1], "Stad"]);
+        _results.push([city[0], 8, city[1], city[1], "Stad"]);
       }
       return _results;
     })();
+    label_mapping = {};
+    for (_i = 0, _len = control_data.length; _i < _len; _i++) {
+      measure = control_data[_i];
+      label_mapping[measure.type_index] = measure.type_indicator;
+    }
+    yticks = (function() {
+      var _results;
+      _results = [];
+      for (key in label_mapping) {
+        value = label_mapping[key];
+        _results.push([key, value]);
+      }
+      return _results;
+    })();
+    console.log(yticks);
     selected_river = $("#blockbox-river .chzn-select")[0].value;
     d4 = void 0;
     d5 = void 0;
@@ -573,7 +586,8 @@
         reserveSpace: true,
         labelWidth: 21,
         position: "left",
-        tickDecimals: 0
+        tickDecimals: 0,
+        ticks: yticks
       },
       grid: {
         minBorderMargin: 20,
@@ -582,12 +596,7 @@
         borderWidth: 1
       },
       legend: {
-        container: $("#measures_legend"),
-        labelFormatter: function(label, series) {
-          var cb;
-          cb = label;
-          return cb;
-        }
+        container: $("#measures_legend")
       }
     };
     measures_controls = [
