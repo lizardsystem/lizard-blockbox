@@ -89,14 +89,12 @@
 
 {% block content %}
   <div id="lizard-blockbox-graph" class="i-have-height"
-	   style="margin-left:5px;" data-static-url="{{ STATIC_URL }}">
+       data-static-url="{{ STATIC_URL }}">
     {% block lizard-blockbox-graph %}
-      <div id="placeholder_top"
-           style="width:98%;height:150px;"></div>
-      <!-- placeholder_top is the actual graph. -->
-      <div id="placeholder_control"
-           style="width:98%;height:100px;border-bottom:1px solid #ccc;"></div>
-      <!-- placeholder_control is the graph part with the measures. -->
+      <div id="measure_results_graph"></div>
+      <!-- measure_results_graph is the actual graph. -->
+      <div id="measure_graph"></div>
+      <!-- measure_graph is the graph part with the measures. -->
     {% endblock %}
   </div>
 

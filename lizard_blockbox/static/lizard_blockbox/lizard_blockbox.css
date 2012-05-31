@@ -1,5 +1,15 @@
 #lizard-blockbox-graph {
-  height: 260px;
+  height: 300px;
+  margin-left: 5px;
+}
+#measure_results_graph {
+  width: 98%;
+  height: 150px;
+}
+#measure_graph {
+  width: 98%;
+  height: 150px;
+  border-bottom: 1px solid #ccc;
 }
 #blockbox-table {
   display: none;
@@ -20,7 +30,4 @@ th.headerSortUp {
 }
 th.headerSortDown {
   background-image: url(/static_media/lizard_blockbox/desc.gif);
-}
-#placeholder_control .yAxis .tickLabel {
-  display: none;
 }

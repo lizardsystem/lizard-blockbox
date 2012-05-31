@@ -94,7 +94,7 @@ class BlockboxView(MapView):
     def legends(self):
         result_graph_legend = FlotLegend(
             name="Effecten grafiek",
-            div_id='placeholder_top_legend')
+            div_id='measure_results_graph_legend')
         measures_legend = FlotLegend(
             name="Maatregelselectie grafiek",
             div_id='measures_legend')
