@@ -23,7 +23,6 @@ from lizard_blockbox import models
 from lizard_blockbox.utils import namedreach2riversegments
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
-REFERENCE_TARGET = -0.11
 
 logger = logging.getLogger(__name__)
 
@@ -223,9 +222,10 @@ def _available_factsheets():
     return factsheets
 
 
-def _water_levels(flooding_chance, selected_river, selected_measures):
+def _water_levels(flooding_chance, selected_river, selected_measures,
+                  selected_vertex):
     cache_key = (str(flooding_chance) + str(selected_river) +
-                 ''.join(selected_measures))
+                 str(selected_vertex.id) + ''.join(selected_measures))
     cache_key = md5(cache_key).hexdigest()
     water_levels = cache.get(cache_key)
     if not water_levels:
@@ -241,10 +241,19 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
             measures_level = segment.waterleveldifference_set.filter(
                 measure__in=measures, flooding_chance=flooding_chance
                 ).aggregate(ld=Sum('level_difference'))['ld'] or 0
-            d = {'measures_level': measures_level,
-                 'reference_target': REFERENCE_TARGET,
-                 'reference_value': 0,
-                 'target_difference': measures_level - REFERENCE_TARGET,
+            try:
+                vertex_level = models.VertexValue.objects.get(
+                    vertex=selected_vertex, riversegment=segment).value
+            except models.VertexValue.DoesNotExist:
+                vertex_level = 0
+
+            reference_absolute = models.ReferenceValue.objects.get(
+                riversegment=segment, flooding_chance=flooding_chance
+                ).reference
+            vertex_level_normalized = vertex_level - reference_absolute
+            d = {'vertex_level': vertex_level_normalized,
+                 'measures_level': vertex_level_normalized + measures_level,
+                 'reference_target': 0,
                  'location': segment.location,
                  'location_reach': '%i_%s' % (segment.location,
                                               segment.reach.slug),
@@ -267,11 +276,12 @@ def calculated_measures_json(request):
 
     flooding_chance = models.FloodingChance.objects.get(name="T1250")
     selected_river = _selected_river(request)
-
     selected_measures = _selected_measures(request)
+    selected_vertex = _selected_vertex(request)
     water_levels = _water_levels(flooding_chance,
                                  selected_river,
-                                 selected_measures)
+                                 selected_measures,
+                                 selected_vertex)
 
     response = HttpResponse(mimetype='application/json')
     json.dump(water_levels, response)
@@ -315,8 +325,19 @@ def select_vertex(request):
 
     if not request.POST:
         return
-    request.session['vertex'] = request.POST['id']
+    request.session['vertex'] = request.POST['vertex']
     return HttpResponse()
+
+
+def _selected_vertex(request):
+    """Return the selected vertex."""
+    if not 'vertex' in request.session:
+        selected_river = _selected_river(request)
+        vertex = models.Vertex.objects.filter(
+            named_reaches__name=selected_river).order_by('name')[0]
+        request.session['vertex'] = vertex.id
+        return vertex
+    return models.Vertex.objects.get(id=request.session['vertex'])
 
 
 def _selected_river(request):

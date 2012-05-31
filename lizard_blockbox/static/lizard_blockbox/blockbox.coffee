@@ -76,7 +76,7 @@ selectVertex = (vertex_id) ->
         url: $('#blockbox-vertex').data 'select-vertex-url'
         data:
             'vertex': vertex_id
-        sucess: (data) ->
+        success: (data) ->
             setFlotSeries()
             measuresMapView.render()
             @
@@ -366,15 +366,15 @@ setMeasureSeries = () ->
 
 
 setMeasureResultsGraph = (json_data) ->
-    reference = ([num.location, num.reference_value] for num in json_data)
-    target = ([num.location, num.reference_target] for num in json_data)
+    vertex = ([num.location, num.vertex_level] for num in json_data)
+    reference = ([num.location, num.reference_target] for num in json_data)
     measures = ([num.location, num.measures_level] for num in json_data)
     cities = ([num.location, num.city] for num in json_data)
 
     selected_river = $("#blockbox-river .chzn-select")[0].value
 
     ed_data = [
-        data: reference
+        data: vertex
         points:
             show: false
 
@@ -384,7 +384,7 @@ setMeasureResultsGraph = (json_data) ->
         color: GRAY
     ,
         label: "Doelwaarde"
-        data: target
+        data: reference
         points:
             show: false
             # show: true
@@ -632,7 +632,9 @@ $(document).ready ->
     updateVertex()
 
     $("#blockbox-vertex .chzn-select").chosen().change(
-        () -> selectVertex @value )
+        () ->
+            selectVertex @value
+        )
 
     $('#measures-table-top').tablesorter()
     @
