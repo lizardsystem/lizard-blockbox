@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.1 (unreleased)
+0.1 (2012-06-01)
 ----------------
 
 - Added legend for map layers.
