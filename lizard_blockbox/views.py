@@ -155,7 +155,7 @@ class SelectedMeasuresView(UiView):
     def to_bookmark_url(self):
         """Return URL with the selected measures stored in the URL."""
         short_names = sorted(list(self.selected_names()))
-        selected = ','.join(short_names)
+        selected = ';'.join(short_names)
         url = reverse('lizard_blockbox.bookmarked_measures',
                 kwargs={'selected': selected})
         return url
@@ -183,8 +183,8 @@ class BookmarkedMeasuresView(SelectedMeasuresView):
         comma-separated string with shortnames.
 
         """
-        comma_separated = self.kwargs['selected']
-        short_names = comma_separated.split(',')
+        semicolon_separated = self.kwargs['selected']
+        short_names = semicolon_separated.split(';')
         return set(short_names)
 
 
