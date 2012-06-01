@@ -31,3 +31,18 @@ th.headerSortUp {
 th.headerSortDown {
   background-image: url(/static_media/lizard_blockbox/desc.gif);
 }
+#placeholder_control .yAxis .tickLabel {
+  display: none;
+}
+.olPopup img {
+  display: none;
+}
+.olFramedCloudPopupContent {
+  height: auto!important;
+  width: auto!important;
+}
+.olFramedCloudPopupContent div {
+  background-color: #FFFFFF;
+  border: 1px solid #333333;
+  padding: 1px 6px;
+}

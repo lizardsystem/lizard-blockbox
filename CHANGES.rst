@@ -15,3 +15,5 @@ Changelog of lizard-blockbox
 - Added factsheets download support.
 
 - Initial library skeleton created by nensskel.  [Roland]
+
+- Made feature hover balloons pretty. [Berto]
