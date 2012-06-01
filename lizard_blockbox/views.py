@@ -6,6 +6,7 @@ from hashlib import md5
 from collections import defaultdict
 
 from django.conf import settings
+from django.contrib.auth.decorators import permission_required
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
@@ -23,6 +24,7 @@ from lizard_blockbox import models
 from lizard_blockbox.utils import namedreach2riversegments
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
+VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +33,7 @@ class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
     template_name = 'lizard_blockbox/blockbox.html'
     edit_link = '/admin/lizard_blockbox/'
-    require_application_icon_with_permission = True
+    required_permission = VIEW_PERM
 
     @property
     def content_actions(self):
@@ -123,7 +125,7 @@ class FlotLegend(Legend):
 class SelectedMeasuresView(UiView):
     """Show info on the selected measures."""
     template_name = 'lizard_blockbox/selected_measures.html'
-    # require_application_icon_with_permission = True
+    required_permission = VIEW_PERM
     page_title = "Geselecteerde blokkendoos maatregelen"
 
     def selected_names(self):
@@ -188,6 +190,7 @@ class BookmarkedMeasuresView(SelectedMeasuresView):
         return set(short_names)
 
 
+@permission_required(VIEW_PERM)
 def fetch_factsheet(request, measure):
     """Return download header for nginx to serve pdf file."""
 
@@ -271,6 +274,7 @@ def _water_levels(flooding_chance, selected_river, selected_measures,
     return water_levels
 
 
+@permission_required(VIEW_PERM)
 def calculated_measures_json(request):
     """Calculate the result of the measures."""
 
@@ -288,6 +292,7 @@ def calculated_measures_json(request):
     return response
 
 
+@permission_required(VIEW_PERM)
 def city_locations_json(request):
     """Return the city locations for the selected river."""
 
@@ -311,6 +316,7 @@ def city_locations_json(request):
     return response
 
 
+@permission_required(VIEW_PERM)
 def vertex_json(request):
     selected_river = _selected_river(request)
     vertexes = models.Vertex.objects.filter(named_reaches__name=selected_river)
@@ -320,6 +326,7 @@ def vertex_json(request):
     return response
 
 
+@permission_required(VIEW_PERM)
 def select_vertex(request):
     """Select the vertex."""
 
@@ -379,6 +386,7 @@ def _unselectable_measures(request):
 
 
 @never_cache
+@permission_required(VIEW_PERM)
 def toggle_measure(request):
     """Toggle a measure on or off."""
     if not request.POST:
@@ -411,6 +419,7 @@ def toggle_measure(request):
     return HttpResponse(json.dumps(list(selected_measures)))
 
 
+@permission_required(VIEW_PERM)
 def select_river(request):
     """Select a river."""
     if not request.POST:
@@ -420,6 +429,7 @@ def select_river(request):
 
 
 @never_cache
+@permission_required(VIEW_PERM)
 def list_measures_json(request):
     """Return a list with all known measures for the second graph."""
 

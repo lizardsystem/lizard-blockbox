@@ -4,9 +4,6 @@
    {{ block.super }}
 
     <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.js">
-    </script>
-    <script type="text/javascript"
         src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.symbol.js">
     </script>
     <script type="text/javascript"
@@ -26,9 +23,6 @@
 
 {% block map-javascript %}
     {{ block.super }}
-    <!--[if lte IE 8]>
-    <script type="text/javascript" src="{{ STATIC_URL }}lizard_blockbox/flot/excanvas.min.js"></script>
-    <![endif]-->
     <script type="text/javascript"
         src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
     </script>
