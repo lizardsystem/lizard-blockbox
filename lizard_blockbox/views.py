@@ -110,7 +110,33 @@ class BlockboxView(MapView):
             name="Maatregelselectie grafiek",
             div_id='measures_legend',
             labels=labels)
-        result = [result_graph_legend, measures_legend]
+
+        labels = [
+            # text, color
+            ['1.00 - 1.50', 'darkred'],
+            ['0.50 - 1.00', 'middlered'],
+            ['0.10 - 0.50', 'lightred'],
+            ['-0.10 - 0.10', 'blue'],
+            ['-0.50 - -0.10', 'lightgreen'],
+            ['-1.00 - -0.50', 'middlegreen'],
+            ['-1.50 - -1.00', 'darkgreen']
+            ]
+        map_measure_results_legend = MapLayerLegend(
+            name="Rivieren (kaart)",
+            labels=labels)
+
+        labels = [
+            # text, color
+            ['Niet geselecteerd',  'green'],
+            ['Geselecteerd',  'red'],
+            ]
+        selected_measures_map_legend = MapLayerLegend(
+            name="Maatregelen (kaart)",
+            labels=labels)
+
+        result = [result_graph_legend, measures_legend,
+                  map_measure_results_legend,
+                  selected_measures_map_legend]
         result += super(BlockboxView, self).legends
         return result
 
@@ -120,6 +146,12 @@ class FlotLegend(Legend):
     template_name = 'lizard_blockbox/flot_legend_item.html'
     div_id = None
     labels = {}  # Only used for label explanation of y axis measure kinds.
+
+
+class MapLayerLegend(Legend):
+    """UI widget for a json map layer legend."""
+    template_name = 'lizard_blockbox/map_layer_legend_item.html'
+    labels = []
 
 
 class SelectedMeasuresView(UiView):

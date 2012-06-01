@@ -37,6 +37,10 @@ SQUARE_COLOR = "#122F64"
 PURPLE = "#E01B6A"
 BLACK = "#000000"
 
+# Note on colors: setup_map_legend() at the end helps put the right colors
+# in the legend. See the legend usage in views.py. Let's try to keep the
+# color definitions in one spot! :-)
+
 STROKEWIDTH = 5
 
 graphTimer = ''
@@ -241,6 +245,7 @@ JSONRiverLayer = (name, json) ->
         RiverLayerRule -0.50, -0.10, LIGHTGREEN
         RiverLayerRule -1.00, -0.50, MIDDLEGREEN
         RiverLayerRule -1.50, -1.00, DARKGREEN
+        # Keep in sync with the legend in views.py!
         new OpenLayers.Rule
             elseFilter: true
             symbolizer:
@@ -624,8 +629,23 @@ $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
     toggleMeasure $(@).data('measure-id')
 
+
+setup_map_legend = ->
+    $('.legend-lightred').css("background-color", LIGHTRED)
+    $('.legend-middlered').css("background-color", MIDDLERED)
+    $('.legend-darkred').css("background-color", DARKRED)
+    $('.legend-blue').css("background-color", BLUE)
+    $('.legend-lightgreen').css("background-color", LIGHTGREEN)
+    $('.legend-middlegreen').css("background-color", MIDDLEGREEN)
+    $('.legend-darkgreen').css("background-color", DARKGREEN)
+    $('.legend-gray').css("background-color", GRAY)
+    $('.legend-green').css("background-color", GREEN)
+    $('.legend-red').css("background-color", RED)
+
+
 $(document).ready ->
     setFlotSeries()
+    setup_map_legend()
     $("#blockbox-river .chzn-select").chosen().change(
         () ->
             selectRiver @value

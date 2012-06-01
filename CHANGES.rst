@@ -5,6 +5,8 @@ Changelog of lizard-blockbox
 0.1 (unreleased)
 ----------------
 
+- Added legend for map layers.
+
 - Requiring lizard-ui 4.0b4 because it include flot (and for some other
   changes). [Reinout]
 
