@@ -29,7 +29,7 @@ class Command(BaseCommand):
         for row_nr in xrange(1, sheet.nrows):
             name, reach_slug, km_from, km_to = sheet.row_values(row_nr)
             km_from, km_to = int(km_from), int(km_to)
-            reach = models.Reach.objects.get(slug=reach_slug)
+            reach, _ = models.Reach.objects.get_or_create(slug=reach_slug)
             named_reach, _ = models.NamedReach.objects.get_or_create(name=name)
 
             models.SubsetReach.objects.get_or_create(

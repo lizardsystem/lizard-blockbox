@@ -140,6 +140,10 @@ class Measure(models.Model):
         'Ruimtelijke kwaliteit',
         max_length=100, blank=True, null=True)
 
+    exclude = models.ManyToManyField(
+        'self',
+        blank=True, null=True)
+
     def __unicode__(self):
         name = self.name or self.short_name
         return u'%s' % name
@@ -147,7 +151,7 @@ class Measure(models.Model):
     def pretty(self):
         """Return list with verbose name + value for every field for the view.
         """
-        ignore = ['id', 'name']
+        ignore = ['id', 'name', 'exclude']
         result = []
         for field in self._meta.fields:
             if field.name in ignore:
