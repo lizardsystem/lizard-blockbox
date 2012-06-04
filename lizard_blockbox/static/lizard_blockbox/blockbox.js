@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, showLabel, showTooltip, toggleMeasure, updateVertex,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showTooltip, toggleMeasure, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -109,7 +109,6 @@
         return _results;
       })();
       html = options.join("");
-      console.log(html);
       $('#blockbox-vertex select').html(html);
       return $('#blockbox-vertex .chzn-select').trigger("liszt:updated");
     });
@@ -455,6 +454,7 @@
     selected_river = $("#blockbox-river .chzn-select")[0].value;
     ed_data = [
       {
+        label: "Hoekpunt",
         data: vertex,
         points: {
           show: false
@@ -590,7 +590,6 @@
       }
       return _results;
     })();
-    console.log(yticks);
     selected_river = $("#blockbox-river .chzn-select")[0].value;
     d4 = void 0;
     d5 = void 0;
@@ -756,8 +755,22 @@
     return toggleMeasure($(this).data('measure-id'));
   });
 
+  setup_map_legend = function() {
+    $('.legend-lightred').css("background-color", LIGHTRED);
+    $('.legend-middlered').css("background-color", MIDDLERED);
+    $('.legend-darkred').css("background-color", DARKRED);
+    $('.legend-blue').css("background-color", BLUE);
+    $('.legend-lightgreen').css("background-color", LIGHTGREEN);
+    $('.legend-middlegreen').css("background-color", MIDDLEGREEN);
+    $('.legend-darkgreen').css("background-color", DARKGREEN);
+    $('.legend-gray').css("background-color", GRAY);
+    $('.legend-green').css("background-color", GREEN);
+    return $('.legend-red').css("background-color", RED);
+  };
+
   $(document).ready(function() {
     setFlotSeries();
+    setup_map_legend();
     $("#blockbox-river .chzn-select").chosen().change(function() {
       selectRiver(this.value);
       return updateVertex();

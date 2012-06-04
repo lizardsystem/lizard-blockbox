@@ -37,6 +37,10 @@ SQUARE_COLOR = "#122F64"
 PURPLE = "#E01B6A"
 BLACK = "#000000"
 
+# Note on colors: setup_map_legend() at the end helps put the right colors
+# in the legend. See the legend usage in views.py. Let's try to keep the
+# color definitions in one spot! :-)
+
 STROKEWIDTH = 5
 
 graphTimer = ''
@@ -241,6 +245,7 @@ JSONRiverLayer = (name, json) ->
         RiverLayerRule -0.50, -0.10, LIGHTGREEN
         RiverLayerRule -1.00, -0.50, MIDDLEGREEN
         RiverLayerRule -1.50, -1.00, DARKGREEN
+        # Keep in sync with the legend in views.py!
         new OpenLayers.Rule
             elseFilter: true
             symbolizer:
@@ -374,6 +379,9 @@ setMeasureResultsGraph = (json_data) ->
     selected_river = $("#blockbox-river .chzn-select")[0].value
 
     ed_data = [
+        label: "Hoekpunt"
+        # Vertex is in NAP, reference too. Reference is zero, by definition,
+        # so from both we subtract the vertex.
         data: vertex
         points:
             show: false
@@ -384,12 +392,11 @@ setMeasureResultsGraph = (json_data) ->
         color: GRAY
     ,
         label: "Doelwaarde"
+        # This one is always, per definition, zero. This is what we should
+        # reach.
         data: reference
         points:
             show: false
-            # show: true
-            # symbol: "triangle"
-            # radius: 1
 
         lines:
             show: true
@@ -398,12 +405,11 @@ setMeasureResultsGraph = (json_data) ->
         color: BLUE
     ,
         label: "Effect maatregelen"
+        # All measures are mostly negative, so we add them to the vertex,
+        # which pulls it downwards in the direction of the reference value.
         data: measures
         points:
             show: false
-            # show: true
-            # symbol: "triangle"
-            # radius: 2
 
         lines:
             show: true
@@ -464,7 +470,6 @@ setMeasureGraph = (control_data, cities_data) ->
     for measure in control_data
         label_mapping[measure.type_index] = measure.type_indicator
     yticks = ([key, value] for key, value of label_mapping)
-    console.log(yticks)
 
     selected_river = $("#blockbox-river .chzn-select")[0].value
     d4 = undefined
@@ -624,8 +629,23 @@ $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
     toggleMeasure $(@).data('measure-id')
 
+
+setup_map_legend = ->
+    $('.legend-lightred').css("background-color", LIGHTRED)
+    $('.legend-middlered').css("background-color", MIDDLERED)
+    $('.legend-darkred').css("background-color", DARKRED)
+    $('.legend-blue').css("background-color", BLUE)
+    $('.legend-lightgreen').css("background-color", LIGHTGREEN)
+    $('.legend-middlegreen').css("background-color", MIDDLEGREEN)
+    $('.legend-darkgreen').css("background-color", DARKGREEN)
+    $('.legend-gray').css("background-color", GRAY)
+    $('.legend-green').css("background-color", GREEN)
+    $('.legend-red').css("background-color", RED)
+
+
 $(document).ready ->
     setFlotSeries()
+    setup_map_legend()
     $("#blockbox-river .chzn-select").chosen().change(
         () ->
             selectRiver @value
