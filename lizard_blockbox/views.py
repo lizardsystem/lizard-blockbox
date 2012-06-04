@@ -255,7 +255,7 @@ def _water_levels(flooding_chance, selected_river, selected_measures,
                  'measures_level': vertex_level_normalized + measures_level,
                  'reference_target': 0,
                  'location': segment.location,
-                 'location_reach': '%i_%s' % (segment.location,
+                 'location_reach': '%i.00_%s' % (segment.location,
                                               segment.reach.slug),
                  }
             # This next part can probably go.

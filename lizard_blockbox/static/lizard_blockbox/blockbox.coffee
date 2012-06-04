@@ -86,7 +86,6 @@ updateVertex = ->
         options = for id, name of data
             "<option value='#{id}'>#{name}</option>"
         html=options.join ""
-        console.log html
         $('#blockbox-vertex select').html html
         $('#blockbox-vertex .chzn-select').trigger "liszt:updated"
         )
@@ -133,7 +132,7 @@ MeasuresMapView = Backbone.View.extend
         $.getJSON json_url, (data) ->
             target_difference = {}
             for num in data
-                target_difference[num.location_reach] = num.target_difference
+                target_difference[num.location_reach] = num.measures_level
             for feature in rivers.features
                 attributes = feature.attributes
                 attributes.target_difference = target_difference[attributes.MODELKM]

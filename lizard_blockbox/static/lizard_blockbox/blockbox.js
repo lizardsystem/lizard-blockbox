@@ -185,7 +185,7 @@
         target_difference = {};
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           num = data[_i];
-          target_difference[num.location_reach] = num.target_difference;
+          target_difference[num.location_reach] = num.measures_level;
         }
         _ref = rivers.features;
         for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {

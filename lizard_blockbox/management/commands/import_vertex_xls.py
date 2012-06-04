@@ -54,6 +54,7 @@ class Command(BaseCommand):
                     reach__slug=row[1])
             except models.RiverSegment.DoesNotExist:
                 continue
+
             for col_nr, vertex in vertexes.iteritems():
                 models.VertexValue.objects.create(
                     riversegment=riversegment,
