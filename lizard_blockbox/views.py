@@ -293,14 +293,6 @@ def _water_levels(flooding_chance, selected_river, selected_measures,
                  'location_reach': '%i.00_%s' % (segment.location,
                                               segment.reach.slug),
                  }
-            # This next part can probably go.
-            try:
-                city = models.CityLocation.objects.get(
-                    km=segment.location, reach=segment.reach)
-            except models.CityLocation.DoesNotExist:
-                pass
-            else:
-                d['city'] = city.city
             water_levels.append(d)
         cache.set(cache_key, water_levels, 5 * 60)
     return water_levels
