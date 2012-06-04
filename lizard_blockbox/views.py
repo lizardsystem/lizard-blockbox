@@ -376,14 +376,6 @@ def _water_levels(flooding_chance, selected_river, selected_measures,
                  'location_reach': '%i.00_%s' % (segment.location,
                                               segment.reach.slug),
                  }
-            # This next part can probably go.
-            try:
-                city = models.CityLocation.objects.get(
-                    km=segment.location, reach=segment.reach)
-            except models.CityLocation.DoesNotExist:
-                pass
-            else:
-                d['city'] = city.city
             water_levels.append(d)
         cache.set(cache_key, water_levels, 5 * 60)
     return water_levels
@@ -490,14 +482,11 @@ def _unselectable_measures(request):
     IDs further down the line...
 
     """
-    measures_shortnames = list(models.Measure.objects.all().values_list(
-        'short_name', flat=True))
-    unselectable = []
-    for shortname in _selected_measures(request):
-        index = measures_shortnames.index(shortname) + 2
-        if index < len(measures_shortnames):
-            unselectable.append(measures_shortnames[index])
-    return unselectable
+
+    return set(models.Measure.objects.filter(
+        short_name__in=_selected_measures(request),
+        exclude__isnull=False
+        ).values_list('exclude__short_name', flat=True))
 
 
 @never_cache
@@ -556,8 +545,7 @@ def list_measures_json(request):
     all_types = list(
             set(measure['measure_type'] for measure in measures))
     all_types[all_types.index('Onbekend')] = 'XOnbekend'
-    all_types.sort()
-    all_types.reverse()
+    all_types.sort(reverse=True)
     all_types[all_types.index('XOnbekend')] = 'Onbekend'
     single_characters = []
     for measure_type in all_types:
