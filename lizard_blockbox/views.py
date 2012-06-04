@@ -1,9 +1,16 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
+from cgi import escape
+from collections import defaultdict
+from datetime import datetime
+from hashlib import md5
+import cStringIO as StringIO
+import csv
+import ho.pisa as pisa
 import logging
+import math
 import operator
 import os
-from hashlib import md5
-from collections import defaultdict
+import random
 
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
@@ -11,9 +18,12 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
+from django.template import Context
+from django.template.loader import get_template
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
+
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
@@ -27,6 +37,79 @@ SELECTED_MEASURES_KEY = 'selected_measures_key'
 VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
 
 logger = logging.getLogger(__name__)
+
+
+
+
+class Error(Exception):
+    """Base class for errors in this module."""
+    pass
+    
+class OutOfRangeError(Error):
+    def __init__(self, msg):
+        Exception.__init__(self, msg)    
+
+def render_to_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    context = Context(context_dict)
+    html = template.render(context)
+    result = StringIO.StringIO()
+
+    pdf = pisa.pisaDocument(
+        StringIO.StringIO(html.encode("ISO-8859-1")), result)
+        # StringIO.StringIO(html.encode("UTF-8")), result)
+    if not pdf.err:
+        # return HttpResponse(result.getvalue(), mimetype='application/pdf')
+        
+        response = HttpResponse(mimetype='application/pdf')
+        response['Content-Disposition'] = 'filename=blokkendoos-report.pdf'
+        response.write(result.getvalue())
+        return response
+        
+    return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
+
+
+
+
+def generate_report(request, template='lizard_blockbox/report.html'):
+    """
+    Uses PISA to generate a PDF report
+    """
+
+    total_cost = 0.0
+    reaches = defaultdict(list)
+    measures = models.Measure.objects.filter(
+        short_name__in=_selected_measures(request))
+    for measure in measures:
+        # total_cost = total_cost + measure.total_costs()
+        if measure.total_costs:
+            total_cost = total_cost + measure.total_costs
+        if measure.reach:
+            reach_name = measure.reach.slug
+        else:
+            reach_name = 'unknown'
+        reaches[reach_name].append(measure)
+    result = []
+    print models.Measure._meta.fields
+    for name, measures in reaches.items():
+        reach = {'name': name,
+                 'amount': len(measures),
+                 'measures': measures}
+        result.append(reach)
+    result.sort(key=lambda x: x['amount'], reverse=True)
+    print "total_cost: ", total_cost
+
+
+    return render_to_pdf(
+            'lizard_blockbox/report.html',
+            {
+                'date': datetime.now(),
+                'pagesize':'A4',
+                'reaches': result,
+                'total_cost': total_cost,
+            }
+        )
+
 
 
 class BlockboxView(MapView):
