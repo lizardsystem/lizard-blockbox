@@ -37,10 +37,16 @@ SQUARE_COLOR = "#122F64"
 PURPLE = "#E01B6A"
 BLACK = "#000000"
 
+# Note on colors: setup_map_legend() at the end helps put the right colors
+# in the legend. See the legend usage in views.py. Let's try to keep the
+# color definitions in one spot! :-)
+
 STROKEWIDTH = 5
 
 graphTimer = ''
 hasTooltip = ''
+
+String::endsWith = (str) -> if @match(new RegExp "#{str}$") then true else false
 
 
 toggleMeasure = (measure_id) ->
@@ -69,6 +75,26 @@ selectRiver = (river_name) ->
             setFlotSeries()
             measuresMapView.render()
             @
+
+selectVertex = (vertex_id) ->
+    $.ajax
+        type: 'POST'
+        url: $('#blockbox-vertex').data 'select-vertex-url'
+        data:
+            'vertex': vertex_id
+        success: (data) ->
+            setFlotSeries()
+            measuresMapView.render()
+            @
+
+updateVertex = ->
+    $.getJSON($('#blockbox-vertex').data('update-vertex-url'), (data) ->
+        options = for id, name of data
+            "<option value='#{id}'>#{name}</option>"
+        html=options.join ""
+        $('#blockbox-vertex select').html html
+        $('#blockbox-vertex .chzn-select').trigger "liszt:updated"
+        )
 
 class BlockboxRouter extends Backbone.Router
     routes:
@@ -112,7 +138,7 @@ MeasuresMapView = Backbone.View.extend
         $.getJSON json_url, (data) ->
             target_difference = {}
             for num in data
-                target_difference[num.location_reach] = num.target_difference
+                target_difference[num.location_reach] = num.measures_level
             for feature in rivers.features
                 attributes = feature.attributes
                 attributes.target_difference = target_difference[attributes.MODELKM]
@@ -213,8 +239,6 @@ RiverLayerBorderRule = (to, color) ->
     rule
 
 JSONRiverLayer = (name, json) ->
-    console.log "json:", json
-    console.log "name:", name
     rules = [
         RiverLayerRule 1.00, 1.50, DARKRED
         RiverLayerRule 0.50, 1.00, MIDDLERED
@@ -223,6 +247,7 @@ JSONRiverLayer = (name, json) ->
         RiverLayerRule -0.50, -0.10, LIGHTGREEN
         RiverLayerRule -1.00, -0.50, MIDDLEGREEN
         RiverLayerRule -1.50, -1.00, DARKGREEN
+        # Keep in sync with the legend in views.py!
         new OpenLayers.Rule
             elseFilter: true
             symbolizer:
@@ -236,7 +261,7 @@ JSONRiverLayer = (name, json) ->
             strokeColor: GRAY
             strokeWidth: STROKEWIDTH
         OpenLayers.Feature.Vector.style["default"]))
-    
+
     styleMap.styles["default"].addRules(rules)
 
     geojson_format = new OpenLayers.Format.GeoJSON()
@@ -246,6 +271,7 @@ JSONRiverLayer = (name, json) ->
     map.addLayer(vector_layer)
     vector_layer.addFeatures(geojson_format.read(json))
     vector_layer
+
 
 JSONTooltip = (name, json) ->
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
@@ -330,7 +356,7 @@ setFlotSeries = () ->
         window.min_graph_value = data[0].location
         window.max_graph_value = data[data.length-1].location
 
-        setPlaceholderTop data
+        setMeasureResultsGraph data
         setMeasureSeries()
 
 
@@ -339,20 +365,23 @@ setMeasureSeries = () ->
     cities_list_url = $('#blockbox-table').data('cities-list-url')
     $.getJSON json_url, (data) ->
         $.getJSON cities_list_url, (cities) ->
-            setPlaceholderControl data, cities
+            setMeasureGraph data, cities
 
 
 
-setPlaceholderTop = (json_data) ->
-    reference = ([num.location, num.reference_value] for num in json_data)
-    target = ([num.location, num.reference_target] for num in json_data)
+setMeasureResultsGraph = (json_data) ->
+    vertex = ([num.location, num.vertex_level] for num in json_data)
+    reference = ([num.location, num.reference_target] for num in json_data)
     measures = ([num.location, num.measures_level] for num in json_data)
     cities = ([num.location, num.city] for num in json_data)
 
     selected_river = $("#blockbox-river .chzn-select")[0].value
 
     ed_data = [
-        data: reference
+        label: "Hoekpunt"
+        # Vertex is in NAP, reference too. Reference is zero, by definition,
+        # so from both we subtract the vertex.
+        data: vertex
         points:
             show: false
 
@@ -362,12 +391,11 @@ setPlaceholderTop = (json_data) ->
         color: GRAY
     ,
         label: "Doelwaarde"
-        data: target
+        # This one is always, per definition, zero. This is what we should
+        # reach.
+        data: reference
         points:
             show: false
-            # show: true
-            # symbol: "triangle"
-            # radius: 1
 
         lines:
             show: true
@@ -376,12 +404,11 @@ setPlaceholderTop = (json_data) ->
         color: BLUE
     ,
         label: "Effect maatregelen"
+        # All measures are mostly negative, so we add them to the vertex,
+        # which pulls it downwards in the direction of the reference value.
         data: measures
         points:
             show: false
-            # show: true
-            # symbol: "triangle"
-            # radius: 2
 
         lines:
             show: true
@@ -393,14 +420,14 @@ setPlaceholderTop = (json_data) ->
 
     # tickFormatter = (val, axis) ->
     #     val+10
-    # 
+    #
 
     options =
         xaxis:
             min: window.min_graph_value
             max: window.max_graph_value
-            transform: (v) -> if selected_river == 'Maas' then -v else v
-            inverseTransform: (v) -> if selected_river == 'Maas' then -v else v
+            transform: (v) -> if selected_river.endsWith('Maas') then -v else v
+            inverseTransform: (v) -> if selected_river.endsWith('Maas') then -v else v
             position: "top"
 
         yaxis:
@@ -417,31 +444,33 @@ setPlaceholderTop = (json_data) ->
             axisMargin: 10
             # labelMargin:-50
 
-    legend:
-        show: true
-        noColumns: 4
-        container: $("#placeholder_top_legend")
-        labelFormatter: (label, series) ->
-            cb = label
-            cb
+        legend:
+            container: $("#measure_results_graph_legend")
+            labelFormatter: (label, series) ->
+                cb = label
+                cb
 
-    pl_lines = $.plot($("#placeholder_top"), ed_data, options)
+    pl_lines = $.plot($("#measure_results_graph"), ed_data, options)
     window.topplot = pl_lines
 
-    # $("#placeholder_top").bind "plotclick", (event, pos, item) ->
+    # $("#measure_results_graph").bind "plotclick", (event, pos, item) ->
     #     if item
     #         refreshGraph()
 
 
-setPlaceholderControl = (control_data, cities_data) ->
+setMeasureGraph = (control_data, cities_data) ->
 
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected)
     selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected)
     non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable)
-    cities = ([city[0], 15, city[1], city[1], "Stad"] for city in cities_data)
+    cities = ([city[0], 8, city[1], city[1], "Stad"] for city in cities_data)
+
+    label_mapping = {}
+    for measure in control_data
+        label_mapping[measure.type_index] = measure.type_indicator
+    yticks = ([key, value] for key, value of label_mapping)
 
     selected_river = $("#blockbox-river .chzn-select")[0].value
-
     d4 = undefined
     d5 = undefined
     pl_lines = undefined
@@ -450,6 +479,7 @@ setPlaceholderControl = (control_data, cities_data) ->
         xaxis:
             min: window.min_graph_value
             max: window.max_graph_value
+            # TODO: add transform for the now-differently-named maas sections.
             transform: (v) -> if selected_river == 'Maas' then -v else v
             inverseTransform: (v) -> if selected_river == 'Maas' then -v else v
             reserveSpace: true
@@ -460,6 +490,7 @@ setPlaceholderControl = (control_data, cities_data) ->
             labelWidth: 21
             position: "left"
             tickDecimals: 0
+            ticks: yticks
 
         grid:
             minBorderMargin: 20
@@ -469,12 +500,8 @@ setPlaceholderControl = (control_data, cities_data) ->
             # labelMargin:-50
 
         legend:
-            show: false
-            noColumns: 4
-            container: $("#placeholder_control_legend")
-            labelFormatter: (label, series) ->
-                cb = label
-                cb
+            container: $("#measures_legend")
+
     measures_controls = [
 
         label: "Steden"
@@ -489,7 +516,7 @@ setPlaceholderControl = (control_data, cities_data) ->
             show: false
         color: BLACK
     ,
-        
+
         label: "Maatregelen"
         data: measures
         points:
@@ -523,15 +550,15 @@ setPlaceholderControl = (control_data, cities_data) ->
             show: false
         color: GRAY
     ]
-    pl_control = $.plot($("#placeholder_control"), measures_controls, options)
-    
-    
+    pl_control = $.plot($("#measure_graph"), measures_controls, options)
+
+
     # (city[0], city[1], city[2]) for city in pl_control.getData()[0].data
     # showLabel(city[0], city[1], city[2]) for city in pl_control.getData()[0].data
 
     # showLabel(city[0], city[1], city[2]) for city in pl_control.getData()[0].data
 
-    $("#placeholder_control").bind "plotclick", (event, pos, item) ->
+    $("#measure_graph").bind "plotclick", (event, pos, item) ->
         if item
             if item.series.label is "Steden"
                 return
@@ -547,7 +574,7 @@ setPlaceholderControl = (control_data, cities_data) ->
 
     # This trick with previousPoint is neccessary to prevent tooltip flickering!
     previousPoint = null
-    $("#placeholder_control").bind "plothover", (event, pos, item) ->
+    $("#measure_graph").bind "plothover", (event, pos, item) ->
 
         if item
 
@@ -555,17 +582,17 @@ setPlaceholderControl = (control_data, cities_data) ->
             # the right of the browser window:
             if item.pageX > ($(window).width() - 300)
                 item.pageX = item.pageX - 300
-            
+
             if previousPoint != item.dataIndex
                 previousPoint = item.dataIndex
-                
+
                 $("#tooltip").remove()
                 x = item.datapoint[0].toFixed(2)
                 y = item.datapoint[1].toFixed(2)
 
                 showTooltip(
-                    item.pageX, 
-                    item.pageY, 
+                    item.pageX,
+                    item.pageY,
                     item.series.data[item.dataIndex][2]
                     item.series.data[item.dataIndex][4]
                 )
@@ -575,45 +602,59 @@ setPlaceholderControl = (control_data, cities_data) ->
 
 
 
-resize_placeholder = ->
+resize_graphs = ->
     clearTimeout doit
     doit = setTimeout(->
-        $('#placeholder_top_legend').empty()
-        $('#placeholder_top').empty()
-        $('#placeholder_control').empty()
-        $('#placeholder_control_legend').empty()
+        $('#measure_results_graph').empty()
+        $('#measure_graph').empty()
 
-        $('#placeholder_top_legend').css('width', '100%')
-        $('#placeholder_top').css('width', '100%')
-        $('#placeholder_control').css('width', '100%')
-        $('#placeholder_control_legend').css('width', '100%')
-
-        $('#placeholder_top_legend').css('height', '0px')
-        $('#placeholder_top').css('height', '150px')
-        $('#placeholder_control').css('height', '100px')
-        $('#placeholder_control_legend').css('height', '100px')
+        $('#measure_results_graph').css('width', '100%')
+        $('#measure_graph').css('width', '100%')
 
         setFlotSeries()
-    ,100)
+    ,200)
 
 $('.btn.collapse-sidebar').click ->
-    resize_placeholder()
+    resize_graphs()
 
 $('.btn.collapse-rightbar').click ->
-    resize_placeholder()
+    resize_graphs()
 
 doit = undefined
 $(window).resize ->
-    resize_placeholder()
+    resize_graphs()
 
 $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
     toggleMeasure $(@).data('measure-id')
 
+
+setup_map_legend = ->
+    $('.legend-lightred').css("background-color", LIGHTRED)
+    $('.legend-middlered').css("background-color", MIDDLERED)
+    $('.legend-darkred').css("background-color", DARKRED)
+    $('.legend-blue').css("background-color", BLUE)
+    $('.legend-lightgreen').css("background-color", LIGHTGREEN)
+    $('.legend-middlegreen').css("background-color", MIDDLEGREEN)
+    $('.legend-darkgreen').css("background-color", DARKGREEN)
+    $('.legend-gray').css("background-color", GRAY)
+    $('.legend-green').css("background-color", GREEN)
+    $('.legend-red').css("background-color", RED)
+
+
 $(document).ready ->
     setFlotSeries()
+    setup_map_legend()
     $("#blockbox-river .chzn-select").chosen().change(
-        () -> selectRiver @value )
+        () ->
+            selectRiver @value
+            updateVertex())
+    updateVertex()
+
+    $("#blockbox-vertex .chzn-select").chosen().change(
+        () ->
+            selectVertex @value
+        )
 
     $('#measures-table-top').tablesorter()
     @

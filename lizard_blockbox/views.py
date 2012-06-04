@@ -6,6 +6,7 @@ from hashlib import md5
 from collections import defaultdict
 
 from django.conf import settings
+from django.contrib.auth.decorators import permission_required
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
@@ -20,9 +21,10 @@ from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
 
 from lizard_blockbox import models
+from lizard_blockbox.utils import namedreach2riversegments
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
-REFERENCE_TARGET = -0.11
+VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +33,7 @@ class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
     template_name = 'lizard_blockbox/blockbox.html'
     edit_link = '/admin/lizard_blockbox/'
-    require_application_icon_with_permission = True
+    required_permission = VIEW_PERM
 
     @property
     def content_actions(self):
@@ -82,6 +84,7 @@ class BlockboxView(MapView):
             # measure['in_selected_river'] = (
             #     measure_obj.riverpart == selected_river)
             measure['name'] = unicode(measure_obj)
+            measure['short_name'] = measure_obj.short_name
             if measure_obj.short_name in available_factsheets:
                 measure['pdf_link'] = reverse(
                     'measure_factsheet',
@@ -91,20 +94,70 @@ class BlockboxView(MapView):
 
     @property
     def legends(self):
-        result = super(BlockboxView, self).legends
+        result_graph_legend = FlotLegend(
+            name="Effecten grafiek",
+            div_id='measure_results_graph_legend')
+        all_types = models.Measure.objects.all().values_list(
+            'measure_type', flat=True)
+        labels = []
+        for measure_type in set(all_types):
+            if measure_type is None:
+                labels.append(['x', 'Onbekend'])
+            else:
+                labels.append([measure_type[0].lower(), measure_type])
+        labels.sort()
+        measures_legend = FlotLegend(
+            name="Maatregelselectie grafiek",
+            div_id='measures_legend',
+            labels=labels)
 
+        labels = [
+            # text, color
+            ['1.00 - 1.50', 'darkred'],
+            ['0.50 - 1.00', 'middlered'],
+            ['0.10 - 0.50', 'lightred'],
+            ['-0.10 - 0.10', 'blue'],
+            ['-0.50 - -0.10', 'lightgreen'],
+            ['-1.00 - -0.50', 'middlegreen'],
+            ['-1.50 - -1.00', 'darkgreen']
+            ]
+        map_measure_results_legend = MapLayerLegend(
+            name="Rivieren (kaart)",
+            labels=labels)
+
+        labels = [
+            # text, color
+            ['Niet geselecteerd',  'green'],
+            ['Geselecteerd',  'red'],
+            ]
+        selected_measures_map_legend = MapLayerLegend(
+            name="Maatregelen (kaart)",
+            labels=labels)
+
+        result = [result_graph_legend, measures_legend,
+                  map_measure_results_legend,
+                  selected_measures_map_legend]
+        result += super(BlockboxView, self).legends
         return result
 
 
 class FlotLegend(Legend):
     """UI widget for a flot graph legend."""
-    template_name = 'lizard_map/legend_item.html'
+    template_name = 'lizard_blockbox/flot_legend_item.html'
+    div_id = None
+    labels = {}  # Only used for label explanation of y axis measure kinds.
+
+
+class MapLayerLegend(Legend):
+    """UI widget for a json map layer legend."""
+    template_name = 'lizard_blockbox/map_layer_legend_item.html'
+    labels = []
 
 
 class SelectedMeasuresView(UiView):
     """Show info on the selected measures."""
     template_name = 'lizard_blockbox/selected_measures.html'
-    # require_application_icon_with_permission = True
+    required_permission = VIEW_PERM
     page_title = "Geselecteerde blokkendoos maatregelen"
 
     def selected_names(self):
@@ -136,7 +189,7 @@ class SelectedMeasuresView(UiView):
     def to_bookmark_url(self):
         """Return URL with the selected measures stored in the URL."""
         short_names = sorted(list(self.selected_names()))
-        selected = ','.join(short_names)
+        selected = ';'.join(short_names)
         url = reverse('lizard_blockbox.bookmarked_measures',
                 kwargs={'selected': selected})
         return url
@@ -164,11 +217,12 @@ class BookmarkedMeasuresView(SelectedMeasuresView):
         comma-separated string with shortnames.
 
         """
-        comma_separated = self.kwargs['selected']
-        short_names = comma_separated.split(',')
+        semicolon_separated = self.kwargs['selected']
+        short_names = semicolon_separated.split(';')
         return set(short_names)
 
 
+@permission_required(VIEW_PERM)
 def fetch_factsheet(request, measure):
     """Return download header for nginx to serve pdf file."""
 
@@ -203,43 +257,46 @@ def _available_factsheets():
     return factsheets
 
 
-def _water_levels(flooding_chance, selected_river, selected_measures):
+def _water_levels(flooding_chance, selected_river, selected_measures,
+                  selected_vertex):
     cache_key = (str(flooding_chance) + str(selected_river) +
-                 ''.join(selected_measures))
+                 str(selected_vertex.id) + ''.join(selected_measures))
     cache_key = md5(cache_key).hexdigest()
     water_levels = cache.get(cache_key)
     if not water_levels:
         logger.info("Cache miss for _water_levels")
-        reach = models.NamedReach.objects.get(name=selected_river)
-        subset_reaches = reach.subsetreach_set.all()
-
-        segments_join = (models.RiverSegment.objects.filter(
-            reach=element.reach,
-            location__range=(element.km_from, element.km_to))
-                         for element in subset_reaches)
-
-        # Join the querysets in segments_join into one.
-        riversegments = reduce(operator.or_, segments_join)
-        riversegments = riversegments.distinct().order_by('location')
 
         measures = models.Measure.objects.filter(
             short_name__in=selected_measures)
+
+        riversegments = namedreach2riversegments(selected_river)
 
         water_levels = []
         for segment in riversegments:
             measures_level = segment.waterleveldifference_set.filter(
                 measure__in=measures, flooding_chance=flooding_chance
                 ).aggregate(ld=Sum('level_difference'))['ld'] or 0
-            d = {'measures_level': measures_level,
-                 'reference_target': REFERENCE_TARGET,
-                 'reference_value': 0,
-                 'target_difference': measures_level - REFERENCE_TARGET,
+            try:
+                vertex_level = models.VertexValue.objects.get(
+                    vertex=selected_vertex, riversegment=segment).value
+            except models.VertexValue.DoesNotExist:
+                vertex_level = 0
+
+            reference_absolute = models.ReferenceValue.objects.get(
+                riversegment=segment, flooding_chance=flooding_chance
+                ).reference
+            vertex_level_normalized = vertex_level - reference_absolute
+            d = {'vertex_level': vertex_level_normalized,
+                 'measures_level': vertex_level_normalized + measures_level,
+                 'reference_target': 0,
                  'location': segment.location,
-                 'location_reach': '%i_%s' % (segment.location,
+                 'location_reach': '%i.00_%s' % (segment.location,
                                               segment.reach.slug),
                  }
+            # This next part can probably go.
             try:
-                city = models.CityLocation.objects.get(km=segment.location, reach=segment.reach)
+                city = models.CityLocation.objects.get(
+                    km=segment.location, reach=segment.reach)
             except models.CityLocation.DoesNotExist:
                 pass
             else:
@@ -249,22 +306,25 @@ def _water_levels(flooding_chance, selected_river, selected_measures):
     return water_levels
 
 
+@permission_required(VIEW_PERM)
 def calculated_measures_json(request):
     """Calculate the result of the measures."""
 
     flooding_chance = models.FloodingChance.objects.get(name="T1250")
     selected_river = _selected_river(request)
-    
     selected_measures = _selected_measures(request)
+    selected_vertex = _selected_vertex(request)
     water_levels = _water_levels(flooding_chance,
                                  selected_river,
-                                 selected_measures)
+                                 selected_measures,
+                                 selected_vertex)
 
     response = HttpResponse(mimetype='application/json')
     json.dump(water_levels, response)
     return response
 
 
+@permission_required(VIEW_PERM)
 def city_locations_json(request):
     """Return the city locations for the selected river."""
 
@@ -286,6 +346,37 @@ def city_locations_json(request):
     response = HttpResponse(mimetype='application/json')
     json.dump(json_list, response)
     return response
+
+
+@permission_required(VIEW_PERM)
+def vertex_json(request):
+    selected_river = _selected_river(request)
+    vertexes = models.Vertex.objects.filter(named_reaches__name=selected_river)
+    to_json = dict(vertexes.values_list('id', 'name').order_by('name'))
+    response = HttpResponse(mimetype='application/json')
+    json.dump(to_json, response)
+    return response
+
+
+@permission_required(VIEW_PERM)
+def select_vertex(request):
+    """Select the vertex."""
+
+    if not request.POST:
+        return
+    request.session['vertex'] = request.POST['vertex']
+    return HttpResponse()
+
+
+def _selected_vertex(request):
+    """Return the selected vertex."""
+    if not 'vertex' in request.session:
+        selected_river = _selected_river(request)
+        vertex = models.Vertex.objects.filter(
+            named_reaches__name=selected_river).order_by('name')[0]
+        request.session['vertex'] = vertex.id
+        return vertex
+    return models.Vertex.objects.get(id=request.session['vertex'])
 
 
 def _selected_river(request):
@@ -327,21 +418,40 @@ def _unselectable_measures(request):
 
 
 @never_cache
+@permission_required(VIEW_PERM)
 def toggle_measure(request):
     """Toggle a measure on or off."""
     if not request.POST:
         return
     measure_id = request.POST['measure_id']
     selected_measures = _selected_measures(request)
+    # Fix for empty u'' that somehow showed up.
+    available_shortnames = list(models.Measure.objects.all().values_list(
+            'short_name', flat=True))
+    to_remove = []
+    for shortname in selected_measures:
+        if shortname not in available_shortnames:
+            to_remove.append(shortname)
+            logger.warn(
+                "Removed unavailable shortname %r from selected measures.",
+                shortname)
+    if to_remove:
+        selected_measures = selected_measures - set(to_remove)
+        request.session[SELECTED_MEASURES_KEY] = selected_measures
+
     unselectable_measures = _unselectable_measures(request)
     if measure_id in selected_measures:
         selected_measures.remove(measure_id)
+    elif measure_id not in available_shortnames:
+        logger.error("Non-existing shortname %r passed to toggle_measure",
+                     measure_id)
     elif not measure_id in unselectable_measures:
-            selected_measures.add(measure_id)
+        selected_measures.add(measure_id)
     request.session[SELECTED_MEASURES_KEY] = selected_measures
     return HttpResponse(json.dumps(list(selected_measures)))
 
 
+@permission_required(VIEW_PERM)
 def select_river(request):
     """Select a river."""
     if not request.POST:
@@ -351,14 +461,27 @@ def select_river(request):
 
 
 @never_cache
+@permission_required(VIEW_PERM)
 def list_measures_json(request):
     """Return a list with all known measures for the second graph."""
 
     measures = models.Measure.objects.all().values(
         'name', 'short_name', 'measure_type', 'km_from')
-    all_types = sorted(list(
-            set(measure['measure_type'] for measure in measures)))
-
+    for measure in measures:
+        if not measure['measure_type']:
+            measure['measure_type'] = 'Onbekend'
+    all_types = list(
+            set(measure['measure_type'] for measure in measures))
+    all_types[all_types.index('Onbekend')] = 'XOnbekend'
+    all_types.sort()
+    all_types.reverse()
+    all_types[all_types.index('XOnbekend')] = 'Onbekend'
+    single_characters = []
+    for measure_type in all_types:
+        if measure_type is 'Onbekend':
+            single_characters.append('x')
+        else:
+            single_characters.append(measure_type[0].lower())
     selected_measures = _selected_measures(request)
     unselectable_measures = _unselectable_measures(request)
     for measure in measures:
@@ -366,6 +489,7 @@ def list_measures_json(request):
         measure['selectable'] = (
             measure['short_name'] not in unselectable_measures)
         measure['type_index'] = all_types.index(measure['measure_type'])
+        measure['type_indicator'] = single_characters[measure['type_index']]
     response = HttpResponse(mimetype='application/json')
     json.dump(list(measures), response)
     return response

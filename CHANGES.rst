@@ -2,8 +2,25 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.1 (unreleased)
+0.2 (unreleased)
 ----------------
+
+- Nothing changed yet.
+
+
+0.1 (2012-06-01)
+----------------
+
+- Added legend for map layers.
+
+- Requiring lizard-ui 4.0b4 because it include flot (and for some other
+  changes). [Reinout]
+
+- Protected all views with the "view blockbox" permission. You need to be the
+  admin user now or you must have that permission (globally at the moment, so
+  not via lizard-security's permission mapper).
+
+- Added legend for Flot graphs in the right-hand sidebar. [Reinout]
 
 - Added selected measures page, including a bookmarkable one. [Reinout]
 

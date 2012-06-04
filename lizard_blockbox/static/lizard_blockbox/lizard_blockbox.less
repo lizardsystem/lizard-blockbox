@@ -1,5 +1,20 @@
+@RESULT_GRAPH_HEIGHT: 150px;
+@MEASURE_GRAPH_HEIGHT: 150px;
+
 #lizard-blockbox-graph {
-  height: 260px;
+  height: @RESULT_GRAPH_HEIGHT + @MEASURE_GRAPH_HEIGHT + 10px;
+  margin-left:5px;
+}
+
+#measure_results_graph {
+  width: 98%;
+  height: @RESULT_GRAPH_HEIGHT;
+}
+
+#measure_graph {
+  width: 98%;
+  height: @MEASURE_GRAPH_HEIGHT;
+  border-bottom: 1px solid #ccc;
 }
 
 #blockbox-table {
@@ -27,6 +42,9 @@ th.headerSortDown {
     background-image: url(/static_media/lizard_blockbox/desc.gif);
 }
 
-#placeholder_control .yAxis .tickLabel {
-  display: none;
+.legend-icon {
+  width: 20px;
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: 5px;
 }
