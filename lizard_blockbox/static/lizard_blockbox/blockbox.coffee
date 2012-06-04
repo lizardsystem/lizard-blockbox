@@ -46,6 +46,8 @@ STROKEWIDTH = 5
 graphTimer = ''
 hasTooltip = ''
 
+String::endsWith = (str) -> if @match(new RegExp "#{str}$") then true else false
+
 
 toggleMeasure = (measure_id) ->
     $.ajax
@@ -427,8 +429,8 @@ setMeasureResultsGraph = (json_data) ->
         xaxis:
             min: window.min_graph_value
             max: window.max_graph_value
-            transform: (v) -> if selected_river == 'Maas' then -v else v
-            inverseTransform: (v) -> if selected_river == 'Maas' then -v else v
+            transform: (v) -> if selected_river.endsWith('Maas') then -v else v
+            inverseTransform: (v) -> if selected_river.endsWith('Maas') then -v else v
             position: "top"
 
         yaxis:

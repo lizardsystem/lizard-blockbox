@@ -2,7 +2,9 @@
 
 {% block javascript %}
    {{ block.super }}
-
+    <script type="text/javascript"
+			src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.js">
+	</script>
     <script type="text/javascript"
         src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.symbol.js">
     </script>

@@ -46,6 +46,14 @@
 
   hasTooltip = '';
 
+  String.prototype.endsWith = function(str) {
+    if (this.match(new RegExp("" + str + "$"))) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   toggleMeasure = function(measure_id) {
     return $.ajax({
       type: 'POST',
@@ -492,14 +500,14 @@
         min: window.min_graph_value,
         max: window.max_graph_value,
         transform: function(v) {
-          if (selected_river === 'Maas') {
+          if (selected_river.endsWith('Maas')) {
             return -v;
           } else {
             return v;
           }
         },
         inverseTransform: function(v) {
-          if (selected_river === 'Maas') {
+          if (selected_river.endsWith('Maas')) {
             return -v;
           } else {
             return v;
