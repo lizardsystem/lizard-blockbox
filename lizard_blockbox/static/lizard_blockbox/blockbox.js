@@ -422,7 +422,7 @@
   };
 
   setMeasureResultsGraph = function(json_data) {
-    var cities, ed_data, measures, num, options, pl_lines, reference, selected_river, vertex;
+    var ed_data, measures, num, options, pl_lines, reference, selected_river, vertex;
     vertex = (function() {
       var _i, _len, _results;
       _results = [];
@@ -441,26 +441,17 @@
       }
       return _results;
     })();
-    measures = ((function() {
-      var _i, _len, _results;
-      if (num.show === true) {
-        _results = [];
-        for (_i = 0, _len = json_data.length; _i < _len; _i++) {
-          num = json_data[_i];
-          _results.push([num.location, num.measures_level]);
-        }
-        return _results;
-      }
-    })());
-    cities = (function() {
+    measures = (function() {
       var _i, _len, _results;
       _results = [];
       for (_i = 0, _len = json_data.length; _i < _len; _i++) {
         num = json_data[_i];
-        _results.push([num.location, num.city]);
+        _results.push([num.location, num.measures_level]);
       }
       return _results;
     })();
+    window.vertex = vertex;
+    window.measures = measures;
     selected_river = $("#blockbox-river .chzn-select")[0].value;
     ed_data = [
       {
@@ -549,7 +540,7 @@
       _results = [];
       for (_i = 0, _len = control_data.length; _i < _len; _i++) {
         num = control_data[_i];
-        if (num.selectable && !num.selected) {
+        if (num.selectable && !num.selected && num.show) {
           _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
         }
       }
@@ -560,7 +551,7 @@
       _results = [];
       for (_i = 0, _len = control_data.length; _i < _len; _i++) {
         num = control_data[_i];
-        if (num.selected) {
+        if (num.selected && num.show) {
           _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
         }
       }
@@ -571,7 +562,7 @@
       _results = [];
       for (_i = 0, _len = control_data.length; _i < _len; _i++) {
         num = control_data[_i];
-        if (!num.selectable) {
+        if (!num.selectable && nun.show) {
           _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
         }
       }
@@ -609,14 +600,14 @@
         min: window.min_graph_value,
         max: window.max_graph_value,
         transform: function(v) {
-          if (selected_river === 'Maas') {
+          if (selected_river.endsWith('Maas')) {
             return -v;
           } else {
             return v;
           }
         },
         inverseTransform: function(v) {
-          if (selected_river === 'Maas') {
+          if (selected_river.endsWith('Maas')) {
             return -v;
           } else {
             return v;

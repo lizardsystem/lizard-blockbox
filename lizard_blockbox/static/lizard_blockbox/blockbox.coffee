@@ -372,9 +372,9 @@ setMeasureSeries = () ->
 setMeasureResultsGraph = (json_data) ->
     vertex = ([num.location, num.vertex_level] for num in json_data)
     reference = ([num.location, num.reference_target] for num in json_data)
-    measures = ([num.location, num.measures_level] for num in json_data if num.show == true)
-    cities = ([num.location, num.city] for num in json_data)
-
+    measures = ([num.location, num.measures_level] for num in json_data)
+    window.vertex = vertex
+    window.measures = measures
     selected_river = $("#blockbox-river .chzn-select")[0].value
 
     ed_data = [
@@ -460,9 +460,9 @@ setMeasureResultsGraph = (json_data) ->
 
 setMeasureGraph = (control_data, cities_data) ->
 
-    measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected)
-    selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected)
-    non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable)
+    measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected and num.show)
+    selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected and num.show)
+    non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable and nun.show)
     cities = ([city[0], 8, city[1], city[1], "Stad"] for city in cities_data)
 
     label_mapping = {}
@@ -479,9 +479,8 @@ setMeasureGraph = (control_data, cities_data) ->
         xaxis:
             min: window.min_graph_value
             max: window.max_graph_value
-            # TODO: add transform for the now-differently-named maas sections.
-            transform: (v) -> if selected_river == 'Maas' then -v else v
-            inverseTransform: (v) -> if selected_river == 'Maas' then -v else v
+            transform: (v) -> if selected_river.endsWith('Maas') then -v else v
+            inverseTransform: (v) -> if selected_river.endsWith('Maas') then -v else v
             reserveSpace: true
             position: "bottom"
 
