@@ -31,7 +31,7 @@ from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
 
 from lizard_blockbox import models
-from lizard_blockbox.utils import namedreach2riversegments
+from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
 VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
@@ -294,15 +294,17 @@ class BookmarkedMeasuresView(SelectedMeasuresView):
             len(self.selected_names()))
 
     def selected_names(self):
-        """Return set of selected measures from URL info.
+        """Return and set selected measures from URL info.
 
         The last part of the url, extracted as 'selected', is a
         comma-separated string with shortnames.
 
         """
         semicolon_separated = self.kwargs['selected']
-        short_names = semicolon_separated.split(';')
-        return set(short_names)
+        short_names = set(semicolon_separated.split(';'))
+        # put them on the session
+        self.request.session[SELECTED_MEASURES_KEY] = short_names
+        return short_names
 
 
 @permission_required(VIEW_PERM)
@@ -555,12 +557,16 @@ def list_measures_json(request):
             single_characters.append(measure_type[0].lower())
     selected_measures = _selected_measures(request)
     unselectable_measures = _unselectable_measures(request)
+    selected_river = _selected_river(request)
+    measures_selected_river = namedreach2measures(selected_river)
     for measure in measures:
         measure['selected'] = measure['short_name'] in selected_measures
         measure['selectable'] = (
             measure['short_name'] not in unselectable_measures)
         measure['type_index'] = all_types.index(measure['measure_type'])
         measure['type_indicator'] = single_characters[measure['type_index']]
+        measure['show'] = measure['short_name'] in measures_selected_river
+
     response = HttpResponse(mimetype='application/json')
     json.dump(list(measures), response)
     return response
