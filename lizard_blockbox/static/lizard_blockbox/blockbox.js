@@ -441,15 +441,17 @@
       }
       return _results;
     })();
-    measures = (function() {
+    measures = ((function() {
       var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = json_data.length; _i < _len; _i++) {
-        num = json_data[_i];
-        _results.push([num.location, num.measures_level]);
+      if (num.show === true) {
+        _results = [];
+        for (_i = 0, _len = json_data.length; _i < _len; _i++) {
+          num = json_data[_i];
+          _results.push([num.location, num.measures_level]);
+        }
+        return _results;
       }
-      return _results;
-    })();
+    })());
     cities = (function() {
       var _i, _len, _results;
       _results = [];
