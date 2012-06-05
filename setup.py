@@ -16,6 +16,10 @@ install_requires = [
     'lizard-ui >= 4.0b4',
     'pkginfo',
     'xlrd',
+    'reportlab',
+    'pisa',
+    'html5lib',
+    'pyPdf',
     ],
 
 tests_require = [

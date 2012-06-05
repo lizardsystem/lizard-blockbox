@@ -337,9 +337,6 @@ showLabel = (x, y, contents) ->
         opacity: 0.80
     )
 
-
-
-
 showTooltip = (x, y, name, type_name) ->
     $("""<div id="tooltip" class="popover top">
            <div class="popover-inner">
