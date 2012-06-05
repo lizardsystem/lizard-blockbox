@@ -4,13 +4,10 @@ from collections import defaultdict
 from datetime import datetime
 from hashlib import md5
 import cStringIO as StringIO
-import csv
 import ho.pisa as pisa
 import logging
-import math
 import operator
 import os
-import random
 
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
@@ -39,16 +36,6 @@ VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
 logger = logging.getLogger(__name__)
 
 
-
-
-class Error(Exception):
-    """Base class for errors in this module."""
-    pass
-    
-class OutOfRangeError(Error):
-    def __init__(self, msg):
-        Exception.__init__(self, msg)    
-
 def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
     context = Context(context_dict)
@@ -57,18 +44,14 @@ def render_to_pdf(template_src, context_dict):
 
     pdf = pisa.pisaDocument(
         StringIO.StringIO(html.encode("ISO-8859-1")), result)
-        # StringIO.StringIO(html.encode("UTF-8")), result)
-    if not pdf.err:
-        # return HttpResponse(result.getvalue(), mimetype='application/pdf')
-        
-        response = HttpResponse(mimetype='application/pdf')
-        response['Content-Disposition'] = 'filename=blokkendoos-report.pdf'
-        response.write(result.getvalue())
-        return response
-        
-    return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
 
+    if pdf.err:
+        return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
 
+    response = HttpResponse(mimetype='application/pdf')
+    response['Content-Disposition'] = 'filename=blokkendoos-report.pdf'
+    response.write(result.getvalue())
+    return response
 
 
 def generate_report(request, template='lizard_blockbox/report.html'):
@@ -97,19 +80,15 @@ def generate_report(request, template='lizard_blockbox/report.html'):
                  'measures': measures}
         result.append(reach)
     result.sort(key=lambda x: x['amount'], reverse=True)
-    print "total_cost: ", total_cost
-
 
     return render_to_pdf(
             'lizard_blockbox/report.html',
-            {
-                'date': datetime.now(),
-                'pagesize':'A4',
-                'reaches': result,
-                'total_cost': total_cost,
+            {'date': datetime.now(),
+             'pagesize': 'A4',
+             'reaches': result,
+             'total_cost': total_cost,
             }
         )
-
 
 
 class BlockboxView(MapView):
@@ -383,6 +362,7 @@ def _water_levels(flooding_chance, selected_river, selected_measures,
     return water_levels
 
 
+@never_cache
 @permission_required(VIEW_PERM)
 def calculated_measures_json(request):
     """Calculate the result of the measures."""
@@ -401,6 +381,7 @@ def calculated_measures_json(request):
     return response
 
 
+@never_cache
 @permission_required(VIEW_PERM)
 def city_locations_json(request):
     """Return the city locations for the selected river."""
@@ -424,7 +405,7 @@ def city_locations_json(request):
     json.dump(json_list, response)
     return response
 
-
+@never_cache
 @permission_required(VIEW_PERM)
 def vertex_json(request):
     selected_river = _selected_river(request)
