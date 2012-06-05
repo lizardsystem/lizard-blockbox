@@ -91,7 +91,12 @@
         overzichtspagina over de geselecteerde maatregelen
       </a> voor meer informatie. Hier kunt u de gekozen set ook bewaren.
     </p>
-
+    <hr />
+    <p class="muted">
+      Genereer een <a href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
+        met de geselecteerde maatregelen.
+        <a href="{% url lizard_blockbox.generate_report %}"><img src="{{ STATIC_URL }}lizard_blockbox/pdf_icon.png"/></a>
+    </p>
 {% endblock %}
 
 {% block content %}

@@ -15,7 +15,7 @@ urlpatterns = patterns(
         name='lizard_blockbox.home'),
     url(r'^report/$',
         'lizard_blockbox.views.generate_report',
-        name='lizard_blockbox_generate_report'),
+        name='lizard_blockbox.generate_report'),
     url(r'^geselecteerd/$',
         SelectedMeasuresView.as_view(),
         name='lizard_blockbox.selected_measures'),
