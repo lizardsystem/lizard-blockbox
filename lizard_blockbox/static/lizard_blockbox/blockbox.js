@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, showLabel, showTooltip, toggleMeasure, updateVertex,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showTooltip, toggleMeasure, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -45,6 +45,14 @@
   graphTimer = '';
 
   hasTooltip = '';
+
+  String.prototype.endsWith = function(str) {
+    if (this.match(new RegExp("" + str + "$"))) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   toggleMeasure = function(measure_id) {
     return $.ajax({
@@ -184,7 +192,7 @@
         target_difference = {};
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           num = data[_i];
-          target_difference[num.location_reach] = num.target_difference;
+          target_difference[num.location_reach] = num.measures_level;
         }
         _ref = rivers.features;
         for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
@@ -492,14 +500,14 @@
         min: window.min_graph_value,
         max: window.max_graph_value,
         transform: function(v) {
-          if (selected_river === 'Maas') {
+          if (selected_river.endsWith('Maas')) {
             return -v;
           } else {
             return v;
           }
         },
         inverseTransform: function(v) {
-          if (selected_river === 'Maas') {
+          if (selected_river.endsWith('Maas')) {
             return -v;
           } else {
             return v;
@@ -755,8 +763,22 @@
     return toggleMeasure($(this).data('measure-id'));
   });
 
+  setup_map_legend = function() {
+    $('.legend-lightred').css("background-color", LIGHTRED);
+    $('.legend-middlered').css("background-color", MIDDLERED);
+    $('.legend-darkred').css("background-color", DARKRED);
+    $('.legend-blue').css("background-color", BLUE);
+    $('.legend-lightgreen').css("background-color", LIGHTGREEN);
+    $('.legend-middlegreen').css("background-color", MIDDLEGREEN);
+    $('.legend-darkgreen').css("background-color", DARKGREEN);
+    $('.legend-gray').css("background-color", GRAY);
+    $('.legend-green').css("background-color", GREEN);
+    return $('.legend-red').css("background-color", RED);
+  };
+
   $(document).ready(function() {
     setFlotSeries();
+    setup_map_legend();
     $("#blockbox-river .chzn-select").chosen().change(function() {
       selectRiver(this.value);
       return updateVertex();

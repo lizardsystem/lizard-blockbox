@@ -1,0 +1,10 @@
+{% load i18n %}
+<h3>{{ legend.name }}</h3>
+<div>
+  {% for text, color in legend.labels %}
+  <div>
+    <span class="legend-icon legend-{{ color }}">&nbsp;</span>
+    {{ text }}
+  </div>
+  {% endfor %}
+</div>

@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '0.1dev'
+version = '0.2.dev0'
 
 long_description = '\n\n'.join([
     open('README.rst').read(),
@@ -13,9 +13,13 @@ install_requires = [
     'Django',
     'django-extensions',
     'django-nose',
-    'lizard-ui >= 3.0',
+    'lizard-ui >= 4.0b4',
     'pkginfo',
     'xlrd',
+    'reportlab',
+    'pisa',
+    'html5lib',
+    'pyPdf',
     ],
 
 tests_require = [

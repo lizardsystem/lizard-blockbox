@@ -59,7 +59,7 @@ class Command(BaseCommand):
             location, reference, _, difference, reach_slug = \
                 sheet.row_values(row_nr)
 
-            reach, _ = models.Reach.objects.get_or_create(slug=reach_slug)
+            reach = models.Reach.objects.get(slug=reach_slug)
 
             #The Meuse has both North and South (Z) kilometers with the same
             #kilometer identifier.
@@ -74,17 +74,16 @@ class Command(BaseCommand):
             if not location.is_integer():
                 continue
             try:
-                riversegment, _ = models.RiverSegment.objects.get_or_create(
+                riversegment = models.RiverSegment.objects.get(
                     location=location, reach=reach)
-            except:
+            except models.RiverSegment.DoesNotExist:
                 print 'This location does not exist: %i %s' % (
                     location, reach_slug)
                 continue
 
-            ref_val, _ = models.ReferenceValue.objects.get_or_create(
+            ref_val = models.ReferenceValue.objects.get(
                 riversegment=riversegment,
-                flooding_chance=flooding_T1250,
-                defaults={'reference': reference})
+                flooding_chance=flooding_T1250)
 
             models.WaterLevelDifference.objects.create(
                 riversegment=riversegment,

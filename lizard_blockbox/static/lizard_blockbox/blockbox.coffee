@@ -37,10 +37,16 @@ SQUARE_COLOR = "#122F64"
 PURPLE = "#E01B6A"
 BLACK = "#000000"
 
+# Note on colors: setup_map_legend() at the end helps put the right colors
+# in the legend. See the legend usage in views.py. Let's try to keep the
+# color definitions in one spot! :-)
+
 STROKEWIDTH = 5
 
 graphTimer = ''
 hasTooltip = ''
+
+String::endsWith = (str) -> if @match(new RegExp "#{str}$") then true else false
 
 
 toggleMeasure = (measure_id) ->
@@ -132,7 +138,7 @@ MeasuresMapView = Backbone.View.extend
         $.getJSON json_url, (data) ->
             target_difference = {}
             for num in data
-                target_difference[num.location_reach] = num.target_difference
+                target_difference[num.location_reach] = num.measures_level
             for feature in rivers.features
                 attributes = feature.attributes
                 attributes.target_difference = target_difference[attributes.MODELKM]
@@ -241,6 +247,7 @@ JSONRiverLayer = (name, json) ->
         RiverLayerRule -0.50, -0.10, LIGHTGREEN
         RiverLayerRule -1.00, -0.50, MIDDLEGREEN
         RiverLayerRule -1.50, -1.00, DARKGREEN
+        # Keep in sync with the legend in views.py!
         new OpenLayers.Rule
             elseFilter: true
             symbolizer:
@@ -329,9 +336,6 @@ showLabel = (x, y, contents) ->
         'background-color': '#fee',
         opacity: 0.80
     )
-
-
-
 
 showTooltip = (x, y, name, type_name) ->
     $("""<div id="tooltip" class="popover top">
@@ -422,8 +426,8 @@ setMeasureResultsGraph = (json_data) ->
         xaxis:
             min: window.min_graph_value
             max: window.max_graph_value
-            transform: (v) -> if selected_river == 'Maas' then -v else v
-            inverseTransform: (v) -> if selected_river == 'Maas' then -v else v
+            transform: (v) -> if selected_river.endsWith('Maas') then -v else v
+            inverseTransform: (v) -> if selected_river.endsWith('Maas') then -v else v
             position: "top"
 
         yaxis:
@@ -624,8 +628,23 @@ $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
     toggleMeasure $(@).data('measure-id')
 
+
+setup_map_legend = ->
+    $('.legend-lightred').css("background-color", LIGHTRED)
+    $('.legend-middlered').css("background-color", MIDDLERED)
+    $('.legend-darkred').css("background-color", DARKRED)
+    $('.legend-blue').css("background-color", BLUE)
+    $('.legend-lightgreen').css("background-color", LIGHTGREEN)
+    $('.legend-middlegreen').css("background-color", MIDDLEGREEN)
+    $('.legend-darkgreen').css("background-color", DARKGREEN)
+    $('.legend-gray').css("background-color", GRAY)
+    $('.legend-green').css("background-color", GREEN)
+    $('.legend-red').css("background-color", RED)
+
+
 $(document).ready ->
     setFlotSeries()
+    setup_map_legend()
     $("#blockbox-river .chzn-select").chosen().change(
         () ->
             selectRiver @value

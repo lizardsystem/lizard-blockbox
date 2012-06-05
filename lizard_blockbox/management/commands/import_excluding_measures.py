@@ -10,7 +10,7 @@ from lizard_blockbox import models
 
 class Command(BaseCommand):
     args = '<excelfile excelfile ...>'
-    help = ("Imports the measures table excelfile, "
+    help = ("Imports the excluding measurements excelfile, "
             "To flush use the management command: import_measure_xls --flush")
 
     def handle(self, *args, **options):
@@ -27,13 +27,16 @@ class Command(BaseCommand):
     @transaction.commit_on_success
     def parse_sheet(self, sheet):
         for row_nr in xrange(1, sheet.nrows):
-            name, reach_slug, km_from, km_to = sheet.row_values(row_nr)
-            km_from, km_to = int(km_from), int(km_to)
-            reach, _ = models.Reach.objects.get_or_create(slug=reach_slug)
-            named_reach, _ = models.NamedReach.objects.get_or_create(name=name)
-
-            models.SubsetReach.objects.get_or_create(
-                reach=reach,
-                named_reach=named_reach,
-                km_from=km_from,
-                km_to=km_to)
+            measure, excluding = sheet.row_values(row_nr)
+            excludes = [i.strip() for i in excluding.split(';')]
+            try:
+                measure = models.Measure.objects.get(short_name=measure)
+            except models.Measure.DoesNotExist:
+                continue
+            for exclude in excludes:
+                try:
+                    instance = models.Measure.objects.get(short_name=exclude)
+                except models.Measure.DoesNotExist:
+                    continue
+                measure.exclude.add(instance)
+                measure.save()

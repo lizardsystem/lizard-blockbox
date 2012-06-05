@@ -36,10 +36,13 @@ class Command(BaseCommand):
     @transaction.commit_on_success
     def parse_sheet(self, sheet):
         # First two rows are not vertexes.
-        row0 = sheet.row_values(0)[2:]
+        row0 = sheet.row_values(0)[3:]
         vertexes = [models.Vertex.objects.create(name=vertex) for
                     vertex in row0]
-        vertexes = dict(enumerate(vertexes, 2))
+        vertexes = dict(enumerate(vertexes, 3))
+
+        flooding_T1250, _ = models.FloodingChance.objects.get_or_create(
+            name='T1250')
 
         for row_nr in xrange(1, sheet.nrows):
 
@@ -48,12 +51,16 @@ class Command(BaseCommand):
             if isinstance(km, basestring) and km[-1] in ('Z', 'N'):
                 #ToDo: Parse Meuse KM with 'N' or 'Z' correctly
                 continue
-            try:
-                riversegment = models.RiverSegment.objects.get(
-                    location=row[0],
-                    reach__slug=row[1])
-            except models.RiverSegment.DoesNotExist:
-                continue
+
+            reach = models.Reach.objects.get(slug=row[1])
+            riversegment, _ = models.RiverSegment.objects.get_or_create(
+                    location=row[0], reach=reach)
+
+            models.ReferenceValue.objects.get_or_create(
+                riversegment=riversegment,
+                flooding_chance=flooding_T1250,
+                defaults={'reference': row[2]})
+
             for col_nr, vertex in vertexes.iteritems():
                 models.VertexValue.objects.create(
                     riversegment=riversegment,

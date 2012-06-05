@@ -1,18 +1,29 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
+from cgi import escape
+from collections import defaultdict
+from datetime import datetime
+from hashlib import md5
+import cStringIO as StringIO
+import csv
+import ho.pisa as pisa
 import logging
+import math
 import operator
 import os
-from hashlib import md5
-from collections import defaultdict
+import random
 
 from django.conf import settings
+from django.contrib.auth.decorators import permission_required
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
+from django.template import Context
+from django.template.loader import get_template
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
+
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
@@ -23,15 +34,89 @@ from lizard_blockbox import models
 from lizard_blockbox.utils import namedreach2riversegments
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
+VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
 
 logger = logging.getLogger(__name__)
+
+
+
+
+class Error(Exception):
+    """Base class for errors in this module."""
+    pass
+    
+class OutOfRangeError(Error):
+    def __init__(self, msg):
+        Exception.__init__(self, msg)    
+
+def render_to_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    context = Context(context_dict)
+    html = template.render(context)
+    result = StringIO.StringIO()
+
+    pdf = pisa.pisaDocument(
+        StringIO.StringIO(html.encode("ISO-8859-1")), result)
+        # StringIO.StringIO(html.encode("UTF-8")), result)
+    if not pdf.err:
+        # return HttpResponse(result.getvalue(), mimetype='application/pdf')
+        
+        response = HttpResponse(mimetype='application/pdf')
+        response['Content-Disposition'] = 'filename=blokkendoos-report.pdf'
+        response.write(result.getvalue())
+        return response
+        
+    return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
+
+
+
+
+def generate_report(request, template='lizard_blockbox/report.html'):
+    """
+    Uses PISA to generate a PDF report
+    """
+
+    total_cost = 0.0
+    reaches = defaultdict(list)
+    measures = models.Measure.objects.filter(
+        short_name__in=_selected_measures(request))
+    for measure in measures:
+        # total_cost = total_cost + measure.total_costs()
+        if measure.total_costs:
+            total_cost = total_cost + measure.total_costs
+        if measure.reach:
+            reach_name = measure.reach.slug
+        else:
+            reach_name = 'unknown'
+        reaches[reach_name].append(measure)
+    result = []
+    print models.Measure._meta.fields
+    for name, measures in reaches.items():
+        reach = {'name': name,
+                 'amount': len(measures),
+                 'measures': measures}
+        result.append(reach)
+    result.sort(key=lambda x: x['amount'], reverse=True)
+    print "total_cost: ", total_cost
+
+
+    return render_to_pdf(
+            'lizard_blockbox/report.html',
+            {
+                'date': datetime.now(),
+                'pagesize':'A4',
+                'reaches': result,
+                'total_cost': total_cost,
+            }
+        )
+
 
 
 class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
     template_name = 'lizard_blockbox/blockbox.html'
     edit_link = '/admin/lizard_blockbox/'
-    require_application_icon_with_permission = True
+    required_permission = VIEW_PERM
 
     @property
     def content_actions(self):
@@ -108,7 +193,33 @@ class BlockboxView(MapView):
             name="Maatregelselectie grafiek",
             div_id='measures_legend',
             labels=labels)
-        result = [result_graph_legend, measures_legend]
+
+        labels = [
+            # text, color
+            ['1.00 - 1.50', 'darkred'],
+            ['0.50 - 1.00', 'middlered'],
+            ['0.10 - 0.50', 'lightred'],
+            ['-0.10 - 0.10', 'blue'],
+            ['-0.50 - -0.10', 'lightgreen'],
+            ['-1.00 - -0.50', 'middlegreen'],
+            ['-1.50 - -1.00', 'darkgreen']
+            ]
+        map_measure_results_legend = MapLayerLegend(
+            name="Rivieren (kaart)",
+            labels=labels)
+
+        labels = [
+            # text, color
+            ['Niet geselecteerd',  'green'],
+            ['Geselecteerd',  'red'],
+            ]
+        selected_measures_map_legend = MapLayerLegend(
+            name="Maatregelen (kaart)",
+            labels=labels)
+
+        result = [result_graph_legend, measures_legend,
+                  map_measure_results_legend,
+                  selected_measures_map_legend]
         result += super(BlockboxView, self).legends
         return result
 
@@ -120,10 +231,16 @@ class FlotLegend(Legend):
     labels = {}  # Only used for label explanation of y axis measure kinds.
 
 
+class MapLayerLegend(Legend):
+    """UI widget for a json map layer legend."""
+    template_name = 'lizard_blockbox/map_layer_legend_item.html'
+    labels = []
+
+
 class SelectedMeasuresView(UiView):
     """Show info on the selected measures."""
     template_name = 'lizard_blockbox/selected_measures.html'
-    # require_application_icon_with_permission = True
+    required_permission = VIEW_PERM
     page_title = "Geselecteerde blokkendoos maatregelen"
 
     def selected_names(self):
@@ -155,7 +272,7 @@ class SelectedMeasuresView(UiView):
     def to_bookmark_url(self):
         """Return URL with the selected measures stored in the URL."""
         short_names = sorted(list(self.selected_names()))
-        selected = ','.join(short_names)
+        selected = ';'.join(short_names)
         url = reverse('lizard_blockbox.bookmarked_measures',
                 kwargs={'selected': selected})
         return url
@@ -183,11 +300,12 @@ class BookmarkedMeasuresView(SelectedMeasuresView):
         comma-separated string with shortnames.
 
         """
-        comma_separated = self.kwargs['selected']
-        short_names = comma_separated.split(',')
+        semicolon_separated = self.kwargs['selected']
+        short_names = semicolon_separated.split(';')
         return set(short_names)
 
 
+@permission_required(VIEW_PERM)
 def fetch_factsheet(request, measure):
     """Return download header for nginx to serve pdf file."""
 
@@ -255,22 +373,15 @@ def _water_levels(flooding_chance, selected_river, selected_measures,
                  'measures_level': vertex_level_normalized + measures_level,
                  'reference_target': 0,
                  'location': segment.location,
-                 'location_reach': '%i_%s' % (segment.location,
+                 'location_reach': '%i.00_%s' % (segment.location,
                                               segment.reach.slug),
                  }
-            # This next part can probably go.
-            try:
-                city = models.CityLocation.objects.get(
-                    km=segment.location, reach=segment.reach)
-            except models.CityLocation.DoesNotExist:
-                pass
-            else:
-                d['city'] = city.city
             water_levels.append(d)
         cache.set(cache_key, water_levels, 5 * 60)
     return water_levels
 
 
+@permission_required(VIEW_PERM)
 def calculated_measures_json(request):
     """Calculate the result of the measures."""
 
@@ -288,6 +399,7 @@ def calculated_measures_json(request):
     return response
 
 
+@permission_required(VIEW_PERM)
 def city_locations_json(request):
     """Return the city locations for the selected river."""
 
@@ -311,6 +423,7 @@ def city_locations_json(request):
     return response
 
 
+@permission_required(VIEW_PERM)
 def vertex_json(request):
     selected_river = _selected_river(request)
     vertexes = models.Vertex.objects.filter(named_reaches__name=selected_river)
@@ -320,6 +433,7 @@ def vertex_json(request):
     return response
 
 
+@permission_required(VIEW_PERM)
 def select_vertex(request):
     """Select the vertex."""
 
@@ -368,17 +482,15 @@ def _unselectable_measures(request):
     IDs further down the line...
 
     """
-    measures_shortnames = list(models.Measure.objects.all().values_list(
-        'short_name', flat=True))
-    unselectable = []
-    for shortname in _selected_measures(request):
-        index = measures_shortnames.index(shortname) + 2
-        if index < len(measures_shortnames):
-            unselectable.append(measures_shortnames[index])
-    return unselectable
+
+    return set(models.Measure.objects.filter(
+        short_name__in=_selected_measures(request),
+        exclude__isnull=False
+        ).values_list('exclude__short_name', flat=True))
 
 
 @never_cache
+@permission_required(VIEW_PERM)
 def toggle_measure(request):
     """Toggle a measure on or off."""
     if not request.POST:
@@ -411,6 +523,7 @@ def toggle_measure(request):
     return HttpResponse(json.dumps(list(selected_measures)))
 
 
+@permission_required(VIEW_PERM)
 def select_river(request):
     """Select a river."""
     if not request.POST:
@@ -420,6 +533,7 @@ def select_river(request):
 
 
 @never_cache
+@permission_required(VIEW_PERM)
 def list_measures_json(request):
     """Return a list with all known measures for the second graph."""
 
@@ -431,8 +545,7 @@ def list_measures_json(request):
     all_types = list(
             set(measure['measure_type'] for measure in measures))
     all_types[all_types.index('Onbekend')] = 'XOnbekend'
-    all_types.sort()
-    all_types.reverse()
+    all_types.sort(reverse=True)
     all_types[all_types.index('XOnbekend')] = 'Onbekend'
     single_characters = []
     for measure_type in all_types:

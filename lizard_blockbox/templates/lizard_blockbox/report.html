@@ -1,0 +1,134 @@
+{% load i18n %}<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Deltaportaal: Blokkendoos Rivieren</title>
+        <style type="text/css">
+            table{
+/*                border: 1px solid red;*/
+            }
+            table tr td{
+                vertical-align: top;
+            }
+            table#data tr td{
+                font-size: 1.2em;
+            }
+            @page {
+                size: {{ pagesize }};
+                margin: 1cm;
+                @frame footer {
+                    -pdf-frame-content: footerContent;
+                    bottom: 0cm;
+                    margin-left: 9cm;
+                    margin-right: 9cm;
+                    height: 1cm;
+                }
+            }
+            body{
+                font-family: Helvetica;
+            }
+            h2{
+                font-size: 1.1em;
+            }
+            div#header{
+            }
+            div#header h1{
+                font-size: 2em;
+                color: #BFBFBF;
+                font-weight: bold;
+                line-height: 1.3em;
+                padding: 0; margin: 0;
+                text-align: right;
+            }
+            div#header h2{
+                font-size: 1.6em;
+                color: #BFBFBF;
+                font-weight: lighter; 
+                padding: 10px 0px 10px 0px; margin: 10px 0px 10px 0px;
+                text-align: left;
+            }
+            div#header table{
+                font-size: 1.1em;
+            }
+            div#disclaimer{
+                font-size: 1.2em;
+                font-weight: bold;
+                left: 300px;
+                padding: 10px;
+                width: 200px;
+                color: #fff;
+                background-color: #BFBFBF;
+            }
+            div#disclaimer p{
+                font-weight: normal;
+            }
+            div#disclaimer p a{
+                color: #fff;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <center>
+            <img src="http://roimg.nl/presentation/images/logotype-government-of-the-netherlands-nl.png"/>
+        </center>
+        <div id="header">
+            <h1>Blokkendoos Rivieren</h1>
+
+            <table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>
+                        <p style="font-size:1.2em;font-weight:bold;">Algemeen</p>
+                        <table border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td>Versie</td>
+                                <td>1.0</td>
+                            </tr>                                
+                            <tr>
+                                <td>Datum</td>
+                                <td>{{ date|date:"d-m-Y" }}</td>
+                            </tr>
+                        </table>
+                        </div>
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+            </table>
+            
+            <hr color="#B1B2B1"/>
+            
+            {% for reach in reaches %}
+              <h2>
+                {{ reach.name }}
+                <span class="muted">({{ reach.amount }} maatregel{{ reach.amount|pluralize:"en" }})</span>
+              </h2>
+              {% for measure in reach.measures %}
+                <h3>{{ measure.name }}</h3>
+                <table>
+                  {% for field in measure.pretty %}
+                  <tr>
+                      <td>{{ field.label }}</td>
+                      <td>{% firstof field.value "Onbekend" %}</td>
+                  </tr>
+                  {% endfor %}
+                </table>
+              {% endfor %}
+            {% endfor %}
+
+            <hr color="#B1B2B1"/>
+            <h2>Cumulatief</h2>
+            <table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>Totale kosten</td>
+                    <td>{{ total_cost }} miljoen euro</td>
+                </tr>
+            </table>
+
+        </div>
+        
+        <div id="footerContent">
+            {%block page_foot%}
+                Pagina <pdf:pagenumber>
+            {%endblock%}
+        </div>
+    </body>
+</html>
