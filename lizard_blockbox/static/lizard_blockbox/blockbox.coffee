@@ -88,7 +88,7 @@ selectVertex = (vertex_id) ->
             @
 
 updateVertex = ->
-    $.getJSON($('#blockbox-vertex').data('update-vertex-url'), (data) ->
+    $.getJSON($('#blockbox-vertex').data('update-vertex-url') + '?' + new Date().getTime(), (data) ->
         options = for id, name of data
             "<option value='#{id}'>#{name}</option>"
         html=options.join ""
@@ -126,7 +126,7 @@ Backbone.history.start()
 MeasuresMapView = Backbone.View.extend
 
     measures: ->
-        $.getJSON @static_url + 'lizard_blockbox/measures.json', (json) =>
+        $.getJSON @static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), (json) =>
             @measures = JSONTooltip 'Maatregelen', json
             @render_measures(@measures)
 
@@ -135,7 +135,7 @@ MeasuresMapView = Backbone.View.extend
 
     render_rivers: (rivers = @Rivers) ->
         json_url = $('#blockbox-table').data('calculated-measures-url')
-        $.getJSON json_url, (data) ->
+        $.getJSON json_url + '?' + new Date().getTime(), (data) ->
             target_difference = {}
             for num in data
                 target_difference[num.location_reach] = num.measures_level
@@ -154,7 +154,7 @@ MeasuresMapView = Backbone.View.extend
         measures.redraw()
 
     rivers: ->
-        $.getJSON @static_url + 'lizard_blockbox/kilometers.json', (json) =>
+        $.getJSON @static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), (json) =>
             @Rivers = JSONRiverLayer 'Rivers', json
             @render_rivers(@Rivers)
 
@@ -352,7 +352,7 @@ showTooltip = (x, y, name, type_name) ->
 
 setFlotSeries = () ->
     json_url = $('#blockbox-table').data('calculated-measures-url')
-    $.getJSON json_url, (data) ->
+    $.getJSON json_url + '?' + new Date().getTime(), (data) ->
         window.min_graph_value = data[0].location
         window.max_graph_value = data[data.length-1].location
 
@@ -363,8 +363,8 @@ setFlotSeries = () ->
 setMeasureSeries = () ->
     json_url = $('#blockbox-table').data('measure-list-url')
     cities_list_url = $('#blockbox-table').data('cities-list-url')
-    $.getJSON json_url, (data) ->
-        $.getJSON cities_list_url, (cities) ->
+    $.getJSON json_url + '?' + new Date().getTime(), (data) ->
+        $.getJSON cities_list_url + '?' + new Date().getTime(), (cities) ->
             setMeasureGraph data, cities
 
 

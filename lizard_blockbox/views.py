@@ -405,6 +405,7 @@ def city_locations_json(request):
     json.dump(json_list, response)
     return response
 
+
 @never_cache
 @permission_required(VIEW_PERM)
 def vertex_json(request):
@@ -416,6 +417,7 @@ def vertex_json(request):
     return response
 
 
+@never_cache
 @permission_required(VIEW_PERM)
 def select_vertex(request):
     """Select the vertex."""
@@ -506,6 +508,7 @@ def toggle_measure(request):
     return HttpResponse(json.dumps(list(selected_measures)))
 
 
+@never_cache
 @permission_required(VIEW_PERM)
 def select_river(request):
     """Select a river."""
