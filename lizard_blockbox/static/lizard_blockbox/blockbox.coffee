@@ -375,7 +375,7 @@ setMeasureSeries = () ->
 setMeasureResultsGraph = (json_data) ->
     vertex = ([num.location, num.vertex_level] for num in json_data)
     reference = ([num.location, num.reference_target] for num in json_data)
-    measures = ([num.location, num.measures_level] for num in json_data)
+    measures = ([num.location, num.measures_level] for num in json_data if num.show == true)
     cities = ([num.location, num.city] for num in json_data)
 
     selected_river = $("#blockbox-river .chzn-select")[0].value
