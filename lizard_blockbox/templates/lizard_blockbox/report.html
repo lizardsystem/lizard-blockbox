@@ -27,6 +27,9 @@
                 font-family: Helvetica;
             }
             h2{
+                -pdf-outline: true;
+                -pdf-level: 0;
+                -pdf-open: true;
                 font-size: 1.1em;
             }
             div#header{
@@ -65,12 +68,27 @@
                 color: #fff;
                 text-decoration: none;
             }
+            pdftoc.pdftoclevel0 {
+                font-weight: bold;
+                margin-top: 0.5em;
+            }
+            pdftoc.pdftoclevel1 {
+                margin-left: 1em;
+            }
+            pdftoc.pdftoclevel2 {
+                margin-left: 2em;
+                font-style: italic;
+            }
         </style>
     </head>
     <body>
         <center>
             <img src="http://roimg.nl/presentation/images/logotype-government-of-the-netherlands-nl.png"/>
         </center>
+        {# <right> #}
+        {#     <pdf:barcode value="EMBED CODE HERE" type="code128" humanreadable="1"  #}
+        {#     barwidth="0.33mm" barheight="0.5cm" align="right"> #}
+        {# </right> #}
         <div id="header">
             <h1>Blokkendoos Rivieren</h1>
 
@@ -94,7 +112,14 @@
                 </tr>
             </table>
             
+
             <hr color="#B1B2B1"/>
+            <div id="toc">
+                <h2>Inhoudsopgave</h2>
+                <pdf:toc />
+            </div>
+            <hr color="#B1B2B1"/>
+
             
             {% for reach in reaches %}
               <h2>
@@ -122,7 +147,6 @@
                     <td>{{ total_cost }} miljoen euro</td>
                 </tr>
             </table>
-
         </div>
         
         <div id="footerContent">
