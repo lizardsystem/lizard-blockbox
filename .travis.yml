@@ -10,7 +10,6 @@ notifications:
   irc: "irc.freenode.org#nens"
   email: false
 before_install:
-  - sudo apt-get update
   - sudo apt-get build-dep python-psycopg2
 install:
   - pip install pep8 --use-mirrors
