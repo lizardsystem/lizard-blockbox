@@ -105,7 +105,7 @@
   };
 
   updateVertex = function() {
-    return $.getJSON($('#blockbox-vertex').data('update-vertex-url'), function(data) {
+    return $.getJSON($('#blockbox-vertex').data('update-vertex-url') + '?' + new Date().getTime(), function(data) {
       var html, id, name, options;
       options = (function() {
         var _results;
@@ -168,7 +168,7 @@
   MeasuresMapView = Backbone.View.extend({
     measures: function() {
       var _this = this;
-      return $.getJSON(this.static_url + 'lizard_blockbox/measures.json', function(json) {
+      return $.getJSON(this.static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), function(json) {
         _this.measures = JSONTooltip('Maatregelen', json);
         return _this.render_measures(_this.measures);
       });
@@ -187,7 +187,7 @@
       var json_url;
       if (rivers == null) rivers = this.Rivers;
       json_url = $('#blockbox-table').data('calculated-measures-url');
-      return $.getJSON(json_url, function(data) {
+      return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
         var attributes, feature, num, target_difference, _i, _j, _len, _len2, _ref;
         target_difference = {};
         for (_i = 0, _len = data.length; _i < _len; _i++) {
@@ -220,7 +220,7 @@
     },
     rivers: function() {
       var _this = this;
-      return $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json', function(json) {
+      return $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
         _this.Rivers = JSONRiverLayer('Rivers', json);
         return _this.render_rivers(_this.Rivers);
       });
@@ -402,7 +402,7 @@
   setFlotSeries = function() {
     var json_url;
     json_url = $('#blockbox-table').data('calculated-measures-url');
-    return $.getJSON(json_url, function(data) {
+    return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
       window.min_graph_value = data[0].location;
       window.max_graph_value = data[data.length - 1].location;
       setMeasureResultsGraph(data);
@@ -414,8 +414,8 @@
     var cities_list_url, json_url;
     json_url = $('#blockbox-table').data('measure-list-url');
     cities_list_url = $('#blockbox-table').data('cities-list-url');
-    return $.getJSON(json_url, function(data) {
-      return $.getJSON(cities_list_url, function(cities) {
+    return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
+      return $.getJSON(cities_list_url + '?' + new Date().getTime(), function(cities) {
         return setMeasureGraph(data, cities);
       });
     });
