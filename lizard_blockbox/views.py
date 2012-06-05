@@ -226,19 +226,39 @@ class SelectedMeasuresView(UiView):
         """Return set of selected measures from session."""
         return _selected_measures(self.request)
 
-    def measures_per_reach(self):
-        """Return selected measures, sorted per reach."""
+    def total_cost(self):
         reaches = defaultdict(list)
         measures = models.Measure.objects.filter(
             short_name__in=self.selected_names())
+        total_cost = 0.0
         for measure in measures:
+            if measure.total_costs:
+                total_cost = total_cost + measure.total_costs
             if measure.reach:
                 reach_name = measure.reach.slug
             else:
                 reach_name = 'unknown'
             reaches[reach_name].append(measure)
         result = []
-        print models.Measure._meta.fields
+        return total_cost
+
+    def measures_per_reach(self):
+        """Return selected measures, sorted per reach."""
+        reaches = defaultdict(list)
+        measures = models.Measure.objects.filter(
+            short_name__in=self.selected_names())
+        total_cost = 0.0
+        for measure in measures:
+            if measure.total_costs:
+                total_cost = total_cost + measure.total_costs
+            if measure.reach:
+                reach_name = measure.reach.slug
+            else:
+                reach_name = 'unknown'
+            reaches[reach_name].append(measure)
+        result = []
+        print "total_cost: ", total_cost
+        # print models.Measure._meta.fields
         for name, measures in reaches.items():
             reach = {'name': name,
                      'amount': len(measures),
