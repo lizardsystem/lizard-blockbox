@@ -6,15 +6,30 @@
     <script type="text/javascript"
         src="{{ STATIC_URL }}lizard_blockbox/jquery.tablesorter.js">
     </script>
+    <script type="text/javascript"
+        src="{{ STATIC_URL }}lizard_blockbox/jquery.tinyscrollbar.min.js">
+    </script>
 
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('#selected-measures-list .viewport').height($(window).height()-150);
+            $('#selected-measures-list').tinyscrollbar();
+        });
+        $(window).resize(function() {
+            $('#selected-measures-list .viewport').height($(window).height()-150);
+            $('#selected-measures-list').tinyscrollbar();          
+        });
+    </script>
 {% endblock %}
 
 {% block css %}
   {{ block.super }}
+
   <link rel="stylesheet"
         href="{{ STATIC_URL }}lizard_blockbox/lizard_blockbox.css"
         type="text/css"
         media="screen, projection" />
+
 {% endblock css %}
 
 {% block sidebar %}
@@ -37,25 +52,36 @@
 
 {% block content %}
   <div class="textual-content give-me-height">
-    <h1>Geselecteerde maatregelen</h1>
-    {% for reach in view.measures_per_reach %}
-      <h2>
-        {{ reach.name }}
-        <span class="muted">({{ reach.amount }} maatregelen)</span>
-      </h2>
-      {% for measure in reach.measures %}
-        <h3>{{ measure.name }}</h3>
-        <dl>
-          {% for field in measure.pretty %}
-          <dt>{{ field.label }}</dt>
-          <dd>{% firstof field.value "Onbekend" %}</dd>
-          {% endfor %}
-        </dl>
-      {% endfor %}
-    {% endfor %}
 
-    <h2>Kosten</h2>
-    <p>TODO</p>
+      <div id="selected-measures-list">
+      	<div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>
+      	<div class="viewport">
+      		<div class="overview">
+                <h1>Geselecteerde maatregelen</h1>
+                {% for reach in view.measures_per_reach %}
+                  <h2>
+                    {{ reach.name }}
+                    <span class="muted">({{ reach.amount }} maatregelen)</span>
+                  </h2>
+                  {% for measure in reach.measures %}
+                    <h3>{{ measure.name }}</h3>
+                    <dl>
+                      {% for field in measure.pretty %}
+                      <dt>{{ field.label }}</dt>
+                      <dd>{% firstof field.value "Onbekend" %}</dd>
+                      {% endfor %}
+                    </dl>
+                  {% endfor %}
+                {% endfor %}
+
+                <h2>Kosten</h2>
+                <p>TODO</p>
+
+      		</div>
+      	</div>
+      </div>
+
+
 
   </div>
 {% endblock %}

@@ -70,3 +70,15 @@ th.headerSortDown {
   margin-right: 10px;
   margin-bottom: 5px;
 }
+
+
+#selected-measures-list { width: 99%; clear: both; margin: 20px 0 10px; }
+#selected-measures-list .viewport { width: 500px; height:700px; overflow: hidden; position: relative; }
+#selected-measures-list .overview { list-style: none; position: absolute; left: 0; top: 0; }
+#selected-measures-list .thumb .end,
+#selected-measures-list .thumb { background-color: #003D5D; }
+#selected-measures-list .scrollbar { position: relative; float: right; width: 15px; }
+#selected-measures-list .track { background-color: #D8EEFD; height: 100%; width:13px; position: relative; padding: 0 1px; }
+#selected-measures-list .thumb { height: 20px; width: 13px; cursor: pointer; overflow: hidden; position: absolute; top: 0; }
+#selected-measures-list .thumb .end { overflow: hidden; height: 5px; width: 13px; }
+#selected-measures-list .disable{ display: none; }
