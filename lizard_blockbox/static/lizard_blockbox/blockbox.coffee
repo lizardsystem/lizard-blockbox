@@ -647,12 +647,14 @@ $(document).ready ->
     $("#blockbox-river .chzn-select").chosen().change(
         () ->
             selectRiver @value
-            updateVertex())
+            updateVertex()
+            @)
     updateVertex()
 
     $("#blockbox-vertex .chzn-select").chosen().change(
         () ->
             selectVertex @value
+            @
         )
 
     $('#measures-table-top').tablesorter()

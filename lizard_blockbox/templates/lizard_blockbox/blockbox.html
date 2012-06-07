@@ -48,9 +48,11 @@
 	      class="chzn-select"
 	      tabindex="2"
 	      style="width:250px;">
-	{% for reach in view.reaches %}
-          <option {% if reach.selected %}SELECTED{% endif %}
-		  >{{ reach.name }}</option>
+	    {% for reach in view.reaches %}
+          <option value="{{reach.name}}"
+                  {% if reach.selected %}SELECTED{% endif %}>
+            {{ reach.name }}
+          </option>
         {% endfor %}
       </select>
     </form>

@@ -774,11 +774,13 @@
     setup_map_legend();
     $("#blockbox-river .chzn-select").chosen().change(function() {
       selectRiver(this.value);
-      return updateVertex();
+      updateVertex();
+      return this;
     });
     updateVertex();
     $("#blockbox-vertex .chzn-select").chosen().change(function() {
-      return selectVertex(this.value);
+      selectVertex(this.value);
+      return this;
     });
     $('#measures-table-top').tablesorter();
     return this;
