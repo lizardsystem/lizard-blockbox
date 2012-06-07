@@ -648,7 +648,8 @@ $(document).ready ->
     $("#blockbox-river .chzn-select").chosen().change(
         () ->
             selectRiver @value
-            @)
+            @
+        )
     updateVertex()
 
     $("#blockbox-vertex .chzn-select").chosen().change(
