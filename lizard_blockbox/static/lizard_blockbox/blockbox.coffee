@@ -72,6 +72,7 @@ selectRiver = (river_name) ->
         data:
             'river_name': river_name
         success: (data) ->
+            updateVertex()
             setFlotSeries()
             measuresMapView.render()
             @
@@ -647,7 +648,6 @@ $(document).ready ->
     $("#blockbox-river .chzn-select").chosen().change(
         () ->
             selectRiver @value
-            updateVertex()
             @)
     updateVertex()
 

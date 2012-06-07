@@ -82,6 +82,7 @@
         'river_name': river_name
       },
       success: function(data) {
+        updateVertex();
         setFlotSeries();
         measuresMapView.render();
         return this;
@@ -774,7 +775,6 @@
     setup_map_legend();
     $("#blockbox-river .chzn-select").chosen().change(function() {
       selectRiver(this.value);
-      updateVertex();
       return this;
     });
     updateVertex();
