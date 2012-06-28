@@ -58,7 +58,8 @@
         setFlotSeries();
         $holder = $('<div/>');
         $holder.load('. #page', function() {
-          return $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
+          $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
+          return $("#measures-table").html($('#measures-table', $holder).html());
         });
         measuresMapView.render();
         return this;
@@ -177,7 +178,8 @@
       return _results;
     },
     render_rivers: function(rivers) {
-      var json_url;
+      var json_url,
+        _this = this;
       if (rivers == null) rivers = this.Rivers;
       json_url = $('#blockbox-table').data('calculated-measures-url');
       return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
@@ -193,7 +195,8 @@
           attributes = feature.attributes;
           attributes.target_difference = target_difference[attributes.MODELKM];
         }
-        return rivers.redraw();
+        rivers.redraw();
+        return _this.render_measures();
       });
     },
     render_measures: function(measures) {
@@ -229,12 +232,13 @@
       return setTimeout(runDelayed, 500);
     },
     render: function() {
-      this.render_measures();
       return this.render_rivers();
     }
   });
 
   measuresMapView = new MeasuresMapView();
+
+  window.mMV = measuresMapView;
 
   onPopupClose = function(evt) {
     return selectControl.unselect(selectedFeature);
@@ -541,7 +545,7 @@
       _results = [];
       for (_i = 0, _len = control_data.length; _i < _len; _i++) {
         num = control_data[_i];
-        if (!num.selectable && nun.show) {
+        if (!num.selectable && num.show) {
           _results.push([num.km_from, num.type_index, num.name, num.short_name, num.measure_type]);
         }
       }

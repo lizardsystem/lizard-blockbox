@@ -59,6 +59,7 @@ toggleMeasure = (measure_id) ->
             $holder = $('<div/>')
             $holder.load '. #page', () ->
                 $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
+                $("#measures-table").html($('#measures-table', $holder).html())
             measuresMapView.render()
             @
 
@@ -133,7 +134,7 @@ MeasuresMapView = Backbone.View.extend
 
     render_rivers: (rivers = @Rivers) ->
         json_url = $('#blockbox-table').data('calculated-measures-url')
-        $.getJSON json_url + '?' + new Date().getTime(), (data) ->
+        $.getJSON json_url + '?' + new Date().getTime(), (data) =>
             target_difference = {}
             for num in data
                 target_difference[num.location_reach] = num.measures_level
@@ -141,6 +142,7 @@ MeasuresMapView = Backbone.View.extend
                 attributes = feature.attributes
                 attributes.target_difference = target_difference[attributes.MODELKM]
             rivers.redraw()
+            @render_measures()
 
     render_measures: (measures = @measures) ->
         selected_items = @selected_items()
@@ -166,11 +168,11 @@ MeasuresMapView = Backbone.View.extend
         setTimeout(runDelayed, 500)
 
     render: ->
-        @render_measures()
         @render_rivers()
 
 
 measuresMapView = new MeasuresMapView()
+window.mMV = measuresMapView
 
 #######################################################
 # OpenLayers GeoJSON graph                            #
@@ -458,7 +460,7 @@ setMeasureGraph = (control_data, cities_data) ->
 
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected and num.show)
     selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected and num.show)
-    non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable and nun.show)
+    non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable and num.show)
     cities = ([city[0], 8, city[1], city[1], "Stad"] for city in cities_data)
 
     label_mapping = {}
