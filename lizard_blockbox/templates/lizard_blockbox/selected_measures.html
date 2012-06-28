@@ -17,7 +17,7 @@
         });
         $(window).resize(function() {
             $('#selected-measures-list .viewport').height($(window).height()-150);
-            $('#selected-measures-list').tinyscrollbar();          
+            $('#selected-measures-list').tinyscrollbar();
         });
     </script>
 {% endblock %}
@@ -74,7 +74,7 @@
                   {% endfor %}
                 {% endfor %}
 
-                <h2>Kosten</h2>
+                <h2>Totale Kosten</h2>
                 <p>&euro; {{ view.total_cost }} {% trans "m" %}</p>
 
       		</div>
