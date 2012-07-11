@@ -255,7 +255,6 @@ class SelectedMeasuresView(UiView):
             else:
                 reach_name = 'unknown'
             reaches[reach_name].append(measure)
-        result = []
         return total_cost
 
     def measures_per_reach(self):

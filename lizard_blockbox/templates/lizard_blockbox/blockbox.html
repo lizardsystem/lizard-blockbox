@@ -84,13 +84,13 @@
         </li>
       {% endfor %}
     </ul>
-    <hr />
+	<h3>Overzichts Pagina</h3>
     <p class="muted">
       Ga naar de <a href="{% url lizard_blockbox.selected_measures %}">
         overzichtspagina over de geselecteerde maatregelen
       </a> voor meer informatie. Hier kunt u de gekozen set ook bewaren.
     </p>
-    <hr />
+	<h3>Downloads</h3>
     <p class="muted">
       Genereer een <a href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
         met de geselecteerde maatregelen.
@@ -138,16 +138,16 @@
 	      <i class="icon-ok"></i>Ja
 	      {% endif %}
 	    </td>
-            <td style="cursor:pointer;">
-              <a href="#"
-                 class="blockbox-toggle-measure"
-                 data-measure-id="{{ measure.short_name }}">
-                {{ measure.name }}
-                </a>
-            </td>
-            {% for field in measure.fields %}
-              <td>{% firstof field.value "Onbekend" %}</td>
-            {% endfor %}
+        <td style="cursor:pointer;">
+          <a href="#"
+             class="blockbox-toggle-measure"
+             data-measure-id="{{ measure.short_name }}">
+            {{ measure.name }}
+          </a>
+        </td>
+        {% for field in measure.fields %}
+          <td>{% firstof field.value "Onbekend" %}</td>
+        {% endfor %}
 	    <td>
 	      {% if measure.pdf_link %}
 	        <a href="{{ measure.pdf_link }}">
