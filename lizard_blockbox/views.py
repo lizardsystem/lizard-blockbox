@@ -175,13 +175,16 @@ class BlockboxView(MapView):
 
         labels = [
             # text, color
-            ['1.00 - 1.50', 'darkred'],
-            ['0.50 - 1.00', 'middlered'],
-            ['0.10 - 0.50', 'lightred'],
-            ['-0.10 - 0.10', 'blue'],
-            ['-0.50 - -0.10', 'lightgreen'],
-            ['-1.00 - -0.50', 'middlegreen'],
-            ['-1.50 - -1.00', 'darkgreen']
+            ['> 2.00', 'darkred'],
+            ['1.00 - 2.00', 'darkred'],
+            ['0.80 1.00', 'middlered'],
+            ['0.60 - 0.80', 'lightred'],
+            ['0.40 - 0.60', 'blue'],
+            ['0.20 - 0.40', 'lightgreen'],
+            ['0.00 - 0.20', 'middlegreen'],
+            ['-0.20 - -0.00', 'darkgreen'],
+            ['-0.40 - -0.20', 'darkgreen'],
+            ['< -0.40', 'darkgreen']
             ]
         map_measure_results_legend = MapLayerLegend(
             name="Rivieren (kaart)",

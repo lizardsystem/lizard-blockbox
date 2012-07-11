@@ -205,7 +205,7 @@ showPopup = (feature) ->
 RiverLayerRule = (from, to, color) ->
     rule = new OpenLayers.Rule(
         filter: new OpenLayers.Filter.Comparison
-            type: OpenLayers.Filter.Comparison.BETWEEN,
+            type: OpenLayers.Filter.Comparison.BETWEEN
             property: "target_difference"
             lowerBoundary: from
             upperBoundary: to
@@ -216,27 +216,36 @@ RiverLayerRule = (from, to, color) ->
     )
     rule
 
-RiverLayerBorderRule = (to, color) ->
-    rule = new OpenLayers.Rule(
-        filter: new OpenLayers.Filter.Comparison
-            type: OpenLayers.Filter.Comparison.EQUAL_TO,
-            property: "target_difference"
-            value: to
-        symbolizer:
-            fillColor: color
-            strokeColor: color
-    )
-    rule
-
 JSONRiverLayer = (name, json) ->
     rules = [
-        RiverLayerRule 1.00, 1.50, DARKRED
-        RiverLayerRule 0.50, 1.00, MIDDLERED
-        RiverLayerRule 0.10, 0.50, LIGHTRED
-        RiverLayerRule -0.10, 0.10, BLUE
-        RiverLayerRule -0.50, -0.10, LIGHTGREEN
-        RiverLayerRule -1.00, -0.50, MIDDLEGREEN
-        RiverLayerRule -1.50, -1.00, DARKGREEN
+        new OpenLayers.Rule
+            filter: new OpenLayers.Filter.Comparison
+                type: OpenLayers.Filter.Comparison.GREATER_THAN
+                property: "target_difference"
+                value: 2.00
+            symbolizer:
+                fillColor: DARKRED
+                strokeColor: DARKRED
+                strokeWidth: STROKEWIDTH
+
+        RiverLayerRule 1.00, 2.00, DARKRED
+        RiverLayerRule 0.80, 1.00, MIDDLERED
+        RiverLayerRule 0.60, 0.80, LIGHTRED
+        RiverLayerRule 0.40, 0.60, BLUE
+        RiverLayerRule 0.20, 0.40, LIGHTGREEN
+        RiverLayerRule 0.00, 0.20, MIDDLEGREEN
+        RiverLayerRule -0.20, -0.00, DARKGREEN
+        RiverLayerRule -0.40, -0.20, DARKGREEN
+
+        new OpenLayers.Rule
+            filter: new OpenLayers.Filter.Comparison
+                type: OpenLayers.Filter.Comparison.LESS_THAN
+                property: "target_difference"
+                value: -0.40
+            symbolizer:
+                fillColor: DARKGREEN
+                strokeColor: DARKGREEN
+                strokeWidth: STROKEWIDTH
         # Keep in sync with the legend in views.py!
         new OpenLayers.Rule
             elseFilter: true
@@ -244,6 +253,7 @@ JSONRiverLayer = (name, json) ->
                 fillColor: GRAY
                 strokeColor: GRAY
                 strokeWidth: STROKEWIDTH
+
     ]
 
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
