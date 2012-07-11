@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONLayer, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, onFeatureHighlight, onFeatureToggle, onFeatureUnhighlight, onPopupClose, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showTooltip, toggleMeasure, updateVertex,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showPopup, showTooltip, toggleMeasure, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -66,6 +66,8 @@
       }
     });
   };
+
+  window.toggleMeasure = toggleMeasure;
 
   selectRiver = function(river_name) {
     return $.ajax({
@@ -240,38 +242,12 @@
 
   window.mMV = measuresMapView;
 
-  onPopupClose = function(evt) {
-    return selectControl.unselect(selectedFeature);
-  };
-
-  onFeatureHighlight = function(feature) {
-    var ff, popup, selectedFeature;
-    selectedFeature = feature;
-    ff = feature.feature;
-    popup = new OpenLayers.Popup.FramedCloud("chicken", ff.geometry.getBounds().getCenterLonLat(), null, "<div style='font-size:.8em'>" + ff.data.titel + "</div>", null, false, false);
-    feature.feature.popup = popup;
+  showPopup = function(feature) {
+    var href_text, popup;
+    href_text = feature.attributes['selected'] ? 'Deselecteer' : 'Selecteer';
+    popup = new OpenLayers.Popup.FramedCloud("chicken", feature.geometry.getBounds().getCenterLonLat(), null, "<div style='font-size:.8em'>" + feature.data.titel + "<br/><a onclick='window.toggleMeasure(\"" + feature.attributes['code'] + "\"); if (this.innerHTML === \"Selecteer\") { this.innerHTML=\"Deselecteer\"} else {this.innerHTML=\"Selecteer\"}' href='#'>" + href_text + "</a></div>", null, true, false);
+    feature.popup = popup;
     return map.addPopup(popup);
-  };
-
-  onFeatureUnhighlight = function(feature) {
-    map.removePopup(feature.feature.popup);
-    feature.feature.popup.destroy();
-    return feature.feature.popup = null;
-  };
-
-  onFeatureToggle = function(feature) {
-    var attr, short_name;
-    attr = feature.attributes;
-    short_name = attr["code"];
-    return toggleMeasure(short_name);
-  };
-
-  JSONLayer = function(name, json) {
-    var geojson_format, vector_layer;
-    geojson_format = new OpenLayers.Format.GeoJSON();
-    vector_layer = new OpenLayers.Layer.Vector(name);
-    map.addLayer(vector_layer);
-    return vector_layer.addFeatures(geojson_format.read(json));
   };
 
   RiverLayerRule = function(from, to, color) {
@@ -336,7 +312,7 @@
   };
 
   JSONTooltip = function(name, json) {
-    var geojson_format, highlightCtrl, styleMap, vector_layer;
+    var geojson_format, selectCtrl, styleMap, vector_layer;
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
       fillColor: GREEN,
       strokeColor: GREEN
@@ -362,17 +338,15 @@
     });
     map.addLayer(vector_layer);
     vector_layer.addFeatures(geojson_format.read(json));
-    highlightCtrl = new OpenLayers.Control.SelectFeature(vector_layer, {
-      hover: true,
-      highlightOnly: true,
-      renderIntent: "temporary",
-      eventListeners: {
-        featurehighlighted: onFeatureHighlight,
-        featureunhighlighted: onFeatureUnhighlight
+    selectCtrl = new OpenLayers.Control.SelectFeature(vector_layer, {
+      callbacks: {
+        click: function(feature) {
+          return showPopup(feature);
+        }
       }
     });
-    map.addControl(highlightCtrl);
-    highlightCtrl.activate();
+    map.addControl(selectCtrl);
+    selectCtrl.activate();
     return vector_layer;
   };
 
@@ -703,7 +677,7 @@
       $('#measure_results_graph').css('width', '100%');
       $('#measure_graph').css('width', '100%');
       return setFlotSeries();
-    }, 200);
+    }, 300);
   };
 
   $('.btn.collapse-sidebar').click(function() {

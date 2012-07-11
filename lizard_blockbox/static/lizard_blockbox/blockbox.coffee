@@ -3,11 +3,6 @@
 #
 # setFlotSeries() is the wrapper function you're looking for to
 # draw the flot graph.
-
-#######################################################
-# Backbone part                                       #
-#######################################################
-
 ANIMATION_DURATION = 150
 
 # Colors from main theme.
@@ -46,6 +41,10 @@ STROKEWIDTH = 5
 graphTimer = ''
 hasTooltip = ''
 
+#######################################################
+# Backbone part                                       #
+#######################################################
+
 toggleMeasure = (measure_id) ->
     $.ajax
         type: 'POST'
@@ -62,6 +61,8 @@ toggleMeasure = (measure_id) ->
                 $("#measures-table").html($('#measures-table', $holder).html())
             measuresMapView.render()
             @
+
+window.toggleMeasure = toggleMeasure
 
 selectRiver = (river_name) ->
     $.ajax
@@ -175,42 +176,31 @@ measuresMapView = new MeasuresMapView()
 window.mMV = measuresMapView
 
 #######################################################
+# Popup                                               #
+#######################################################
+
+# UGLY DUCKLING HACK with javascript in the onclick
+# to change the text in the popup dynamically.
+
+showPopup = (feature) ->
+    href_text = if feature.attributes['selected'] then 'Deselecteer' else 'Selecteer'
+    popup = new OpenLayers.Popup.FramedCloud(
+        "chicken"
+        feature.geometry.getBounds().getCenterLonLat()
+        null
+        "<div style='font-size:.8em'>" + feature.data.titel + "<br/><a onclick='window.toggleMeasure(\"" + feature.attributes['code']  + "\"); if (this.innerHTML === \"Selecteer\") { this.innerHTML=\"Deselecteer\"} else {this.innerHTML=\"Selecteer\"}' href='#'>" + href_text +  "</a></div>"
+        null
+        true
+        false
+    )
+    feature.popup = popup
+    map.addPopup popup
+
+
+#######################################################
 # OpenLayers GeoJSON graph                            #
 #######################################################
 
-onPopupClose = (evt) ->
-    selectControl.unselect selectedFeature
-
-onFeatureHighlight = (feature) ->
-    selectedFeature = feature
-    ff = feature.feature
-    popup = new OpenLayers.Popup.FramedCloud(
-        "chicken"
-        ff.geometry.getBounds().getCenterLonLat()
-        null
-        "<div style='font-size:.8em'>" + ff.data.titel + "</div>"
-        null
-        false
-        false
-    )
-    feature.feature.popup = popup
-    map.addPopup popup
-
-onFeatureUnhighlight = (feature) ->
-    map.removePopup feature.feature.popup
-    feature.feature.popup.destroy()
-    feature.feature.popup = null
-
-onFeatureToggle = (feature) ->
-    attr = feature.attributes
-    short_name = attr["code"]
-    toggleMeasure short_name
-
-JSONLayer = (name, json) ->
-    geojson_format = new OpenLayers.Format.GeoJSON()
-    vector_layer = new OpenLayers.Layer.Vector(name)
-    map.addLayer vector_layer
-    vector_layer.addFeatures geojson_format.read(json)
 
 RiverLayerRule = (from, to, color) ->
     rule = new OpenLayers.Rule(
@@ -295,31 +285,19 @@ JSONTooltip = (name, json) ->
     vector_layer = new OpenLayers.Layer.Vector(name,
         styleMap: styleMap
     )
+
     map.addLayer vector_layer
     vector_layer.addFeatures geojson_format.read(json)
-    highlightCtrl = new OpenLayers.Control.SelectFeature(vector_layer,
-        hover: true
-        highlightOnly: true
-        renderIntent: "temporary"
-        eventListeners:
-            featurehighlighted: onFeatureHighlight
-            featureunhighlighted: onFeatureUnhighlight
-        )
+    selectCtrl = new OpenLayers.Control.SelectFeature(vector_layer,
+        callbacks:
+            click: (feature) -> showPopup feature
+    )
 
-    # ToDo: Fix selectCtrl, it has problems with hoover and selecting
-    #selectCtrl = new OpenLayers.Control.SelectFeature(vector_layer,
-    #    hover: false
-    #    click: true
-    #    onSelect: onFeatureToggle
-    #)
-    #map.addControl(selectCtrl)
-    #selectCtrl.activate()
+    map.addControl selectCtrl
+    selectCtrl.activate()
 
-    map.addControl highlightCtrl
-    highlightCtrl.activate()
 
     vector_layer
-
 
 #######################################################
 # Graph part                                          #
@@ -607,7 +585,7 @@ resize_graphs = ->
         $('#measure_graph').css('width', '100%')
 
         setFlotSeries()
-    ,200)
+    ,300)
 
 $('.btn.collapse-sidebar').click ->
     resize_graphs()

@@ -137,16 +137,16 @@
 	      <i class="icon-ok"></i>Ja
 	      {% endif %}
 	    </td>
-            <td style="cursor:pointer;">
-              <a href="#"
-                 class="blockbox-toggle-measure"
-                 data-measure-id="{{ measure.short_name }}">
-                {{ measure.name }}
-                </a>
-            </td>
-            {% for field in measure.fields %}
-              <td>{% firstof field.value "Onbekend" %}</td>
-            {% endfor %}
+        <td style="cursor:pointer;">
+          <a href="#"
+             class="blockbox-toggle-measure"
+             data-measure-id="{{ measure.short_name }}">
+            {{ measure.name }}
+          </a>
+        </td>
+        {% for field in measure.fields %}
+          <td>{% firstof field.value "Onbekend" %}</td>
+        {% endfor %}
 	    <td>
 	      {% if measure.pdf_link %}
 	        <a href="{{ measure.pdf_link }}">
