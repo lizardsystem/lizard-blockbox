@@ -339,6 +339,7 @@
     map.addLayer(vector_layer);
     vector_layer.addFeatures(geojson_format.read(json));
     selectCtrl = new OpenLayers.Control.SelectFeature(vector_layer, {
+      clickout: true,
       callbacks: {
         click: function(feature) {
           return showPopup(feature);

@@ -289,6 +289,7 @@ JSONTooltip = (name, json) ->
     map.addLayer vector_layer
     vector_layer.addFeatures geojson_format.read(json)
     selectCtrl = new OpenLayers.Control.SelectFeature(vector_layer,
+        clickout: true
         callbacks:
             click: (feature) -> showPopup feature
     )
