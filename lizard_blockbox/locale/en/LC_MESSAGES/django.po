@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-29 08:50-0500\n"
+"POT-Creation-Date: 2012-07-11 08:32-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,22 +21,34 @@ msgstr ""
 msgid "Floating point number: converts empty string to None"
 msgstr ""
 
-#: models.py:20
+#: models.py:23 models.py:120 views.py:98
 msgid "reach"
 msgstr ""
 
-#: models.py:21
+#: models.py:24
 msgid "reaches"
 msgstr ""
 
-#: views.py:39
+#: views.py:98
+msgid "reach kilometer"
+msgstr ""
+
+#: views.py:98
+msgid "remaining water level rise in m"
+msgstr ""
+
+#: views.py:118
 msgid "Show table"
 msgstr ""
 
-#: views.py:40
+#: views.py:119
 msgid "Show map"
 msgstr ""
 
-#: views.py:43
+#: views.py:122
 msgid "Switch between a graph+map view and a graph+table view."
+msgstr ""
+
+#: templates/lizard_blockbox/selected_measures.html:79
+msgid "m"
 msgstr ""

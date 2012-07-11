@@ -4,10 +4,12 @@ from collections import defaultdict
 from datetime import datetime
 from hashlib import md5
 import cStringIO as StringIO
-import ho.pisa as pisa
+import csv
 import logging
 import operator
 import os
+
+import ho.pisa as pisa
 
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
@@ -90,6 +92,19 @@ def generate_report(request, template='lizard_blockbox/report.html'):
             }
         )
 
+def generate_csv(request):
+    response = HttpResponse(mimetype='application/csv')
+    response['Content-Disposition'] = 'filename=blokkendoos-report.csv'
+    fieldnames = [_('reach'), _('reach kilometer'), _('remaining water level rise in m')]
+    writer = csv.writer(response, dialect='excel', delimiter=';', quoting=csv.QUOTE_ALL)
+    writer.writerow(fieldnames)
+    water_levels = _water_levels(request)
+    for water_level in water_levels:
+        writer.writerow([water_level['location_segment'],
+                         water_level['location'],
+                         water_level['measures_level'],
+                         ])
+    return response
 
 class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
@@ -339,8 +354,11 @@ def _available_factsheets():
     return factsheets
 
 
-def _water_levels(flooding_chance, selected_river, selected_measures,
-                  selected_vertex):
+def _water_levels(request):
+    flooding_chance = models.FloodingChance.objects.get(name="T1250")
+    selected_river = _selected_river(request)
+    selected_measures = _selected_measures(request)
+    selected_vertex = _selected_vertex(request)
     cache_key = (str(flooding_chance) + str(selected_river) +
                  str(selected_vertex.id) + ''.join(selected_measures))
     cache_key = md5(cache_key).hexdigest()
@@ -374,6 +392,7 @@ def _water_levels(flooding_chance, selected_river, selected_measures,
                  'location': segment.location,
                  'location_reach': '%i.00_%s' % (segment.location,
                                               segment.reach.slug),
+                 'location_segment': segment.reach.slug,
                  }
             water_levels.append(d)
         cache.set(cache_key, water_levels, 5 * 60)
@@ -385,14 +404,7 @@ def _water_levels(flooding_chance, selected_river, selected_measures,
 def calculated_measures_json(request):
     """Calculate the result of the measures."""
 
-    flooding_chance = models.FloodingChance.objects.get(name="T1250")
-    selected_river = _selected_river(request)
-    selected_measures = _selected_measures(request)
-    selected_vertex = _selected_vertex(request)
-    water_levels = _water_levels(flooding_chance,
-                                 selected_river,
-                                 selected_measures,
-                                 selected_vertex)
+    water_levels = _water_levels(request)
 
     response = HttpResponse(mimetype='application/json')
     json.dump(water_levels, response)
@@ -448,6 +460,7 @@ def select_vertex(request):
 
 def _selected_vertex(request):
     """Return the selected vertex."""
+
     if not 'vertex' in request.session:
         selected_river = _selected_river(request)
         vertex = models.Vertex.objects.filter(
