@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showPopup, showTooltip, toggleMeasure, updateVertex,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showPopup, showTooltip, toggleMeasure, updatePage, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -46,6 +46,14 @@
 
   hasTooltip = '';
 
+  deselectAllMeasures = function() {
+    var _this = this;
+    return $.get($('#blockbox-deselect-all-measures').data('deselect-url'), function(data) {
+      updatePage(data);
+      return _this;
+    });
+  };
+
   toggleMeasure = function(measure_id) {
     return $.ajax({
       type: 'POST',
@@ -54,20 +62,24 @@
         'measure_id': measure_id
       },
       success: function(data) {
-        var $holder;
-        setFlotSeries();
-        $holder = $('<div/>');
-        $holder.load('. #page', function() {
-          $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
-          return $("#measures-table").html($('#measures-table', $holder).html());
-        });
-        measuresMapView.render();
+        updatePage(data);
         return this;
       }
     });
   };
 
   window.toggleMeasure = toggleMeasure;
+
+  updatePage = function() {
+    var $holder;
+    setFlotSeries();
+    $holder = $('<div/>');
+    $holder.load('. #page', function() {
+      $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
+      return $("#measures-table").html($('#measures-table', $holder).html());
+    });
+    return measuresMapView.render();
+  };
 
   selectRiver = function(river_name) {
     return $.ajax({
@@ -702,6 +714,11 @@
   $(".blockbox-toggle-measure").live('click', function(e) {
     e.preventDefault();
     return toggleMeasure($(this).data('measure-id'));
+  });
+
+  $("#blockbox-deselect-all-measures").live('click', function(e) {
+    e.preventDefault();
+    return deselectAllMeasures();
   });
 
   setup_map_legend = function() {

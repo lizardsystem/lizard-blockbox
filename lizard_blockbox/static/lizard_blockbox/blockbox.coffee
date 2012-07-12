@@ -45,6 +45,12 @@ hasTooltip = ''
 # Backbone part                                       #
 #######################################################
 
+deselectAllMeasures = () ->
+    $.get($('#blockbox-deselect-all-measures').data('deselect-url'), (data) =>
+            updatePage data
+            @
+    )
+
 toggleMeasure = (measure_id) ->
     $.ajax
         type: 'POST'
@@ -53,16 +59,18 @@ toggleMeasure = (measure_id) ->
             'measure_id': measure_id
         # async: false
         success: (data) ->
-            setFlotSeries()
-           # TODO: Update checkmark for selected measures in main table.
-            $holder = $('<div/>')
-            $holder.load '. #page', () ->
-                $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
-                $("#measures-table").html($('#measures-table', $holder).html())
-            measuresMapView.render()
+            updatePage data
             @
 
 window.toggleMeasure = toggleMeasure
+
+updatePage = () ->
+    setFlotSeries()
+    $holder = $('<div/>')
+    $holder.load '. #page', () ->
+        $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
+        $("#measures-table").html($('#measures-table', $holder).html())
+    measuresMapView.render()
 
 selectRiver = (river_name) ->
     $.ajax
@@ -609,6 +617,9 @@ $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
     toggleMeasure $(@).data('measure-id')
 
+$("#blockbox-deselect-all-measures").live 'click', (e) ->
+    e.preventDefault()
+    deselectAllMeasures()
 
 setup_map_legend = ->
     $('.legend-lightred').css("background-color", LIGHTRED)

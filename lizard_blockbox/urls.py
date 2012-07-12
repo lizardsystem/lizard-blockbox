@@ -22,7 +22,7 @@ urlpatterns = patterns(
     url(r'^geselecteerd/$',
         SelectedMeasuresView.as_view(),
         name='lizard_blockbox.selected_measures'),
-    url(r'^geselecteerd/(?P<selected>[^/]+)/$',
+    url(r'^geselecteerd/(?P<selected>[^/]*)/$',
         BookmarkedMeasuresView.as_view(),
         name='lizard_blockbox.bookmarked_measures'),
     url(r'^table/$',
