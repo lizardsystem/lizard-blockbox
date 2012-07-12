@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerBorderRule, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showPopup, showTooltip, toggleMeasure, updateVertex,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, doit, graphTimer, hasTooltip, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showPopup, showTooltip, toggleMeasure, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -266,26 +266,32 @@
     return rule;
   };
 
-  RiverLayerBorderRule = function(to, color) {
-    var rule;
-    rule = new OpenLayers.Rule({
-      filter: new OpenLayers.Filter.Comparison({
-        type: OpenLayers.Filter.Comparison.EQUAL_TO,
-        property: "target_difference",
-        value: to
-      }),
-      symbolizer: {
-        fillColor: color,
-        strokeColor: color
-      }
-    });
-    return rule;
-  };
-
   JSONRiverLayer = function(name, json) {
     var geojson_format, rules, styleMap, vector_layer;
     rules = [
-      RiverLayerRule(1.00, 1.50, DARKRED), RiverLayerRule(0.50, 1.00, MIDDLERED), RiverLayerRule(0.10, 0.50, LIGHTRED), RiverLayerRule(-0.10, 0.10, BLUE), RiverLayerRule(-0.50, -0.10, LIGHTGREEN), RiverLayerRule(-1.00, -0.50, MIDDLEGREEN), RiverLayerRule(-1.50, -1.00, DARKGREEN), new OpenLayers.Rule({
+      new OpenLayers.Rule({
+        filter: new OpenLayers.Filter.Comparison({
+          type: OpenLayers.Filter.Comparison.GREATER_THAN,
+          property: "target_difference",
+          value: 2.00
+        }),
+        symbolizer: {
+          fillColor: DARKRED,
+          strokeColor: DARKRED,
+          strokeWidth: STROKEWIDTH
+        }
+      }), RiverLayerRule(1.00, 2.00, DARKRED), RiverLayerRule(0.80, 1.00, MIDDLERED), RiverLayerRule(0.60, 0.80, LIGHTRED), RiverLayerRule(0.40, 0.60, BLUE), RiverLayerRule(0.20, 0.40, LIGHTGREEN), RiverLayerRule(0.00, 0.20, MIDDLEGREEN), RiverLayerRule(-0.20, -0.00, DARKGREEN), RiverLayerRule(-0.40, -0.20, DARKGREEN), new OpenLayers.Rule({
+        filter: new OpenLayers.Filter.Comparison({
+          type: OpenLayers.Filter.Comparison.LESS_THAN,
+          property: "target_difference",
+          value: -0.40
+        }),
+        symbolizer: {
+          fillColor: DARKGREEN,
+          strokeColor: DARKGREEN,
+          strokeWidth: STROKEWIDTH
+        }
+      }), new OpenLayers.Rule({
         elseFilter: true,
         symbolizer: {
           fillColor: GRAY,
