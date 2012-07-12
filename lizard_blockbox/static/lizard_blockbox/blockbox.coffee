@@ -113,10 +113,7 @@ class BlockboxRouter extends Backbone.Router
         $('a.toggle_map_and_table span').text(to_map_text)
         $('a.toggle_map_and_table').attr("href", "#map")
         $('#map').slideUp ANIMATION_DURATION, () ->
-            $('#blockbox-table').slideDown ANIMATION_DURATION, () ->
-                # -39 to not have the table scrollbar behind the footer.
-                # ToDo: Fix this for real in lizard-ui.
-                $('#blockbox-table').height($("#content").height() - 250 - 39)
+            $('#blockbox-table').slideDown(ANIMATION_DURATION)
 
 
 window.app_router = new BlockboxRouter

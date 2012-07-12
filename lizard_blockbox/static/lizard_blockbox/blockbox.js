@@ -147,9 +147,7 @@
       $('a.toggle_map_and_table span').text(to_map_text);
       $('a.toggle_map_and_table').attr("href", "#map");
       return $('#map').slideUp(ANIMATION_DURATION, function() {
-        return $('#blockbox-table').slideDown(ANIMATION_DURATION, function() {
-          return $('#blockbox-table').height($("#content").height() - 250 - 39);
-        });
+        return $('#blockbox-table').slideDown(ANIMATION_DURATION);
       });
     };
 

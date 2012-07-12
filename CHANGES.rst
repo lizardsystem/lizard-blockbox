@@ -7,6 +7,8 @@ Changelog of lizard-blockbox
 
 - Added CSV export.
 
+- Fixed dimensions of the measures table.
+
 
 0.1 (2012-06-01)
 ----------------

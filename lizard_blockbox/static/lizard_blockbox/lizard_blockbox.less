@@ -3,7 +3,8 @@
 
 #lizard-blockbox-graph {
   height: @RESULT_GRAPH_HEIGHT + @MEASURE_GRAPH_HEIGHT + 10px;
-  margin-left:5px;
+  padding-left:5px;
+  border-bottom: 1px solid #ccc;
 }
 
 #measure_results_graph {
@@ -14,14 +15,18 @@
 #measure_graph {
   width: 98%;
   height: @MEASURE_GRAPH_HEIGHT;
-  border-bottom: 1px solid #ccc;
 }
 
 #blockbox-table {
   // Initially hidden.
   display: none;
   padding: 1em;
-  overflow-y: auto;
+  overflow: auto;
+  position: absolute;
+  top: 311px;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 th.header {
