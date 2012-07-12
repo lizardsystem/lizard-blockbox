@@ -5,7 +5,7 @@ Changelog of lizard-blockbox
 0.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added CSV export.
 
 
 0.1 (2012-06-01)
