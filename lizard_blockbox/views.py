@@ -1,13 +1,15 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
-from cgi import escape
-from collections import defaultdict
-from datetime import datetime
-from hashlib import md5
-import cStringIO as StringIO
 import csv
 import logging
 import operator
 import os
+
+from cgi import escape
+from collections import defaultdict
+import cStringIO as StringIO
+from datetime import datetime
+from hashlib import md5
+
 
 import ho.pisa as pisa
 
@@ -92,11 +94,14 @@ def generate_report(request, template='lizard_blockbox/report.html'):
             }
         )
 
+
 def generate_csv(request):
     response = HttpResponse(mimetype='application/csv')
     response['Content-Disposition'] = 'filename=blokkendoos-report.csv'
-    fieldnames = [_('reach'), _('reach kilometer'), _('remaining water level rise in m')]
-    writer = csv.writer(response, dialect='excel', delimiter=';', quoting=csv.QUOTE_ALL)
+    fieldnames = [_('reach'), _('reach kilometer'),
+                  _('remaining water level rise in m')]
+    writer = csv.writer(response, dialect='excel', delimiter=';',
+                        quoting=csv.QUOTE_ALL)
     writer.writerow(fieldnames)
     water_levels = _water_levels(request)
     for water_level in water_levels:
@@ -105,6 +110,7 @@ def generate_csv(request):
                          water_level['measures_level'],
                          ])
     return response
+
 
 class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
