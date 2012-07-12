@@ -86,13 +86,11 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     result.sort(key=lambda x: x['amount'], reverse=True)
 
     return render_to_pdf(
-            'lizard_blockbox/report.html',
-            {'date': datetime.now(),
-             'pagesize': 'A4',
-             'reaches': result,
-             'total_cost': total_cost,
-            }
-        )
+        'lizard_blockbox/report.html',
+        {'date': datetime.now(),
+         'pagesize': 'A4',
+         'reaches': result,
+         'total_cost': total_cost})
 
 
 def generate_csv(request):
@@ -147,7 +145,7 @@ class BlockboxView(MapView):
         selected_measures = _selected_measures(self.request)
         return models.Measure.objects.filter(
             short_name__in=selected_measures).values(
-            'name', 'short_name', 'measure_type', 'km_from')
+                'name', 'short_name', 'measure_type', 'km_from')
 
     def measure_headers(self):
         """Return headers for measures table."""
@@ -215,7 +213,7 @@ class BlockboxView(MapView):
             # text, color
             ['Niet geselecteerd',  'green'],
             ['Geselecteerd',  'red'],
-            ]
+        ]
         selected_measures_map_legend = MapLayerLegend(
             name="Maatregelen (kaart)",
             labels=labels)
@@ -294,7 +292,7 @@ class SelectedMeasuresView(UiView):
         short_names = sorted(list(self.selected_names()))
         selected = ';'.join(short_names)
         url = reverse('lizard_blockbox.bookmarked_measures',
-                kwargs={'selected': selected})
+                      kwargs={'selected': selected})
         return url
 
     @property
@@ -383,7 +381,7 @@ def _water_levels(request):
         for segment in riversegments:
             measures_level = segment.waterleveldifference_set.filter(
                 measure__in=measures, flooding_chance=flooding_chance
-                ).aggregate(ld=Sum('level_difference'))['ld'] or 0
+            ).aggregate(ld=Sum('level_difference'))['ld'] or 0
             try:
                 vertex_level = models.VertexValue.objects.get(
                     vertex=selected_vertex, riversegment=segment).value
@@ -392,14 +390,14 @@ def _water_levels(request):
 
             reference_absolute = models.ReferenceValue.objects.get(
                 riversegment=segment, flooding_chance=flooding_chance
-                ).reference
+            ).reference
             vertex_level_normalized = vertex_level - reference_absolute
             d = {'vertex_level': vertex_level_normalized,
                  'measures_level': vertex_level_normalized + measures_level,
                  'reference_target': 0,
                  'location': segment.location,
                  'location_reach': '%i.00_%s' % (segment.location,
-                                              segment.reach.slug),
+                                                 segment.reach.slug),
                  'location_segment': segment.reach.slug,
                  }
             water_levels.append(d)
@@ -428,8 +426,8 @@ def city_locations_json(request):
     reach = models.NamedReach.objects.get(name=selected_river)
     subset_reaches = reach.subsetreach_set.all()
     segments_join = (models.CityLocation.objects.filter(
-            reach=element.reach,
-            km__range=(element.km_from, element.km_to))
+                     reach=element.reach,
+                     km__range=(element.km_from, element.km_to))
                      for element in subset_reaches)
 
     # Join the querysets in segments_join into one.
@@ -510,7 +508,7 @@ def _unselectable_measures(request):
     return set(models.Measure.objects.filter(
         short_name__in=_selected_measures(request),
         exclude__isnull=False
-        ).values_list('exclude__short_name', flat=True))
+    ).values_list('exclude__short_name', flat=True))
 
 
 @never_cache
@@ -523,7 +521,7 @@ def toggle_measure(request):
     selected_measures = _selected_measures(request)
     # Fix for empty u'' that somehow showed up.
     available_shortnames = list(models.Measure.objects.all().values_list(
-            'short_name', flat=True))
+        'short_name', flat=True))
     to_remove = []
     for shortname in selected_measures:
         if shortname not in available_shortnames:
@@ -568,7 +566,7 @@ def list_measures_json(request):
         if not measure['measure_type']:
             measure['measure_type'] = 'Onbekend'
     all_types = list(
-            set(measure['measure_type'] for measure in measures))
+        set(measure['measure_type'] for measure in measures))
     all_types[all_types.index('Onbekend')] = 'XOnbekend'
     all_types.sort(reverse=True)
     all_types[all_types.index('XOnbekend')] = 'Onbekend'
