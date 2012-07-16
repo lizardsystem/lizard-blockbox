@@ -569,6 +569,9 @@
       }
       return _results;
     })();
+    yticks = _.sortBy(yticks, function(u) {
+      return u[0];
+    });
     selected_river = $("#blockbox-river .chzn-select")[0].value;
     d4 = void 0;
     d5 = void 0;

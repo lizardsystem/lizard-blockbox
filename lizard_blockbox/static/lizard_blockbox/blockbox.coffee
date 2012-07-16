@@ -466,6 +466,7 @@ setMeasureGraph = (control_data, cities_data) ->
     for measure in control_data
         label_mapping[measure.type_index] = measure.type_indicator
     yticks = ([key, value] for key, value of label_mapping)
+    yticks = _.sortBy yticks, (u) -> u[0]
 
     selected_river = $("#blockbox-river .chzn-select")[0].value
     d4 = undefined
@@ -545,12 +546,6 @@ setMeasureGraph = (control_data, cities_data) ->
         color: GRAY
     ]
     pl_control = $.plot($("#measure_graph"), measures_controls, options)
-
-
-    # (city[0], city[1], city[2]) for city in pl_control.getData()[0].data
-    # showLabel(city[0], city[1], city[2]) for city in pl_control.getData()[0].data
-
-    # showLabel(city[0], city[1], city[2]) for city in pl_control.getData()[0].data
 
     $("#measure_graph").bind "plotclick", (event, pos, item) ->
         if item
