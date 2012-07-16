@@ -140,7 +140,9 @@
           <tr>
 	    <td>
 	      {% if measure.selected %}
-	      <i class="icon-ok"></i>Ja
+	      <span class="icon-ok"></span>Ja
+		  {% else %}
+		  <span class="icon-remove"></span>Nee
 	      {% endif %}
 	    </td>
         <td style="cursor:pointer;">

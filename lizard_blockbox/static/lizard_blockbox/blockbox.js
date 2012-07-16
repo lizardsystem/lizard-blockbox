@@ -74,11 +74,15 @@
     var $holder;
     setFlotSeries();
     $holder = $('<div/>');
-    $holder.load('. #page', function() {
+    return $holder.load('. #page', function() {
+      var sort;
       $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
-      return $("#measures-table").html($('#measures-table', $holder).html());
+      $("#measures-table").html($('#measures-table', $holder).html());
+      sort = $("#measures-table-top").get(0).config.sortList;
+      $("#measures-table-top").trigger("update");
+      $("#measures-table-top").trigger("sorton", [sort]);
+      return measuresMapView.render();
     });
-    return measuresMapView.render();
   };
 
   selectRiver = function(river_name) {

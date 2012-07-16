@@ -69,8 +69,13 @@ updatePage = () ->
     $holder = $('<div/>')
     $holder.load '. #page', () ->
         $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
-        $("#measures-table").html($('#measures-table', $holder).html())
-    measuresMapView.render()
+        $("#measures-table").html $('#measures-table', $holder).html()
+        #$("#measures-table").html ''
+        sort = $("#measures-table-top").get(0).config.sortList
+        # trigger update for sortable table header.
+        $("#measures-table-top").trigger "update"
+        $("#measures-table-top").trigger "sorton", [sort]
+        measuresMapView.render()
 
 selectRiver = (river_name) ->
     $.ajax
