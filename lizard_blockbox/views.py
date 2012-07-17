@@ -153,7 +153,8 @@ class BlockboxView(MapView):
         return [field['label'] for field in measure.pretty()]
 
     def measures(self):
-        measures = models.Measure.objects.all()
+        measures_ids = namedreach2measures(_selected_river(self.request))
+        measures = models.Measure.objects.filter(short_name__in=measures_ids)
         selected_measures = _selected_measures(self.request)
         available_factsheets = _available_factsheets()
         # selected_river = _selected_river(self.request)

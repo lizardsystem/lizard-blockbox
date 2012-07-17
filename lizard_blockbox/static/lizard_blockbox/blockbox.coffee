@@ -70,7 +70,6 @@ updatePage = () ->
     $holder.load '. #page', () ->
         $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
         $("#measures-table").html $('#measures-table', $holder).html()
-        #$("#measures-table").html ''
         sort = $("#measures-table-top").get(0).config.sortList
         # trigger update for sortable table header.
         $("#measures-table-top").trigger "update"
@@ -85,8 +84,9 @@ selectRiver = (river_name) ->
             'river_name': river_name
         success: (data) ->
             updateVertex()
-            setFlotSeries()
-            measuresMapView.render()
+            updatePage()
+            #setFlotSeries()
+            #measuresMapView.render()
             @
 
 selectVertex = (vertex_id) ->
@@ -633,7 +633,6 @@ setup_map_legend = ->
     $('.legend-green').css("background-color", GREEN)
     $('.legend-red').css("background-color", RED)
 
-
 $(document).ready ->
     setFlotSeries()
     setup_map_legend()
@@ -649,6 +648,5 @@ $(document).ready ->
             selectVertex @value
             @
         )
-
     $('#measures-table-top').tablesorter()
     @

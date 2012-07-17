@@ -94,8 +94,7 @@
       },
       success: function(data) {
         updateVertex();
-        setFlotSeries();
-        measuresMapView.render();
+        updatePage();
         return this;
       }
     });
