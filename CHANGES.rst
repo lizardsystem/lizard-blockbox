@@ -13,6 +13,8 @@ Changelog of lizard-blockbox
 
 - Changed legend label 'Hoekpunt' to 'MHW-opgave'.
 
+- Removed whitespace from selected measures page.
+
 
 0.1 (2012-06-01)
 ----------------
