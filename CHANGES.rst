@@ -9,6 +9,8 @@ Changelog of lizard-blockbox
 
 - Fixed dimensions of the measures table.
 
+- Added color to currently sorted column header.
+
 
 0.1 (2012-06-01)
 ----------------
