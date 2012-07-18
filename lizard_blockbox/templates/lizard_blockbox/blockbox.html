@@ -83,6 +83,7 @@
              class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
              data-measure-id="{{ measure.short_name }}"
              data-measure-shortname="{{ measure.short_name }}">
+            {{ measure.km_from }}:
             {% firstof measure.name measure.short_name %}
           </a>
         </li>

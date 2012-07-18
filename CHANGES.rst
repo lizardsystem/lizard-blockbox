@@ -15,6 +15,8 @@ Changelog of lizard-blockbox
 
 - Removed whitespace from selected measures page.
 
+- Showing start km in front of selected measures.
+
 
 0.1 (2012-06-01)
 ----------------
