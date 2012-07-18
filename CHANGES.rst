@@ -11,6 +11,8 @@ Changelog of lizard-blockbox
 
 - Added color to currently sorted column header.
 
+- Changed legend label 'Hoekpunt' to 'MHW-opgave'.
+
 
 0.1 (2012-06-01)
 ----------------

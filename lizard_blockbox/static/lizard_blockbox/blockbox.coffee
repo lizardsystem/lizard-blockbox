@@ -377,7 +377,7 @@ setMeasureResultsGraph = (json_data) ->
     selected_river = $("#blockbox-river .chzn-select")[0].value
 
     ed_data = [
-        label: "Hoekpunt"
+        label: "MHW-opgave"
         # Vertex is in NAP, reference too. Reference is zero, by definition,
         # so from both we subtract the vertex.
         data: vertex
