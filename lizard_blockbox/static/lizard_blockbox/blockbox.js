@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURE, MeasuresMapView, PURPLE, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURE, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showPopup, showTooltip, toggleMeasure, updatePage, updateVertex,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURECOLOR, MeasuresMapView, PURPLE, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURECOLOR, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showPopup, showTooltip, toggleMeasure, updatePage, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -38,9 +38,9 @@
 
   RIVERLEVEL0 = "rgb(0, 156, 223)";
 
-  MEASURE = "rgb(201, 218, 155)";
+  MEASURECOLOR = "rgb(201, 218, 155)";
 
-  SELECTEDMEASURE = "rgb(140, 182, 59)";
+  SELECTEDMEASURECOLOR = "rgb(140, 182, 59)";
 
   DIAMOND_COLOR = "#105987";
 
@@ -345,8 +345,8 @@
   JSONTooltip = function(name, json) {
     var geojson_format, selectCtrl, styleMap, vector_layer;
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
-      fillColor: MEASURE,
-      strokeColor: MEASURE
+      fillColor: MEASURECOLOR,
+      strokeColor: MEASURECOLOR
     }, OpenLayers.Feature.Vector.style["default"]));
     styleMap.styles["default"].addRules([
       new OpenLayers.Rule({
@@ -356,8 +356,8 @@
           value: true
         }),
         symbolizer: {
-          fillColor: SELECTEDMEASURE,
-          strokeColor: SELECTEDMEASURE
+          fillColor: SELECTEDMEASURECOLOR,
+          strokeColor: SELECTEDMEASURECOLOR
         }
       }), new OpenLayers.Rule({
         elseFilter: true
