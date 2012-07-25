@@ -11,7 +11,7 @@ from datetime import datetime
 from hashlib import md5
 
 
-import ho.pisa as pisa
+import xhtml2pdf.pisa as pisa
 
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
