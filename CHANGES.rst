@@ -23,6 +23,8 @@ Changelog of lizard-blockbox
 
 - Improved CSV export as per request.
 
+- Group selected measures bij reach (not final).
+
 
 0.1 (2012-06-01)
 ----------------

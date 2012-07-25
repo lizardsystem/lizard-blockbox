@@ -78,3 +78,14 @@ th.tablesorter-headerSortDown {
   margin-right: 10px;
   margin-bottom: 5px;
 }
+.sidebar-measure {
+  margin-left: 28px;
+}
+.measure-km {
+  float: left;
+  width: 24px;
+  text-align: right;
+  padding-right: 4px;
+  color: #999999;
+  margin-left: -28px;
+}

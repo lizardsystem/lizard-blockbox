@@ -356,11 +356,27 @@ class BlockboxView(MapView):
                 reach['selected'] = True
         return reaches
 
-    def selected_measures(self):
+    def measures_per_reach(self):
+        """Return selected measures, sorted per reach."""
         selected_measures = _selected_measures(self.request)
-        return models.Measure.objects.filter(
-            short_name__in=selected_measures).values(
-                'name', 'short_name', 'measure_type', 'km_from')
+        reaches = defaultdict(list)
+        measures = models.Measure.objects.filter(short_name__in=selected_measures)
+
+        for measure in measures:
+            if measure.reach:
+                reach_name = measure.reach.slug
+            else:
+                reach_name = 'unknown'
+            reaches[reach_name].append(measure)
+        result = []
+        # print models.Measure._meta.fields
+        for name, measures in reaches.items():
+            reach = {'name': name,
+                     'amount': len(measures),
+                     'measures': measures}
+            result.append(reach)
+        result.sort(key=lambda x: x['amount'], reverse=True)
+        return result
 
     def investment_costs(self):
         return _investment_costs(self.request)
