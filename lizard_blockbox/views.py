@@ -292,10 +292,29 @@ def generate_report(request, template='lizard_blockbox/report.html'):
 def generate_csv(request):
     response = HttpResponse(mimetype='application/csv')
     response['Content-Disposition'] = 'filename=blokkendoos-report.csv'
-    fieldnames = [_('reach'), _('reach kilometer'),
-                  _('remaining water level rise in m')]
     writer = csv.writer(response, dialect='excel', delimiter=';',
                         quoting=csv.QUOTE_ALL)
+
+    writer.writerow(['Titel', 'Code', 'Type', 'Km van', 'Km tot', 'Riviertak',
+                     'Rivierdeel', 'MHW winst m', 'MHW winst m2',
+                     'Kosten investering', 'Baten', 'Kosten B&O',
+                     'herinvestering', 'Schade', 'Kosten totaal',
+                     'Ruimtelijke kwaliteit'])
+    measures = models.Measure.objects.filter(
+        short_name__in=_selected_measures(request))
+    for measure in measures:
+        writer.writerow([measure.name, measure.short_name,
+                         measure.measure_type, measure.km_from, measure.km_to,
+                         measure.reach, measure.riverpart,
+                         measure.mhw_profit_cm / 100, measure.mhw_profit_m2,
+                         measure.investment_costs, measure.benefits,
+                         measure.b_o_costs, measure.reinvestment,
+                         measure.damage, measure.total_costs,
+                         measure.quality_of_environment])
+
+    writer.writerow([])
+    fieldnames = [_('reach'), _('reach kilometer'),
+                  _('remaining water level rise in m')]
     writer.writerow(fieldnames)
     water_levels = _water_levels(request)
     for water_level in water_levels:

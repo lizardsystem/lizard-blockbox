@@ -21,6 +21,8 @@ Changelog of lizard-blockbox
 
 - Updated river level colors and measure colors.
 
+- Improved CSV export as per request.
+
 
 0.1 (2012-06-01)
 ----------------
