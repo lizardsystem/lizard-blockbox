@@ -4,6 +4,7 @@ from django.conf.urls.defaults import url
 
 from lizard_ui.urls import debugmode_urlpatterns
 from lizard_blockbox.views import BlockboxView
+from lizard_blockbox.views import ReportMapView
 from lizard_blockbox.views import SelectedMeasuresView
 from lizard_blockbox.views import BookmarkedMeasuresView
 
@@ -16,6 +17,13 @@ urlpatterns = patterns(
     url(r'^report/$',
         'lizard_blockbox.views.generate_report',
         name='lizard_blockbox.generate_report'),
+            # url(r'^s/(?P<width>[\d]+)x(?P<height>[\d]+)/(?P<url>.+)/$', DirectImageView),
+    # url(r'^report/map/(?P<session_slug>.+)/$',
+    #     'lizard_blockbox.views.report_map_template',
+    #     name='lizard_blockbox.report_map_template'),
+    url(r'^report/map/(?P<session_slug>.+)/$',
+        ReportMapView.as_view(),
+        name='lizard_blockbox.report_map_template'),
     url(r'^csv/$',
         'lizard_blockbox.views.generate_csv',
         name='lizard_blockbox.generate_csv'),
