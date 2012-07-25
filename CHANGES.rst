@@ -19,6 +19,8 @@ Changelog of lizard-blockbox
 
 - Show investments costs of selected measures.
 
+- Updated river level colors and measure colors.
+
 
 0.1 (2012-06-01)
 ----------------

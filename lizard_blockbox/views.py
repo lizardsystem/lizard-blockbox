@@ -197,17 +197,17 @@ class BlockboxView(MapView):
             labels=labels)
 
         labels = [
-            # text, color
-            ['> 2.00', 'darkred'],
-            ['1.00 - 2.00', 'darkred'],
-            ['0.80 1.00', 'middlered'],
-            ['0.60 - 0.80', 'lightred'],
-            ['0.40 - 0.60', 'blue'],
-            ['0.20 - 0.40', 'lightgreen'],
-            ['0.00 - 0.20', 'middlegreen'],
-            ['-0.20 - -0.00', 'darkgreen'],
-            ['-0.40 - -0.20', 'darkgreen'],
-            ['< -0.40', 'darkgreen']
+            # text, level
+            ['> 2.00', 'riverlevel-9'],
+            ['1.00 - 2.00', 'riverlevel-8'],
+            ['0.80 1.00', 'riverlevel-7'],
+            ['0.60 - 0.80', 'riverlevel-6'],
+            ['0.40 - 0.60', 'riverlevel-5'],
+            ['0.20 - 0.40', 'riverlevel-4'],
+            ['0.00 - 0.20', 'riverlevel-3'],
+            ['-0.20 - -0.00', 'riverlevel-2'],
+            ['-0.40 - -0.20', 'riverlevel-1'],
+            ['< -0.40', 'riverlevel-0']
             ]
         map_measure_results_legend = MapLayerLegend(
             name="Rivieren (kaart)",

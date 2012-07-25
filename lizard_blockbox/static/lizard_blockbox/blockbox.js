@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DARKGREEN, DARKRED, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, LIGHTGREEN, LIGHTRED, MIDDLEGREEN, MIDDLERED, MeasuresMapView, PURPLE, RED, RiverLayerRule, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showPopup, showTooltip, toggleMeasure, updatePage, updateVertex,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURE, MeasuresMapView, PURPLE, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURE, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showPopup, showTooltip, toggleMeasure, updatePage, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -18,17 +18,29 @@
 
   GREEN = "#635E0D";
 
-  LIGHTRED = "#A36775";
+  RIVERLEVEL9 = "rgb(195, 0, 120)";
 
-  MIDDLERED = "#A33E56";
+  RIVERLEVEL8 = "rgb(203, 81, 145)";
 
-  DARKRED = RED;
+  RIVERLEVEL7 = "rgb(219, 155, 192)";
 
-  LIGHTGREEN = "#63623F";
+  RIVERLEVEL6 = "rgb(214, 128, 25)";
 
-  MIDDLEGREEN = "#636026";
+  RIVERLEVEL5 = "rgb(241, 205, 58)";
 
-  DARKGREEN = GREEN;
+  RIVERLEVEL4 = "rgb(247, 239, 212)";
+
+  RIVERLEVEL3 = "rgb(217, 235, 250)";
+
+  RIVERLEVEL2 = "rgb(177, 215, 245)";
+
+  RIVERLEVEL1 = "rgb(104, 184, 235)";
+
+  RIVERLEVEL0 = "rgb(0, 156, 223)";
+
+  MEASURE = "rgb(201, 218, 155)";
+
+  SELECTEDMEASURE = "rgb(140, 182, 59)";
 
   DIAMOND_COLOR = "#105987";
 
@@ -291,19 +303,19 @@
           value: 2.00
         }),
         symbolizer: {
-          fillColor: DARKRED,
-          strokeColor: DARKRED,
+          fillColor: RIVERLEVEL9,
+          strokeColor: RIVERLEVEL9,
           strokeWidth: STROKEWIDTH
         }
-      }), RiverLayerRule(1.00, 2.00, DARKRED), RiverLayerRule(0.80, 1.00, MIDDLERED), RiverLayerRule(0.60, 0.80, LIGHTRED), RiverLayerRule(0.40, 0.60, BLUE), RiverLayerRule(0.20, 0.40, LIGHTGREEN), RiverLayerRule(0.00, 0.20, MIDDLEGREEN), RiverLayerRule(-0.20, -0.00, DARKGREEN), RiverLayerRule(-0.40, -0.20, DARKGREEN), new OpenLayers.Rule({
+      }), RiverLayerRule(1.00, 2.00, RIVERLEVEL8), RiverLayerRule(0.80, 1.00, RIVERLEVEL7), RiverLayerRule(0.60, 0.80, RIVERLEVEL6), RiverLayerRule(0.40, 0.60, RIVERLEVEL5), RiverLayerRule(0.20, 0.40, RIVERLEVEL4), RiverLayerRule(0.00, 0.20, RIVERLEVEL3), RiverLayerRule(-0.20, -0.00, RIVERLEVEL2), RiverLayerRule(-0.40, -0.20, RIVERLEVEL1), new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Comparison({
           type: OpenLayers.Filter.Comparison.LESS_THAN,
           property: "target_difference",
           value: -0.40
         }),
         symbolizer: {
-          fillColor: DARKGREEN,
-          strokeColor: DARKGREEN,
+          fillColor: RIVERLEVEL0,
+          strokeColor: RIVERLEVEL0,
           strokeWidth: STROKEWIDTH
         }
       }), new OpenLayers.Rule({
@@ -333,8 +345,8 @@
   JSONTooltip = function(name, json) {
     var geojson_format, selectCtrl, styleMap, vector_layer;
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
-      fillColor: GREEN,
-      strokeColor: GREEN
+      fillColor: MEASURE,
+      strokeColor: MEASURE
     }, OpenLayers.Feature.Vector.style["default"]));
     styleMap.styles["default"].addRules([
       new OpenLayers.Rule({
@@ -344,8 +356,8 @@
           value: true
         }),
         symbolizer: {
-          fillColor: RED,
-          strokeColor: RED
+          fillColor: SELECTEDMEASURE,
+          strokeColor: SELECTEDMEASURE
         }
       }), new OpenLayers.Rule({
         elseFilter: true
@@ -728,16 +740,16 @@
   });
 
   setup_map_legend = function() {
-    $('.legend-lightred').css("background-color", LIGHTRED);
-    $('.legend-middlered').css("background-color", MIDDLERED);
-    $('.legend-darkred').css("background-color", DARKRED);
-    $('.legend-blue').css("background-color", BLUE);
-    $('.legend-lightgreen').css("background-color", LIGHTGREEN);
-    $('.legend-middlegreen').css("background-color", MIDDLEGREEN);
-    $('.legend-darkgreen').css("background-color", DARKGREEN);
-    $('.legend-gray').css("background-color", GRAY);
-    $('.legend-green').css("background-color", GREEN);
-    return $('.legend-red').css("background-color", RED);
+    $('.legend-riverlevel-9').css("background-color", RIVERLEVEL9);
+    $('.legend-riverlevel-8').css("background-color", RIVERLEVEL8);
+    $('.legend-riverlevel-7').css("background-color", RIVERLEVEL7);
+    $('.legend-riverlevel-6').css("background-color", RIVERLEVEL6);
+    $('.legend-riverlevel-5').css("background-color", RIVERLEVEL5);
+    $('.legend-riverlevel-4').css("background-color", RIVERLEVEL4);
+    $('.legend-riverlevel-3').css("background-color", RIVERLEVEL3);
+    $('.legend-riverlevel-2').css("background-color", RIVERLEVEL2);
+    $('.legend-riverlevel-1').css("background-color", RIVERLEVEL1);
+    return $('.legend-riverlevel-0').css("background-color", RIVERLEVEL0);
   };
 
   $(document).ready(function() {
