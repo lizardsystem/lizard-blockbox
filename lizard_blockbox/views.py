@@ -147,6 +147,9 @@ class BlockboxView(MapView):
             short_name__in=selected_measures).values(
                 'name', 'short_name', 'measure_type', 'km_from')
 
+    def investment_costs(self):
+        return _investment_costs(self.request)
+
     def measure_headers(self):
         """Return headers for measures table."""
         measure = models.Measure.objects.all()[0]
@@ -510,6 +513,18 @@ def _unselectable_measures(request):
         short_name__in=_selected_measures(request),
         exclude__isnull=False
     ).values_list('exclude__short_name', flat=True))
+
+
+def _investment_costs(request):
+    investment_costs = 0.0
+    reaches = defaultdict(list)
+    measures = models.Measure.objects.filter(
+        short_name__in=_selected_measures(request))
+
+    for measure in measures:
+        if measure.investment_costs:
+            investment_costs = investment_costs + measure.investment_costs
+    return investment_costs
 
 
 @never_cache

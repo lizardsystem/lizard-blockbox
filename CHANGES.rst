@@ -17,6 +17,8 @@ Changelog of lizard-blockbox
 
 - Showing start km in front of selected measures.
 
+- Show investments costs of selected measures.
+
 
 0.1 (2012-06-01)
 ----------------
