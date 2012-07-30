@@ -62,8 +62,6 @@ def render_to_pdf(template_src, context_dict):
     return response
 
 
-
-
 class ReportMapView(MapView):
     """
     """
@@ -87,10 +85,10 @@ class ReportMapView(MapView):
             print selected_measures
             print vertex
 
-            return super(ReportMapView, self).dispatch(request, *args, **kwargs)
+            return super(ReportMapView, self).dispatch(
+                request, *args, **kwargs)
         except IndexError:
             raise Http404
-
 
     @property
     def content_actions(self):
@@ -191,8 +189,8 @@ class ReportMapView(MapView):
 
         labels = [
             # text, color
-            ['Niet geselecteerd',  'green'],
-            ['Geselecteerd',  'red'],
+            ['Niet geselecteerd', 'green'],
+            ['Geselecteerd', 'red'],
         ]
         selected_measures_map_legend = MapLayerLegend(
             name="Maatregelen (kaart)",
@@ -443,8 +441,8 @@ class BlockboxView(MapView):
 
         labels = [
             # text, color
-            ['Niet geselecteerd',  'green'],
-            ['Geselecteerd',  'red'],
+            ['Niet geselecteerd', 'green'],
+            ['Geselecteerd', 'red'],
         ]
         selected_measures_map_legend = MapLayerLegend(
             name="Maatregelen (kaart)",
