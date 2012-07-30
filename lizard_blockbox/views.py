@@ -69,7 +69,7 @@ class ReportMapView(MapView):
     """
 
     template_name = "lizard_blockbox/report_map_template.html"
-    
+
     def dispatch(self, request, *args, **kwargs):
         session_slug = kwargs.get('session_slug', None)
         try:
@@ -80,13 +80,13 @@ class ReportMapView(MapView):
             river = session.get_decoded().get('river')
             selected_measures = session.get_decoded().get('selected_measures')
             vertex = session.get_decoded().get('vertex')
-            
+
             print map_base_layer
             print bbox
             print river
             print selected_measures
             print vertex
-            
+
             return super(ReportMapView, self).dispatch(request, *args, **kwargs)
         except IndexError:
             raise Http404
@@ -202,30 +202,29 @@ class ReportMapView(MapView):
                   map_measure_results_legend,
                   selected_measures_map_legend]
         result += super(BlockboxView, self).legends
-        return result    
-        
+        return result
 
 # def report_map_template(request, session_slug, template='lizard_blockbox/report_map_template.html'):
 #     """
 #     Flow
 #     ----
-#     
+#
 #     - When a user requests a report, the generate_report() view renders the report.html template.
-# 
+#
 #     - report.html includes an image from:
-#     
+#
 #     http://screenshotter.lizard.net/s/1024x768/http://test.deltaportaal.lizardsystem.nl/blokkendoos/report/map/{{ session.id }}
-#     
-#     - That URL triggers this view (report_map_template()) with the session ID of that user, 
+#
+#     - That URL triggers this view (report_map_template()) with the session ID of that user,
 #       and it should render the map with the settings (zoom/latlng/workspaces etc) that user has.
-#       
+#
 #     """
 #     try:
 #         session = Session.objects.filter(session_key=session_slug)[0]
 #     except IndexError:
 #         raise Http404
-# 
-# 
+#
+#
 #     # '_auth_user_id': 1,
 #     # 'make_sure_session_is_initialized': 'hurray',
 #     # 'map_base_layer': u'basiskaart_snel',
@@ -239,18 +238,15 @@ class ReportMapView(MapView):
 #     #                               u'ma_n24_a1',
 #     #                               u'ma_nurgdiv_a1']),
 #     # 'vertex': 30}
-# 
+#
 #     map_base_layer = session.get_decoded().get('map_base_layer')
 #     bbox = session.get_decoded().get('map_location')
 #     river = session.get_decoded().get('river')
 #     selected_measures = session.get_decoded().get('selected_measures')
 #     vertex = session.get_decoded().get('vertex')
-# 
-#     
+#
+#
 #     return render_to_response(template, locals(), context_instance=RequestContext(request))
-
-
-
 
 
 def generate_report(request, template='lizard_blockbox/report.html'):
@@ -323,7 +319,7 @@ def generate_csv(request):
                          water_level['measures_level'],
                          ])
     return response
-    
+
 
 class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
@@ -360,7 +356,8 @@ class BlockboxView(MapView):
         """Return selected measures, sorted per reach."""
         selected_measures = _selected_measures(self.request)
         reaches = defaultdict(list)
-        measures = models.Measure.objects.filter(short_name__in=selected_measures)
+        measures = models.Measure.objects.filter(
+            short_name__in=selected_measures)
 
         for measure in measures:
             if measure.reach:
