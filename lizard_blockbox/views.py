@@ -69,6 +69,7 @@ class ReportMapView(MapView):
     """
 
     template_name = "lizard_blockbox/report_map_template.html"
+    # template_name = 'lizard_blockbox/blockbox.html'
     
     def dispatch(self, request, *args, **kwargs):
         session_slug = kwargs.get('session_slug', None)
@@ -87,6 +88,7 @@ class ReportMapView(MapView):
             print selected_measures
             print vertex
             
+            # import pdb;pdb.set_trace()
             return super(ReportMapView, self).dispatch(request, *args, **kwargs)
         except IndexError:
             raise Http404
