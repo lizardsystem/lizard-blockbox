@@ -307,6 +307,10 @@ def generate_csv(request):
                          measure.quality_of_environment])
 
     writer.writerow([])
+    selected_vertex = _selected_vertex(request)
+    writer.writerow(['Strategie:', selected_vertex.name])
+
+    writer.writerow([])
     fieldnames = [_('reach'), _('reach kilometer'),
                   _('remaining water level rise in m')]
     writer.writerow(fieldnames)
