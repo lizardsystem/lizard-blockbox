@@ -1,127 +1,17 @@
-{% extends "lizard_map/wms.html" %}{% load i18n %}
-
-{% block javascript %}
-   {{ block.super }}
-    <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.symbol.js">
-    </script>
-    <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/underscore.js">
-    </script>
-    <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/backbone.js">
-    </script>
-    <script type="text/javascript"
-        src="{{ STATIC_URL }}deltaportaal/chosen.jquery.js">
-    </script>
-    <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/jquery.tablesorter.js">
-    </script>
-
-    <script>
-    $(document).ready(function() {
-        $('header').hide();
-        $('#footer').css('height', 0);
-        $('#secondary-sidebar').css('display', 'none');
-        $('div#sidebar').css('left', -300);
-        $('div#content').css('left', -251);
-        $('div#content').css('height', $(window).height()+50);
-        $('div#content').css('top', 0);
-        window.setUpMapDimensions();
-    });
-    
-    
-    </script>
-{% endblock %}
+{% extends "lizard_blockbox/blockbox.html" %}{% load i18n %}
 
 {% block map-javascript %}
-    {{ block.super }}
-    <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
-    </script>
-{% endblock %}
-
-{% block css %}
-  {{ block.super }}
-  <link rel="stylesheet"
-        href="{{ STATIC_URL }}lizard_blockbox/lizard_blockbox.css"
-        type="text/css"
-        media="screen, projection" />
-  <link rel="stylesheet"
-        href="{{ STATIC_URL }}deltaportaal/chosen.css"
-        type="text/css"
-        media="screen, projection" />
-{% endblock css %}
-
-
-{% block sidebar %}
-    <h2>Rivierselectie</h2>
-	<span>Selecteer een rivier:</span>
-    <form id="blockbox-river"
-	  data-select-river-url="{% url lizard_blockbox_select_river %}">
-      <select data-placeholder="Kies een rivier"
-	      class="chzn-select"
-	      tabindex="2"
-	      style="width:250px;">
-	    {% for reach in view.reaches %}
-          <option value="{{reach.name}}"
-                  {% if reach.selected %}SELECTED{% endif %}>
-            {{ reach.name }}
-          </option>
-        {% endfor %}
-      </select>
-    </form>
-	<span>Selecteer een mogelijke strategie DPRD/DPIJ:</span>
-    <form id="blockbox-vertex"
-	  data-select-vertex-url="{% url lizard_blockbox_select_vertex %}"
-	  data-update-vertex-url="{% url lizard_blockbox_vertex_list %}">
-      <select data-placeholder="Kies een hoekpunt"
-	      class="chzn-select"
-	      tabindex="2"
-	      style="width:250px;">
-      </select>
-    </form>
-
-
-    <h3>Geselecteerde maatregelen</h3>
-    <p class="muted">
-	  <a href='#' id="blockbox-deselect-all-measures"
-		 data-deselect-url="{% url lizard_blockbox.bookmarked_measures '' %}">
-		Deselecteer alle maatregelen</a>
-	</p>
-	<p class="muted">
-      Klik op een maatregel om hem te deselecteren.
-    </p>
-    <ul id="selected-measures-list" class="without-bullets">
-      {% for measure in view.selected_measures %}
-        <li>
-          <a href="#"
-             class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
-             data-measure-id="{{ measure.short_name }}"
-             data-measure-shortname="{{ measure.short_name }}">
-            {{ measure.km_from }}:
-            {% firstof measure.name measure.short_name %}
-          </a>
-        </li>
-      {% endfor %}
-      Totale investeringskosten: {{ view.investment_costs }} mln
-    </ul>
-	<h3>Overzichts Pagina</h3>
-    <p class="muted">
-      Ga naar de <a href="{% url lizard_blockbox.selected_measures %}">
-        overzichtspagina over de geselecteerde maatregelen
-      </a> voor meer informatie. Hier kunt u de gekozen set ook bewaren.
-    </p>
-	<h3>Downloads</h3>
-    <p class="muted">
-      Genereer een <a href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
-        met de geselecteerde maatregelen.
-    </p>
-    <p>
-        <a href="{% url lizard_blockbox.generate_report %}"><img src="{{ STATIC_URL }}lizard_blockbox/pdf_icon.png"/></a>
-        <a href="{% url lizard_blockbox.generate_csv %}"><img src="{{ STATIC_URL }}lizard_blockbox/csv_icon.png"/></a>
-    </p>
-    
-
-{% endblock %}
-
+{{ block.super }}
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function() {
+    $('header').hide();
+    $('#footer').css('height', 0);
+    $('#secondary-sidebar').css('display', 'none');
+    $('div#sidebar').css('left', -300);
+    $('div#content').css('left', -251);
+    $('div#content').css('height', $(window).height()+50);
+    $('div#content').css('top', 0);
+    window.setUpMapDimensions();
+});	
+</script>
+{% endblock map-javascript %}
