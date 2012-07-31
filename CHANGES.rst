@@ -19,6 +19,16 @@ Changelog of lizard-blockbox
 
 - Show investments costs of selected measures.
 
+- Updated river level colors and measure colors.
+
+- Improved CSV export as per request.
+
+- Group selected measures bij reach (not final).
+
+- Added selected strategy (vertex) to csv export.
+
+- Moved total investment costs up in the sidebar.
+
 
 0.1 (2012-06-01)
 ----------------

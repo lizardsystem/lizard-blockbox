@@ -16,12 +16,20 @@ GREEN = "#635E0D"
 
 # For shades in the map. The light one is the most extreme.
 # Every shade has 25% lighter saturation.
-LIGHTRED = "#A36775"
-MIDDLERED = "#A33E56"
-DARKRED = RED
-LIGHTGREEN = "#63623F"
-MIDDLEGREEN = "#636026"
-DARKGREEN = GREEN
+RIVERLEVEL9 = "rgb(195, 0, 120)"
+RIVERLEVEL8 = "rgb(203, 81, 145)"
+RIVERLEVEL7 = "rgb(219, 155, 192)"
+RIVERLEVEL6 = "rgb(214, 128, 25)"
+RIVERLEVEL5 = "rgb(241, 205, 58)"
+RIVERLEVEL4 = "rgb(247, 239, 212)"
+RIVERLEVEL3 = "rgb(217, 235, 250)"
+RIVERLEVEL2 = "rgb(177, 215, 245)"
+RIVERLEVEL1 = "rgb(104, 184, 235)"
+RIVERLEVEL0 = "rgb(0, 156, 223)"
+
+# For measures in the map.
+MEASURECOLOR = "rgb(201, 218, 155)"
+SELECTEDMEASURECOLOR = "rgb(140, 182, 59)"
 
 # Original colors
 DIAMOND_COLOR = "#105987"
@@ -234,18 +242,18 @@ JSONRiverLayer = (name, json) ->
                 property: "target_difference"
                 value: 2.00
             symbolizer:
-                fillColor: DARKRED
-                strokeColor: DARKRED
+                fillColor: RIVERLEVEL9
+                strokeColor: RIVERLEVEL9
                 strokeWidth: STROKEWIDTH
 
-        RiverLayerRule 1.00, 2.00, DARKRED
-        RiverLayerRule 0.80, 1.00, MIDDLERED
-        RiverLayerRule 0.60, 0.80, LIGHTRED
-        RiverLayerRule 0.40, 0.60, BLUE
-        RiverLayerRule 0.20, 0.40, LIGHTGREEN
-        RiverLayerRule 0.00, 0.20, MIDDLEGREEN
-        RiverLayerRule -0.20, -0.00, DARKGREEN
-        RiverLayerRule -0.40, -0.20, DARKGREEN
+        RiverLayerRule 1.00, 2.00, RIVERLEVEL8
+        RiverLayerRule 0.80, 1.00, RIVERLEVEL7
+        RiverLayerRule 0.60, 0.80, RIVERLEVEL6
+        RiverLayerRule 0.40, 0.60, RIVERLEVEL5
+        RiverLayerRule 0.20, 0.40, RIVERLEVEL4
+        RiverLayerRule 0.00, 0.20, RIVERLEVEL3
+        RiverLayerRule -0.20, -0.00, RIVERLEVEL2
+        RiverLayerRule -0.40, -0.20, RIVERLEVEL1
 
         new OpenLayers.Rule
             filter: new OpenLayers.Filter.Comparison
@@ -253,8 +261,8 @@ JSONRiverLayer = (name, json) ->
                 property: "target_difference"
                 value: -0.40
             symbolizer:
-                fillColor: DARKGREEN
-                strokeColor: DARKGREEN
+                fillColor: RIVERLEVEL0
+                strokeColor: RIVERLEVEL0
                 strokeWidth: STROKEWIDTH
         # Keep in sync with the legend in views.py!
         new OpenLayers.Rule
@@ -285,8 +293,8 @@ JSONRiverLayer = (name, json) ->
 
 JSONTooltip = (name, json) ->
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
-            fillColor: GREEN
-            strokeColor: GREEN
+            fillColor: MEASURECOLOR
+            strokeColor: MEASURECOLOR
         OpenLayers.Feature.Vector.style["default"]))
 
     styleMap.styles["default"].addRules [ new OpenLayers.Rule(
@@ -296,8 +304,8 @@ JSONTooltip = (name, json) ->
             value: true
         )
         symbolizer:
-          fillColor: RED
-          strokeColor: RED
+          fillColor: SELECTEDMEASURECOLOR
+          strokeColor: SELECTEDMEASURECOLOR
     ), new OpenLayers.Rule(elseFilter: true) ]
 
 
@@ -622,16 +630,16 @@ $("#blockbox-deselect-all-measures").live 'click', (e) ->
     deselectAllMeasures()
 
 setup_map_legend = ->
-    $('.legend-lightred').css("background-color", LIGHTRED)
-    $('.legend-middlered').css("background-color", MIDDLERED)
-    $('.legend-darkred').css("background-color", DARKRED)
-    $('.legend-blue').css("background-color", BLUE)
-    $('.legend-lightgreen').css("background-color", LIGHTGREEN)
-    $('.legend-middlegreen').css("background-color", MIDDLEGREEN)
-    $('.legend-darkgreen').css("background-color", DARKGREEN)
-    $('.legend-gray').css("background-color", GRAY)
-    $('.legend-green').css("background-color", GREEN)
-    $('.legend-red').css("background-color", RED)
+    $('.legend-riverlevel-9').css("background-color", RIVERLEVEL9)
+    $('.legend-riverlevel-8').css("background-color", RIVERLEVEL8)
+    $('.legend-riverlevel-7').css("background-color", RIVERLEVEL7)
+    $('.legend-riverlevel-6').css("background-color", RIVERLEVEL6)
+    $('.legend-riverlevel-5').css("background-color", RIVERLEVEL5)
+    $('.legend-riverlevel-4').css("background-color", RIVERLEVEL4)
+    $('.legend-riverlevel-3').css("background-color", RIVERLEVEL3)
+    $('.legend-riverlevel-2').css("background-color", RIVERLEVEL2)
+    $('.legend-riverlevel-1').css("background-color", RIVERLEVEL1)
+    $('.legend-riverlevel-0').css("background-color", RIVERLEVEL0)
 
 $(document).ready ->
     setFlotSeries()

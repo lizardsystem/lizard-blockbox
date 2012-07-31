@@ -16,4 +16,4 @@ install:
   - python bootstrap.py 
 script:
   - bin/buildout 
-  - pep8 --exclude=migrations --ignore=E501,E225 lizard_blockbox
+  - pep8 --exclude=migrations --ignore=E123,E126,E225,E501 lizard_blockbox

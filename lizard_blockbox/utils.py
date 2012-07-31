@@ -28,7 +28,7 @@ def namedreach2measures(river):
             km_from__range=(element.km_from, element.km_to))
         for element in subset_reaches)
 
-        # Join the querysets in segments_join into one.
+    # Join the querysets in segments_join into one.
     measures = reduce(operator.or_, segments_join)
     return measures.distinct().order_by('km_from').values_list('short_name',
                                                                flat=True)

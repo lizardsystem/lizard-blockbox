@@ -62,15 +62,12 @@ def render_to_pdf(template_src, context_dict):
     return response
 
 
-
-
 class ReportMapView(MapView):
     """
     """
 
     template_name = "lizard_blockbox/report_map_template.html"
-    # template_name = 'lizard_blockbox/blockbox.html'
-    
+
     def dispatch(self, request, *args, **kwargs):
         session_slug = kwargs.get('session_slug', None)
         try:
@@ -81,18 +78,18 @@ class ReportMapView(MapView):
             river = session.get_decoded().get('river')
             selected_measures = session.get_decoded().get('selected_measures')
             vertex = session.get_decoded().get('vertex')
-            
+
             print map_base_layer
             print bbox
             print river
             print selected_measures
             print vertex
-            
-            # import pdb;pdb.set_trace()
-            return super(ReportMapView, self).dispatch(request, *args, **kwargs)
+
+
+            return super(ReportMapView, self).dispatch(
+                request, *args, **kwargs)
         except IndexError:
             raise Http404
-
 
     @property
     def content_actions(self):
@@ -193,8 +190,8 @@ class ReportMapView(MapView):
 
         labels = [
             # text, color
-            ['Niet geselecteerd',  'green'],
-            ['Geselecteerd',  'red'],
+            ['Niet geselecteerd', 'green'],
+            ['Geselecteerd', 'red'],
         ]
         selected_measures_map_legend = MapLayerLegend(
             name="Maatregelen (kaart)",
@@ -204,30 +201,29 @@ class ReportMapView(MapView):
                   map_measure_results_legend,
                   selected_measures_map_legend]
         result += super(BlockboxView, self).legends
-        return result    
-        
+        return result
 
 # def report_map_template(request, session_slug, template='lizard_blockbox/report_map_template.html'):
 #     """
 #     Flow
 #     ----
-#     
+#
 #     - When a user requests a report, the generate_report() view renders the report.html template.
-# 
+#
 #     - report.html includes an image from:
-#     
+#
 #     http://screenshotter.lizard.net/s/1024x768/http://test.deltaportaal.lizardsystem.nl/blokkendoos/report/map/{{ session.id }}
-#     
-#     - That URL triggers this view (report_map_template()) with the session ID of that user, 
+#
+#     - That URL triggers this view (report_map_template()) with the session ID of that user,
 #       and it should render the map with the settings (zoom/latlng/workspaces etc) that user has.
-#       
+#
 #     """
 #     try:
 #         session = Session.objects.filter(session_key=session_slug)[0]
 #     except IndexError:
 #         raise Http404
-# 
-# 
+#
+#
 #     # '_auth_user_id': 1,
 #     # 'make_sure_session_is_initialized': 'hurray',
 #     # 'map_base_layer': u'basiskaart_snel',
@@ -241,18 +237,15 @@ class ReportMapView(MapView):
 #     #                               u'ma_n24_a1',
 #     #                               u'ma_nurgdiv_a1']),
 #     # 'vertex': 30}
-# 
+#
 #     map_base_layer = session.get_decoded().get('map_base_layer')
 #     bbox = session.get_decoded().get('map_location')
 #     river = session.get_decoded().get('river')
 #     selected_measures = session.get_decoded().get('selected_measures')
 #     vertex = session.get_decoded().get('vertex')
-# 
-#     
+#
+#
 #     return render_to_response(template, locals(), context_instance=RequestContext(request))
-
-
-
 
 
 def generate_report(request, template='lizard_blockbox/report.html'):
@@ -294,10 +287,33 @@ def generate_report(request, template='lizard_blockbox/report.html'):
 def generate_csv(request):
     response = HttpResponse(mimetype='application/csv')
     response['Content-Disposition'] = 'filename=blokkendoos-report.csv'
-    fieldnames = [_('reach'), _('reach kilometer'),
-                  _('remaining water level rise in m')]
     writer = csv.writer(response, dialect='excel', delimiter=';',
                         quoting=csv.QUOTE_ALL)
+
+    writer.writerow(['Titel', 'Code', 'Type', 'Km van', 'Km tot', 'Riviertak',
+                     'Rivierdeel', 'MHW winst m', 'MHW winst m2',
+                     'Kosten investering', 'Baten', 'Kosten B&O',
+                     'herinvestering', 'Schade', 'Kosten totaal',
+                     'Ruimtelijke kwaliteit'])
+    measures = models.Measure.objects.filter(
+        short_name__in=_selected_measures(request))
+    for measure in measures:
+        writer.writerow([measure.name, measure.short_name,
+                         measure.measure_type, measure.km_from, measure.km_to,
+                         measure.reach, measure.riverpart,
+                         measure.mhw_profit_cm / 100, measure.mhw_profit_m2,
+                         measure.investment_costs, measure.benefits,
+                         measure.b_o_costs, measure.reinvestment,
+                         measure.damage, measure.total_costs,
+                         measure.quality_of_environment])
+
+    writer.writerow([])
+    selected_vertex = _selected_vertex(request)
+    writer.writerow(['Strategie:', selected_vertex.name])
+
+    writer.writerow([])
+    fieldnames = [_('reach'), _('reach kilometer'),
+                  _('remaining water level rise in m')]
     writer.writerow(fieldnames)
     water_levels = _water_levels(request)
     for water_level in water_levels:
@@ -306,7 +322,7 @@ def generate_csv(request):
                          water_level['measures_level'],
                          ])
     return response
-    
+
 
 class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
@@ -339,11 +355,28 @@ class BlockboxView(MapView):
                 reach['selected'] = True
         return reaches
 
-    def selected_measures(self):
+    def measures_per_reach(self):
+        """Return selected measures, sorted per reach."""
         selected_measures = _selected_measures(self.request)
-        return models.Measure.objects.filter(
-            short_name__in=selected_measures).values(
-                'name', 'short_name', 'measure_type', 'km_from')
+        reaches = defaultdict(list)
+        measures = models.Measure.objects.filter(
+            short_name__in=selected_measures)
+
+        for measure in measures:
+            if measure.reach:
+                reach_name = measure.reach.slug
+            else:
+                reach_name = 'unknown'
+            reaches[reach_name].append(measure)
+        result = []
+        # print models.Measure._meta.fields
+        for name, measures in reaches.items():
+            reach = {'name': name,
+                     'amount': len(measures),
+                     'measures': measures}
+            result.append(reach)
+        result.sort(key=lambda x: x['amount'], reverse=True)
+        return result
 
     def investment_costs(self):
         return _investment_costs(self.request)
@@ -395,17 +428,17 @@ class BlockboxView(MapView):
             labels=labels)
 
         labels = [
-            # text, color
-            ['> 2.00', 'darkred'],
-            ['1.00 - 2.00', 'darkred'],
-            ['0.80 1.00', 'middlered'],
-            ['0.60 - 0.80', 'lightred'],
-            ['0.40 - 0.60', 'blue'],
-            ['0.20 - 0.40', 'lightgreen'],
-            ['0.00 - 0.20', 'middlegreen'],
-            ['-0.20 - -0.00', 'darkgreen'],
-            ['-0.40 - -0.20', 'darkgreen'],
-            ['< -0.40', 'darkgreen']
+            # text, level
+            ['> 2.00', 'riverlevel-9'],
+            ['1.00 - 2.00', 'riverlevel-8'],
+            ['0.80 1.00', 'riverlevel-7'],
+            ['0.60 - 0.80', 'riverlevel-6'],
+            ['0.40 - 0.60', 'riverlevel-5'],
+            ['0.20 - 0.40', 'riverlevel-4'],
+            ['0.00 - 0.20', 'riverlevel-3'],
+            ['-0.20 - -0.00', 'riverlevel-2'],
+            ['-0.40 - -0.20', 'riverlevel-1'],
+            ['< -0.40', 'riverlevel-0']
             ]
         map_measure_results_legend = MapLayerLegend(
             name="Rivieren (kaart)",
@@ -413,8 +446,8 @@ class BlockboxView(MapView):
 
         labels = [
             # text, color
-            ['Niet geselecteerd',  'green'],
-            ['Geselecteerd',  'red'],
+            ['Niet geselecteerd', 'green'],
+            ['Geselecteerd', 'red'],
         ]
         selected_measures_map_legend = MapLayerLegend(
             name="Maatregelen (kaart)",

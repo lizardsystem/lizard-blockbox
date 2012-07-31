@@ -77,18 +77,23 @@
       Klik op een maatregel om hem te deselecteren.
     </p>
     <ul id="selected-measures-list" class="without-bullets">
-      {% for measure in view.selected_measures %}
-        <li>
-          <a href="#"
-             class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
+      <p>
+        Totale investeringskosten: {{ view.investment_costs }} mln
+      </p>
+      {% for reach in view.measures_per_reach %}
+        <h4>{{ reach.name }}</h4>
+        {% for measure in reach.measures %}
+          <li>
+            <a href="#"
+               class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
              data-measure-id="{{ measure.short_name }}"
-             data-measure-shortname="{{ measure.short_name }}">
-            {{ measure.km_from }}:
-            {% firstof measure.name measure.short_name %}
-          </a>
-        </li>
+               data-measure-shortname="{{ measure.short_name }}">
+              <span class="measure-km">{{ measure.km_from }}:</span>
+              {% firstof measure.name measure.short_name %}
+            </a>
+          </li>
+        {% endfor %}
       {% endfor %}
-      Totale investeringskosten: {{ view.investment_costs }} mln
     </ul>
 	<h3>Overzichts Pagina</h3>
     <p class="muted">

@@ -61,5 +61,5 @@ urlpatterns = patterns(
     url(r'^select_vertex/$',
         'lizard_blockbox.views.select_vertex',
         name='lizard_blockbox_select_vertex'),
-    )
+)
 urlpatterns += debugmode_urlpatterns()
