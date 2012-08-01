@@ -26,7 +26,7 @@ class Command(BaseCommand):
         flush = options['flush']
         if flush:
             # Delete all objects from models.
-            for model in ('RiverSegment', 'FloodingChance', 'Measure',
+            for model in ('RiverSegment', 'Measure',
                           'ReferenceValue', 'WaterLevelDifference',
                           'Reach', 'NamedReach', 'SubsetReach',
                           'CityLocation', 'Vertex', 'VertexValue'):
@@ -49,12 +49,8 @@ class Command(BaseCommand):
         measure, created = models.Measure.objects.get_or_create(
             short_name=sheet.name)
         if not created:
-            #print 'This measure already exists: %s' % sheet.name
+            # Measure exists.
             return
-        #print 'New measure: %s' % sheet.name
-        # Flooding chance is always T1250, except for some parts of the Maas.
-        flooding_T1250, _ = models.FloodingChance.objects.get_or_create(
-            name='T1250')
         for row_nr in xrange(1, sheet.nrows):
             location, reference, _, difference, reach_slug = \
                 sheet.row_values(row_nr)
@@ -82,13 +78,11 @@ class Command(BaseCommand):
                 continue
 
             ref_val = models.ReferenceValue.objects.get(
-                riversegment=riversegment,
-                flooding_chance=flooding_T1250)
+                riversegment=riversegment)
 
             models.WaterLevelDifference.objects.create(
                 riversegment=riversegment,
                 measure=measure,
-                flooding_chance=flooding_T1250,
                 reference_value=ref_val,
                 level_difference=difference,
                 )

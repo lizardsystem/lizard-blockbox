@@ -42,9 +42,6 @@ class Command(BaseCommand):
                     vertex in row0]
         vertexes = dict(enumerate(vertexes, 2))
 
-        flooding_T1250, _ = models.FloodingChance.objects.get_or_create(
-            name='T1250')
-
         for row_nr in xrange(2, sheet.nrows):
 
             row = sheet.row_values(row_nr)
@@ -54,7 +51,6 @@ class Command(BaseCommand):
 
             models.ReferenceValue.objects.get_or_create(
                 riversegment=riversegment,
-                flooding_chance=flooding_T1250,
                 defaults={'reference': row[2]})
 
             for col_nr, vertex in vertexes.iteritems():

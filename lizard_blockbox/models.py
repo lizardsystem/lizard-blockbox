@@ -73,17 +73,6 @@ class CityLocation(models.Model):
         return u'city: {city}, km: {km}'.format(**self.__dict__)
 
 
-class FloodingChance(models.Model):
-    """The FloodingChance
-
-    """
-
-    name = models.CharField(max_length=10)
-
-    def __unicode__(self):
-        return u'%s' % self.name
-
-
 class Measure(models.Model):
     """A Measure
 
@@ -171,11 +160,10 @@ class Measure(models.Model):
 class ReferenceValue(models.Model):
     """Reference Value for the water height
 
-    per Riversegment, Measure and Flooding Chance.
+    per Riversegment and Measure.
 
     """
     riversegment = models.ForeignKey(RiverSegment)
-    flooding_chance = models.ForeignKey(FloodingChance)
     reference = models.FloatField()
 
     def __unicode__(self):
@@ -186,7 +174,7 @@ class ReferenceValue(models.Model):
 class WaterLevelDifference(models.Model):
     """Water Level Difference
 
-    per Riversegment, Measure and Flooding Chance.
+    per Riversegmentand Measure.
 
     Dutch: *peilverschil*.
 
@@ -194,7 +182,6 @@ class WaterLevelDifference(models.Model):
 
     riversegment = models.ForeignKey(RiverSegment)
     measure = models.ForeignKey(Measure)
-    flooding_chance = models.ForeignKey(FloodingChance)
     reference_value = models.ForeignKey(ReferenceValue)
 
     level_difference = models.FloatField()

@@ -594,12 +594,11 @@ def _available_factsheets():
 
 
 def _water_levels(request):
-    flooding_chance = models.FloodingChance.objects.get(name="T1250")
     selected_river = _selected_river(request)
     selected_measures = _selected_measures(request)
     selected_vertex = _selected_vertex(request)
-    cache_key = (str(flooding_chance) + str(selected_river) +
-                 str(selected_vertex.id) + ''.join(selected_measures))
+    cache_key = (str(selected_river) + str(selected_vertex.id) +
+                 ''.join(selected_measures))
     cache_key = md5(cache_key).hexdigest()
     water_levels = cache.get(cache_key)
     if not water_levels:
@@ -613,8 +612,8 @@ def _water_levels(request):
         water_levels = []
         for segment in riversegments:
             measures_level = segment.waterleveldifference_set.filter(
-                measure__in=measures, flooding_chance=flooding_chance
-            ).aggregate(ld=Sum('level_difference'))['ld'] or 0
+                measure__in=measures).aggregate(
+                ld=Sum('level_difference'))['ld'] or 0
             try:
                 vertex_level = models.VertexValue.objects.get(
                     vertex=selected_vertex, riversegment=segment).value
