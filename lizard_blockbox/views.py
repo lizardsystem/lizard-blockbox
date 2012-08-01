@@ -83,6 +83,7 @@ class ReportMapView(MapView):
             print selected_measures
             print vertex
 
+
             return super(ReportMapView, self).dispatch(
                 request, *args, **kwargs)
         except IndexError:
@@ -303,6 +304,10 @@ def generate_csv(request):
                          measure.b_o_costs, measure.reinvestment,
                          measure.damage, measure.total_costs,
                          measure.quality_of_environment])
+
+    writer.writerow([])
+    selected_vertex = _selected_vertex(request)
+    writer.writerow(['Strategie:', selected_vertex.name])
 
     writer.writerow([])
     fieldnames = [_('reach'), _('reach kilometer'),

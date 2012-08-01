@@ -25,6 +25,10 @@ Changelog of lizard-blockbox
 
 - Group selected measures bij reach (not final).
 
+- Added selected strategy (vertex) to csv export.
+
+- Moved total investment costs up in the sidebar.
+
 
 0.1 (2012-06-01)
 ----------------
