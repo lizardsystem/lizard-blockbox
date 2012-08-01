@@ -159,7 +159,7 @@ MeasuresMapView = Backbone.View.extend
                 target_difference[num.location_reach] = num.measures_level
             for feature in rivers.features
                 attributes = feature.attributes
-                attributes.target_difference = target_difference[attributes.MODELKM]
+                attributes.target_difference = target_difference[attributes.label]
             rivers.redraw()
             @render_measures()
 

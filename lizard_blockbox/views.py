@@ -20,9 +20,7 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
-from django.shortcuts import render_to_response
 from django.template import Context
-from django.template import RequestContext
 from django.template.loader import get_template
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
@@ -616,17 +614,13 @@ def _water_levels(request):
                 vertex_level = models.VertexValue.objects.get(
                     vertex=selected_vertex, riversegment=segment).value
             except models.VertexValue.DoesNotExist:
-                vertex_level = 0
+                continue
 
-            reference_absolute = models.ReferenceValue.objects.get(
-                riversegment=segment, flooding_chance=flooding_chance
-            ).reference
-            vertex_level_normalized = vertex_level - reference_absolute
-            d = {'vertex_level': vertex_level_normalized,
-                 'measures_level': vertex_level_normalized + measures_level,
+            d = {'vertex_level': vertex_level,
+                 'measures_level': vertex_level + measures_level,
                  'reference_target': 0,
                  'location': segment.location,
-                 'location_reach': '%i.00_%s' % (segment.location,
+                 'location_reach': '%i_%s' % (segment.location,
                                                  segment.reach.slug),
                  'location_segment': segment.reach.slug,
                  }

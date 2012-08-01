@@ -220,7 +220,7 @@
         for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
           feature = _ref[_j];
           attributes = feature.attributes;
-          attributes.target_difference = target_difference[attributes.MODELKM];
+          attributes.target_difference = target_difference[attributes.label];
         }
         rivers.redraw();
         return _this.render_measures();
