@@ -38,8 +38,21 @@ class Command(BaseCommand):
     def parse_sheet(self, sheet):
         # First two rows are not vertexes.
         row0 = sheet.row_values(1)[2:]
-        vertexes = [models.Vertex.objects.create(name=vertex) for
-                    vertex in row0]
+        vertexes = []
+        for vertex in row0:
+            vertex = vertex.strip()
+            header = ''
+            if ':' in vertex:
+                # A vertex can contain multiple colons, only the
+                # first one is the header
+                text = vertex.split(':')
+                # The header and the vertex can contain superfluous spaces.
+                header = text[0].strip()
+                vertex = ':'.join(text[1:]).strip()
+            instance, _ = models.Vertex.objects.get_or_create(
+                header=header, name=vertex)
+            vertexes.append(instance)
+
         vertexes = dict(enumerate(vertexes, 2))
 
         for row_nr in xrange(2, sheet.nrows):

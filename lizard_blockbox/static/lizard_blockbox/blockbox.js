@@ -129,17 +129,29 @@
 
   updateVertex = function() {
     return $.getJSON($('#blockbox-vertex').data('update-vertex-url') + '?' + new Date().getTime(), function(data) {
-      var html, id, name, options;
-      options = (function() {
+      var field, groups, header, html, options, options_html, values;
+      groups = (function() {
         var _results;
         _results = [];
-        for (id in data) {
-          name = data[id];
-          _results.push("<option value='" + id + "'>" + name + "</option>");
+        for (header in data) {
+          values = data[header];
+          options = [
+            (function() {
+              var _i, _len, _results2;
+              _results2 = [];
+              for (_i = 0, _len = values.length; _i < _len; _i++) {
+                field = values[_i];
+                _results2.push("<option value='" + field[0] + "'>" + field[1] + "</option>");
+              }
+              return _results2;
+            })()
+          ];
+          options_html = options.join("");
+          _results.push("<optgroup label='" + header + "'>" + options_html + "</optgroup>");
         }
         return _results;
       })();
-      html = options.join("");
+      html = groups.join("");
       $('#blockbox-vertex select').html(html);
       return $('#blockbox-vertex .chzn-select').trigger("liszt:updated");
     });

@@ -675,7 +675,11 @@ def city_locations_json(request):
 def vertex_json(request):
     selected_river = _selected_river(request)
     vertexes = models.Vertex.objects.filter(named_reaches__name=selected_river)
-    to_json = dict(vertexes.values_list('id', 'name').order_by('name'))
+    values = vertexes.values_list('header', 'id', 'name'
+                                   ).order_by('header', 'name')
+    to_json = defaultdict(list)
+    for i in values:
+        to_json[i[0]].append(i[1:])
     response = HttpResponse(mimetype='application/json')
     json.dump(to_json, response)
     return response
@@ -741,7 +745,6 @@ def _unselectable_measures(request):
 
 def _investment_costs(request):
     investment_costs = 0.0
-    reaches = defaultdict(list)
     measures = models.Measure.objects.filter(
         short_name__in=_selected_measures(request))
 

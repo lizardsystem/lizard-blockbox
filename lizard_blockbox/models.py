@@ -198,6 +198,7 @@ class Vertex(models.Model):
     Dutch: *hoekpunt*.
     """
 
+    header = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     named_reaches = models.ManyToManyField(
         NamedReach, null=True, blank=True)

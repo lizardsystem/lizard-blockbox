@@ -110,9 +110,12 @@ selectVertex = (vertex_id) ->
 
 updateVertex = ->
     $.getJSON($('#blockbox-vertex').data('update-vertex-url') + '?' + new Date().getTime(), (data) ->
-        options = for id, name of data
-            "<option value='#{id}'>#{name}</option>"
-        html=options.join ""
+
+        groups = for header, values of data
+            options =  ["<option value='#{field[0]}'>#{field[1]}</option>" for field in values]
+            options_html = options.join ""
+            "<optgroup label='#{header}'>#{options_html}</optgroup>"
+        html=groups.join ""
         $('#blockbox-vertex select').html html
         $('#blockbox-vertex .chzn-select').trigger "liszt:updated"
         )
