@@ -274,7 +274,6 @@ JSONRiverLayer = (name, json) ->
                 fillColor: GRAY
                 strokeColor: GRAY
                 strokeWidth: STROKEWIDTH
-
     ]
 
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
@@ -358,6 +357,16 @@ showTooltip = (x, y, name, type_name) ->
         left: x + 5
     ).appendTo("body").fadeIn 200
 
+
+showCityTooltip = (x, y, contents) ->
+  $("<div class=\"citytooltip\">" + contents + "</div>").css(
+    position: "absolute"
+    display: "none"
+    top: y
+    left: x
+    color: "#262626"
+    padding: "2px"
+  ).appendTo("body").fadeIn 200
 
 
 setFlotSeries = () ->
@@ -471,7 +480,7 @@ setMeasureGraph = (control_data, cities_data) ->
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected and num.show)
     selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected and num.show)
     non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable and num.show)
-    cities = ([city[0], 8, city[1], city[1], "Stad"] for city in cities_data)
+    cities = ([city[0], 8, city[1]] for city in cities_data)
 
     label_mapping = {}
     for measure in control_data
@@ -510,17 +519,14 @@ setMeasureGraph = (control_data, cities_data) ->
 
     measures_controls = [
 
-        label: "Steden"
         data: cities
         points:
             show: true
-            symbol: "circle"
-            radius: 3
-            fill: 1
             fillColor: BLACK
         lines:
             show: false
         color: BLACK
+        hoverable: false
     ,
 
         label: "Maatregelen"
@@ -577,7 +583,6 @@ setMeasureGraph = (control_data, cities_data) ->
     $("#measure_graph").bind "plothover", (event, pos, item) ->
 
         if item
-
             # Shuffles the tooltip to the left when it gets too close to
             # the right of the browser window:
             if item.pageX > ($(window).width() - 300)
@@ -600,7 +605,23 @@ setMeasureGraph = (control_data, cities_data) ->
             $("#tooltip").remove()
             previousPoint = null
 
+    # Cleanup city tool tips
+    $('.citytooltip').remove()
+    city_points = pl_control.getData()[0]
+    offset = $("#measure_graph").offset()
+    graphx = offset.left
+    graphy = offset.top - 10
 
+    width = $(window).width() - 400
+    console.log "width: " + width
+    for point in city_points.data
+        px = graphx + city_points.xaxis.p2c(point[0])
+        py = graphy + city_points.yaxis.p2c(point[1])
+        text = point[2]
+        if px > width and text.length > 5
+            # Don't let the text overflow into the legend/end of screen.
+            px -= (text.length * 4)
+        showCityTooltip(px, py, text)
 
 resize_graphs = ->
     clearTimeout doit
@@ -644,6 +665,18 @@ setup_map_legend = ->
     $('.legend-riverlevel-1').css("background-color", RIVERLEVEL1)
     $('.legend-riverlevel-0').css("background-color", RIVERLEVEL0)
 
+
+km_line_layer = ->
+    console.log "WMS"
+    wms = new OpenLayers.Layer.WMS("5KM layer", "http://test-geoserver1.lizard.net/geoserver/deltaportaal/wms"
+        layers: "deltaportaal:5km_rivieren"
+        transparent: true,
+    ,
+        opacity: 1
+    )
+    map.addLayer wms
+    `undefined`
+
 $(document).ready ->
     setFlotSeries()
     setup_map_legend()
@@ -653,11 +686,11 @@ $(document).ready ->
             @
         )
     updateVertex()
-
     $("#blockbox-vertex .chzn-select").chosen().change(
         () ->
             selectVertex @value
             @
         )
+    km_line_layer()
     $('#measures-table-top').tablesorter()
     @

@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURECOLOR, MeasuresMapView, PURPLE, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURECOLOR, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showLabel, showPopup, showTooltip, toggleMeasure, updatePage, updateVertex,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURECOLOR, MeasuresMapView, PURPLE, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURECOLOR, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, km_line_layer, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showCityTooltip, showLabel, showPopup, showTooltip, toggleMeasure, updatePage, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -414,6 +414,17 @@
     }).appendTo("body").fadeIn(200);
   };
 
+  showCityTooltip = function(x, y, contents) {
+    return $("<div class=\"citytooltip\">" + contents + "</div>").css({
+      position: "absolute",
+      display: "none",
+      top: y,
+      left: x,
+      color: "#262626",
+      padding: "2px"
+    }).appendTo("body").fadeIn(200);
+  };
+
   setFlotSeries = function() {
     var json_url;
     json_url = $('#blockbox-table').data('calculated-measures-url');
@@ -535,7 +546,7 @@
   };
 
   setMeasureGraph = function(control_data, cities_data) {
-    var cities, city, d4, d5, key, label_mapping, measure, measures, measures_controls, non_selectable_measures, num, options, pl_control, pl_lines, previousPoint, selected_measures, selected_river, value, yticks, _i, _len;
+    var cities, city, city_points, d4, d5, graphx, graphy, key, label_mapping, measure, measures, measures_controls, non_selectable_measures, num, offset, options, pl_control, pl_lines, point, previousPoint, px, py, selected_measures, selected_river, text, value, width, yticks, _i, _j, _len, _len2, _ref, _results;
     measures = (function() {
       var _i, _len, _results;
       _results = [];
@@ -574,7 +585,7 @@
       _results = [];
       for (_i = 0, _len = cities_data.length; _i < _len; _i++) {
         city = cities_data[_i];
-        _results.push([city[0], 8, city[1], city[1], "Stad"]);
+        _results.push([city[0], 8, city[1]]);
       }
       return _results;
     })();
@@ -625,19 +636,16 @@
     };
     measures_controls = [
       {
-        label: "Steden",
         data: cities,
         points: {
           show: true,
-          symbol: "circle",
-          radius: 3,
-          fill: 1,
           fillColor: BLACK
         },
         lines: {
           show: false
         },
-        color: BLACK
+        color: BLACK,
+        hoverable: false
       }, {
         label: "Maatregelen",
         data: measures,
@@ -697,7 +705,7 @@
       }
     });
     previousPoint = null;
-    return $("#measure_graph").bind("plothover", function(event, pos, item) {
+    $("#measure_graph").bind("plothover", function(event, pos, item) {
       var x, y;
       if (item) {
         if (item.pageX > ($(window).width() - 300)) item.pageX = item.pageX - 300;
@@ -713,6 +721,24 @@
         return previousPoint = null;
       }
     });
+    $('.citytooltip').remove();
+    city_points = pl_control.getData()[0];
+    offset = $("#measure_graph").offset();
+    graphx = offset.left;
+    graphy = offset.top - 10;
+    width = $(window).width() - 400;
+    console.log("width: " + width);
+    _ref = city_points.data;
+    _results = [];
+    for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
+      point = _ref[_j];
+      px = graphx + city_points.xaxis.p2c(point[0]);
+      py = graphy + city_points.yaxis.p2c(point[1]);
+      text = point[2];
+      if (px > width && text.length > 5) px -= text.length * 4;
+      _results.push(showCityTooltip(px, py, text));
+    }
+    return _results;
   };
 
   resize_graphs = function() {
@@ -764,6 +790,19 @@
     return $('.legend-riverlevel-0').css("background-color", RIVERLEVEL0);
   };
 
+  km_line_layer = function() {
+    var wms;
+    console.log("WMS");
+    wms = new OpenLayers.Layer.WMS("5KM layer", "http://test-geoserver1.lizard.net/geoserver/deltaportaal/wms", {
+      layers: "deltaportaal:5km_rivieren",
+      transparent: true
+    }, {
+      opacity: 1
+    });
+    map.addLayer(wms);
+    return undefined;
+  };
+
   $(document).ready(function() {
     setFlotSeries();
     setup_map_legend();
@@ -776,6 +815,7 @@
       selectVertex(this.value);
       return this;
     });
+    km_line_layer();
     $('#measures-table-top').tablesorter();
     return this;
   });
