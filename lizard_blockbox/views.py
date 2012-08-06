@@ -327,6 +327,8 @@ class BlockboxView(MapView):
     template_name = 'lizard_blockbox/blockbox.html'
     edit_link = '/admin/lizard_blockbox/'
     required_permission = VIEW_PERM
+    # We don't want empty popups, so disable it.
+    javascript_click_handler = ''
 
     @property
     def content_actions(self):
