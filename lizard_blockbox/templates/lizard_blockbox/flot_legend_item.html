@@ -6,10 +6,10 @@
   <p>
     <b>Maatregel types</b>
   </p>
-  <dl>
+  <ul>
     {% for character, label in legend.labels %}
-      <dt>{{ character }}</dt>
-      <dd>{{ label }}</dd>
+      <li class="measure-legend-label"><span>{{ character }}</span>
+		{{ label }}</li>
     {% endfor %}
-  </dl>
+  </ul>
 {% endif %}
