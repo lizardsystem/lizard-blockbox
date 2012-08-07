@@ -3,19 +3,17 @@ import csv
 import logging
 import operator
 import os
+import StringIO
 
 from cgi import escape
 from collections import defaultdict
-import cStringIO as StringIO
 from datetime import datetime
 from hashlib import md5
 
-
-import xhtml2pdf.pisa as pisa
+from xhtml2pdf import pisa
 
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
-from django.contrib.sessions.models import Session
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
@@ -60,192 +58,6 @@ def render_to_pdf(template_src, context_dict):
     return response
 
 
-class ReportMapView(MapView):
-    """
-    """
-
-    template_name = "lizard_blockbox/report_map_template.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        session_slug = kwargs.get('session_slug', None)
-        try:
-            session = Session.objects.filter(session_key=session_slug)[0]
-
-            map_base_layer = session.get_decoded().get('map_base_layer')
-            bbox = session.get_decoded().get('map_location')
-            river = session.get_decoded().get('river')
-            selected_measures = session.get_decoded().get('selected_measures')
-            vertex = session.get_decoded().get('vertex')
-
-            print map_base_layer
-            print bbox
-            print river
-            print selected_measures
-            print vertex
-
-
-            return super(ReportMapView, self).dispatch(
-                request, *args, **kwargs)
-        except IndexError:
-            raise Http404
-
-    @property
-    def content_actions(self):
-        actions = super(BlockboxView, self).content_actions
-        to_table_text = _('Show table')
-        to_map_text = _('Show map')
-        switch_map_and_table = Action(
-            name=to_table_text,
-            description=_('Switch between a graph+map view and a graph+table '
-                          'view.'),
-            icon='icon-random',
-            url='#table',
-            data_attributes={'to-table-text': to_table_text,
-                             'to-map-text': to_map_text},
-            klass='toggle_map_and_table')
-        actions.insert(0, switch_map_and_table)
-        return actions
-
-    def reaches(self):
-        reaches = models.NamedReach.objects.all().values('name')
-        selected_river = _selected_river(self.request)
-        for reach in reaches:
-            if reach['name'] == selected_river:
-                reach['selected'] = True
-        return reaches
-
-    def selected_measures(self):
-        selected_measures = _selected_measures(self.request)
-        return models.Measure.objects.filter(
-            short_name__in=selected_measures).values(
-                'name', 'short_name', 'measure_type', 'km_from')
-
-    def investment_costs(self):
-        return _investment_costs(self.request)
-
-    def measure_headers(self):
-        """Return headers for measures table."""
-        measure = models.Measure.objects.all()[0]
-        return [field['label'] for field in measure.pretty()]
-
-    def measures(self):
-        measures_ids = namedreach2measures(_selected_river(self.request))
-        measures = models.Measure.objects.filter(short_name__in=measures_ids)
-        selected_measures = _selected_measures(self.request)
-        available_factsheets = _available_factsheets()
-        # selected_river = _selected_river(self.request)
-        result = []
-        for measure_obj in measures:
-            measure = {}
-            measure['fields'] = measure_obj.pretty()
-            measure['selected'] = measure_obj.short_name in selected_measures
-            # measure['in_selected_river'] = (
-            #     measure_obj.riverpart == selected_river)
-            measure['name'] = unicode(measure_obj)
-            measure['short_name'] = measure_obj.short_name
-            if measure_obj.short_name in available_factsheets:
-                measure['pdf_link'] = reverse(
-                    'measure_factsheet',
-                    kwargs={'measure': measure_obj.short_name})
-            result.append(measure)
-        return result
-
-    @property
-    def legends(self):
-        result_graph_legend = FlotLegend(
-            name="Effecten grafiek",
-            div_id='measure_results_graph_legend')
-        all_types = models.Measure.objects.all().values_list(
-            'measure_type', flat=True)
-        labels = []
-        for measure_type in set(all_types):
-            if measure_type is None:
-                labels.append(['x', 'Onbekend'])
-            else:
-                labels.append([measure_type[0].lower(), measure_type])
-        labels.sort()
-        measures_legend = FlotLegend(
-            name="Maatregelselectie grafiek",
-            div_id='measures_legend',
-            labels=labels)
-
-        labels = [
-            # text, color
-            ['> 2.00', 'darkred'],
-            ['1.00 - 2.00', 'darkred'],
-            ['0.80 1.00', 'middlered'],
-            ['0.60 - 0.80', 'lightred'],
-            ['0.40 - 0.60', 'blue'],
-            ['0.20 - 0.40', 'lightgreen'],
-            ['0.00 - 0.20', 'middlegreen'],
-            ['-0.20 - -0.00', 'darkgreen'],
-            ['-0.40 - -0.20', 'darkgreen'],
-            ['< -0.40', 'darkgreen']
-            ]
-        map_measure_results_legend = MapLayerLegend(
-            name="Rivieren (kaart)",
-            labels=labels)
-
-        labels = [
-            # text, color
-            ['Niet geselecteerd', 'green'],
-            ['Geselecteerd', 'red'],
-        ]
-        selected_measures_map_legend = MapLayerLegend(
-            name="Maatregelen (kaart)",
-            labels=labels)
-
-        result = [result_graph_legend, measures_legend,
-                  map_measure_results_legend,
-                  selected_measures_map_legend]
-        result += super(BlockboxView, self).legends
-        return result
-
-# def report_map_template(request, session_slug, template='lizard_blockbox/report_map_template.html'):
-#     """
-#     Flow
-#     ----
-#
-#     - When a user requests a report, the generate_report() view renders the report.html template.
-#
-#     - report.html includes an image from:
-#
-#     http://screenshotter.lizard.net/s/1024x768/http://test.deltaportaal.lizardsystem.nl/blokkendoos/report/map/{{ session.id }}
-#
-#     - That URL triggers this view (report_map_template()) with the session ID of that user,
-#       and it should render the map with the settings (zoom/latlng/workspaces etc) that user has.
-#
-#     """
-#     try:
-#         session = Session.objects.filter(session_key=session_slug)[0]
-#     except IndexError:
-#         raise Http404
-#
-#
-#     # '_auth_user_id': 1,
-#     # 'make_sure_session_is_initialized': 'hurray',
-#     # 'map_base_layer': u'basiskaart_snel',
-#     # 'map_location': {'bottom': u'6241541.5371494',
-#     #                  'left': u'-618222.34429951',
-#     #                  'right': u'1974521.655133',
-#     #                  'top': u'7391154.4425582'},
-#     # 'river': u'Bedijkte Maas',
-#     # 'selected_measures_key': set([u'ma_br_oef_a1',
-#     #                               u'ma_hrw_irp,2',
-#     #                               u'ma_n24_a1',
-#     #                               u'ma_nurgdiv_a1']),
-#     # 'vertex': 30}
-#
-#     map_base_layer = session.get_decoded().get('map_base_layer')
-#     bbox = session.get_decoded().get('map_location')
-#     river = session.get_decoded().get('river')
-#     selected_measures = session.get_decoded().get('selected_measures')
-#     vertex = session.get_decoded().get('vertex')
-#
-#
-#     return render_to_response(template, locals(), context_instance=RequestContext(request))
-
-
 def generate_report(request, template='lizard_blockbox/report.html'):
     """
     Uses PISA to generate a PDF report
@@ -265,7 +77,6 @@ def generate_report(request, template='lizard_blockbox/report.html'):
             reach_name = 'unknown'
         reaches[reach_name].append(measure)
     result = []
-    print models.Measure._meta.fields
     for name, measures in reaches.items():
         reach = {'name': name,
                  'amount': len(measures),
@@ -446,8 +257,8 @@ class BlockboxView(MapView):
 
         labels = [
             # text, color
-            ['Niet geselecteerd', 'green'],
-            ['Geselecteerd', 'red'],
+            ['Niet geselecteerd', 'measure'],
+            ['Geselecteerd', 'selected-measure'],
         ]
         selected_measures_map_legend = MapLayerLegend(
             name="Maatregelen (kaart)",
@@ -458,6 +269,20 @@ class BlockboxView(MapView):
                   selected_measures_map_legend]
         result += super(BlockboxView, self).legends
         return result
+
+
+class PlainGraphMapView(BlockboxView):
+    required_permission = None
+    template_name = 'lizard_blockbox/report_map_template.html'
+
+    def get_context_data(self, **kwargs):
+        # Parse QueryString
+        session = self.request.session
+        measures = set(self.request.GET.get('measures').split(';'))
+        session[SELECTED_MEASURES_KEY] = measures
+        session['vertex'] = self.request.GET.get('vertex')
+        session['river'] = self.request.GET.get('river')
+        return super(PlainGraphMapView, self).get_context_data(**kwargs)
 
 
 class FlotLegend(Legend):

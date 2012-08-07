@@ -6,12 +6,12 @@
 $(document).ready(function() {
     $('header').hide();
     $('#footer').css('height', 0);
-    $('#secondary-sidebar').css('display', 'none');
     $('div#sidebar').css('left', -300);
-    $('div#content').css('left', -251);
-    $('div#content').css('height', $(window).height()+50);
+    $('div#content').css('left', -0);
     $('div#content').css('top', 0);
+    $('div#rightbar').css('top', 0);
     window.setUpMapDimensions();
-});	
+    window.resize_graphs();
+});
 </script>
 {% endblock map-javascript %}

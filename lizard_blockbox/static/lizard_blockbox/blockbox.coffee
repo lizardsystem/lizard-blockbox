@@ -44,7 +44,7 @@ BLACK = "#000000"
 # in the legend. See the legend usage in views.py. Let's try to keep the
 # color definitions in one spot! :-)
 
-STROKEWIDTH = 5
+STROKEWIDTH = 7
 
 graphTimer = ''
 hasTooltip = ''
@@ -271,9 +271,7 @@ JSONRiverLayer = (name, json) ->
         new OpenLayers.Rule
             elseFilter: true
             symbolizer:
-                fillColor: GRAY
-                strokeColor: GRAY
-                strokeWidth: STROKEWIDTH
+                strokeOpacity: 0.0
     ]
 
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
@@ -613,15 +611,16 @@ setMeasureGraph = (control_data, cities_data) ->
     graphy = offset.top - 10
 
     width = $(window).width() - 400
-    console.log "width: " + width
     for point in city_points.data
-        px = graphx + city_points.xaxis.p2c(point[0])
-        py = graphy + city_points.yaxis.p2c(point[1])
-        text = point[2]
-        if px > width and text.length > 5
-            # Don't let the text overflow into the legend/end of screen.
-            px -= (text.length * 4)
-        showCityTooltip(px, py, text)
+        # Filter on cities that are in the km range of the river.
+        if window.min_graph_value <= point[0] <= window.max_graph_value
+            px = graphx + city_points.xaxis.p2c(point[0])
+            py = graphy + city_points.yaxis.p2c(point[1])
+            text = point[2]
+            if px > width and text.length > 5
+                # Don't let the text overflow into the legend/end of screen.
+                px -= (text.length * 4)
+            showCityTooltip(px, py, text)
 
 resize_graphs = ->
     clearTimeout doit
@@ -645,6 +644,8 @@ doit = undefined
 $(window).resize ->
     resize_graphs()
 
+window.resize_graphs = resize_graphs
+
 $(".blockbox-toggle-measure").live 'click', (e) ->
     e.preventDefault()
     toggleMeasure $(@).data('measure-id')
@@ -664,6 +665,8 @@ setup_map_legend = ->
     $('.legend-riverlevel-2').css("background-color", RIVERLEVEL2)
     $('.legend-riverlevel-1').css("background-color", RIVERLEVEL1)
     $('.legend-riverlevel-0').css("background-color", RIVERLEVEL0)
+    $('.legend-measure').css("background-color", MEASURECOLOR)
+    $('.legend-selected-measure').css("background-color", SELECTEDMEASURECOLOR)
 
 
 km_line_layer = ->

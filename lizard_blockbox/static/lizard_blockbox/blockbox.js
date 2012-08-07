@@ -52,7 +52,7 @@
 
   BLACK = "#000000";
 
-  STROKEWIDTH = 5;
+  STROKEWIDTH = 7;
 
   graphTimer = '';
 
@@ -333,9 +333,7 @@
       }), new OpenLayers.Rule({
         elseFilter: true,
         symbolizer: {
-          fillColor: GRAY,
-          strokeColor: GRAY,
-          strokeWidth: STROKEWIDTH
+          strokeOpacity: 0.0
         }
       })
     ];
@@ -546,7 +544,7 @@
   };
 
   setMeasureGraph = function(control_data, cities_data) {
-    var cities, city, city_points, d4, d5, graphx, graphy, key, label_mapping, measure, measures, measures_controls, non_selectable_measures, num, offset, options, pl_control, pl_lines, point, previousPoint, px, py, selected_measures, selected_river, text, value, width, yticks, _i, _j, _len, _len2, _ref, _results;
+    var cities, city, city_points, d4, d5, graphx, graphy, key, label_mapping, measure, measures, measures_controls, non_selectable_measures, num, offset, options, pl_control, pl_lines, point, previousPoint, px, py, selected_measures, selected_river, text, value, width, yticks, _i, _j, _len, _len2, _ref, _ref2, _results;
     measures = (function() {
       var _i, _len, _results;
       _results = [];
@@ -727,16 +725,19 @@
     graphx = offset.left;
     graphy = offset.top - 10;
     width = $(window).width() - 400;
-    console.log("width: " + width);
     _ref = city_points.data;
     _results = [];
     for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
       point = _ref[_j];
-      px = graphx + city_points.xaxis.p2c(point[0]);
-      py = graphy + city_points.yaxis.p2c(point[1]);
-      text = point[2];
-      if (px > width && text.length > 5) px -= text.length * 4;
-      _results.push(showCityTooltip(px, py, text));
+      if ((window.min_graph_value <= (_ref2 = point[0]) && _ref2 <= window.max_graph_value)) {
+        px = graphx + city_points.xaxis.p2c(point[0]);
+        py = graphy + city_points.yaxis.p2c(point[1]);
+        text = point[2];
+        if (px > width && text.length > 5) px -= text.length * 4;
+        _results.push(showCityTooltip(px, py, text));
+      } else {
+        _results.push(void 0);
+      }
     }
     return _results;
   };
@@ -767,6 +768,8 @@
     return resize_graphs();
   });
 
+  window.resize_graphs = resize_graphs;
+
   $(".blockbox-toggle-measure").live('click', function(e) {
     e.preventDefault();
     return toggleMeasure($(this).data('measure-id'));
@@ -787,7 +790,9 @@
     $('.legend-riverlevel-3').css("background-color", RIVERLEVEL3);
     $('.legend-riverlevel-2').css("background-color", RIVERLEVEL2);
     $('.legend-riverlevel-1').css("background-color", RIVERLEVEL1);
-    return $('.legend-riverlevel-0').css("background-color", RIVERLEVEL0);
+    $('.legend-riverlevel-0').css("background-color", RIVERLEVEL0);
+    $('.legend-measure').css("background-color", MEASURECOLOR);
+    return $('.legend-selected-measure').css("background-color", SELECTEDMEASURECOLOR);
   };
 
   km_line_layer = function() {
