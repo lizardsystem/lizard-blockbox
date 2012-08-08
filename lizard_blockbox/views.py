@@ -208,8 +208,6 @@ class BlockboxView(MapView):
             measure = {}
             measure['fields'] = measure_obj.pretty()
             measure['selected'] = measure_obj.short_name in selected_measures
-            # measure['in_selected_river'] = (
-            #     measure_obj.riverpart == selected_river)
             measure['name'] = unicode(measure_obj)
             measure['short_name'] = measure_obj.short_name
             if measure_obj.short_name in available_factsheets:
@@ -282,6 +280,8 @@ class PlainGraphMapView(BlockboxView):
         session[SELECTED_MEASURES_KEY] = measures
         session['vertex'] = self.request.GET.get('vertex')
         session['river'] = self.request.GET.get('river')
+        session['map_location'] = dict((i, self.request.GET.get(i))
+            for i in ('top', 'bottom', 'left', 'right'))
         return super(PlainGraphMapView, self).get_context_data(**kwargs)
 
 
@@ -452,7 +452,7 @@ def _water_levels(request):
                  'reference_target': 0,
                  'location': segment.location,
                  'location_reach': '%i_%s' % (segment.location,
-                                                 segment.reach.slug),
+                                              segment.reach.slug),
                  'location_segment': segment.reach.slug,
                  }
             water_levels.append(d)
@@ -461,7 +461,6 @@ def _water_levels(request):
 
 
 @never_cache
-@permission_required(VIEW_PERM)
 def calculated_measures_json(request):
     """Calculate the result of the measures."""
 
@@ -473,7 +472,6 @@ def calculated_measures_json(request):
 
 
 @never_cache
-@permission_required(VIEW_PERM)
 def city_locations_json(request):
     """Return the city locations for the selected river."""
 
@@ -498,12 +496,11 @@ def city_locations_json(request):
 
 
 @never_cache
-@permission_required(VIEW_PERM)
 def vertex_json(request):
     selected_river = _selected_river(request)
     vertexes = models.Vertex.objects.filter(named_reaches__name=selected_river)
     values = vertexes.values_list('header', 'id', 'name'
-                                   ).order_by('header', 'name')
+                                  ).order_by('header', 'name')
     to_json = defaultdict(list)
     for i in values:
         to_json[i[0]].append(i[1:])
@@ -626,7 +623,6 @@ def select_river(request):
 
 
 @never_cache
-@permission_required(VIEW_PERM)
 def list_measures_json(request):
     """Return a list with all known measures for the second graph."""
 
