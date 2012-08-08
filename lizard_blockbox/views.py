@@ -96,7 +96,7 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     querystring['measures'] = ';'.join(session[SELECTED_MEASURES_KEY])
     querystring = urllib.urlencode(querystring)
     path = reverse('lizard_blockbox.plain_graph_map')
-    domain = Site.objects.get_current().domain + ':8000'
+    domain = Site.objects.get_current().domain
     graph_map_url = urlparse.urlunparse(('http', domain, path, '',
                                          querystring, ''))
     qs = urllib.urlencode({'url': graph_map_url,
