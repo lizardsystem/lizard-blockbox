@@ -4,6 +4,8 @@ import logging
 import operator
 import os
 import StringIO
+import urllib
+import urlparse
 
 from cgi import escape
 from collections import defaultdict
@@ -14,6 +16,7 @@ from xhtml2pdf import pisa
 
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
+from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
@@ -84,9 +87,29 @@ def generate_report(request, template='lizard_blockbox/report.html'):
         result.append(reach)
     result.sort(key=lambda x: x['amount'], reverse=True)
 
+    # Build the graph map url
+    session = request.session
+    querystring = dict((i, session['map_location'][i]) for i in
+                        ('top', 'bottom', 'left', 'right'))
+    querystring['vertex'] = session['vertex']
+    querystring['river'] = session['river']
+    querystring['measures'] = ';'.join(session[SELECTED_MEASURES_KEY])
+    querystring = urllib.urlencode(querystring)
+    path = reverse('lizard_blockbox.plain_graph_map')
+    domain = Site.objects.get_current().domain + ':8000'
+    graph_map_url = urlparse.urlunparse(('http', domain, path, '',
+                                         querystring, ''))
+    qs = urllib.urlencode({'url': graph_map_url,
+                           'width': 1024,
+                           'height': 900})
+    domain = 'screenshotter.lizard.net'
+    path = '/s/'
+    image_url = urlparse.urlunparse(('http', domain, path, '', qs, ''))
+
     return render_to_pdf(
         'lizard_blockbox/report.html',
         {'date': datetime.now(),
+         'image_url': image_url,
          'pagesize': 'A4',
          'reaches': result,
          'total_cost': total_cost,

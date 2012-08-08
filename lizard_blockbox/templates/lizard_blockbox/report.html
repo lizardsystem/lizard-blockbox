@@ -3,9 +3,6 @@
     <head>
         <title>Deltaportaal: Blokkendoos Rivieren</title>
         <style type="text/css">
-            table{
-/*                border: 1px solid red;*/
-            }
             table tr td{
                 vertical-align: top;
             }
@@ -46,7 +43,7 @@
             div#header h2{
                 font-size: 1.6em;
                 color: #BFBFBF;
-                font-weight: lighter; 
+                font-weight: lighter;
                 padding: 10px 0px 10px 0px; margin: 10px 0px 10px 0px;
                 text-align: left;
             }
@@ -86,10 +83,6 @@
         <center>
             <img src="http://roimg.nl/presentation/images/logotype-government-of-the-netherlands-nl.png"/>
         </center>
-        {# <right> #}
-        {#     <pdf:barcode value="EMBED CODE HERE" type="code128" humanreadable="1"  #}
-        {#     barwidth="0.33mm" barheight="0.5cm" align="right"> #}
-        {# </right> #}
         <div id="header">
             <h1>Blokkendoos Rivieren</h1>
 
@@ -101,7 +94,7 @@
                             <tr>
                                 <td>Versie</td>
                                 <td>1.0</td>
-                            </tr>                                
+                            </tr>
                             <tr>
                                 <td>Datum</td>
                                 <td>{{ date|date:"d-m-Y" }}</td>
@@ -112,7 +105,7 @@
                     <td>&nbsp;</td>
                 </tr>
             </table>
-            
+
 
             <hr color="#B1B2B1"/>
             <div id="toc">
@@ -123,8 +116,8 @@
 
 
             <h2>Kaart</h2>
-            <img src="http://screenshotter.lizard.net/s/1024x768/http://reinout:vianen@test.deltaportaal.lizardsystem.nl/blokkendoos/report/map/{{ sessionid }}/"/>
-            
+            <img src="{{ image_url }}"/>
+
             {% for reach in reaches %}
               <h2>
                 {{ reach.name }}
@@ -150,9 +143,9 @@
                     <td>Totale kosten</td>
                     <td>{{ total_cost }} miljoen euro</td>
                 </tr>
-            </table>                
+            </table>
         </div>
-        
+
         <div id="footerContent">
             {%block page_foot%}
                 Pagina <pdf:pagenumber>
