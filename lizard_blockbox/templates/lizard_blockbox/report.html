@@ -50,6 +50,25 @@
             div#header table{
                 font-size: 1.1em;
             }
+
+			table.measures-table{
+			  font-size: 2em;
+			  -pdf-keep-in-frame-mode: overflow;
+			}
+
+			table.measures-table th{
+                border-bottom: 1px #BFBFBF solid;
+            }
+
+			table.measures-table td{
+			    padding: 1px;
+			}
+
+			table.measures-table .measures-right {
+			    border-right: 1px #BFBFBF solid;
+			}
+
+
             div#disclaimer{
                 font-size: 1.2em;
                 font-weight: bold;
@@ -113,27 +132,34 @@
                 <pdf:toc />
             </div>
             <hr color="#B1B2B1"/>
-
-
             <h2>Kaart</h2>
-            <img src="{{ image_url }}"/>
-
+			<img src="{{ image_url }}"/>
             {% for reach in reaches %}
               <h2>
                 {{ reach.name }}
                 <span class="muted">({{ reach.amount }} maatregel{{ reach.amount|pluralize:"en" }})</span>
               </h2>
-              {% for measure in reach.measures %}
-                <h3>{{ measure.name }}</h3>
-                <table>
-                  {% for field in measure.pretty %}
-                  <tr>
-                      <td>{{ field.label }}</td>
-                      <td>{% firstof field.value "Onbekend" %}</td>
-                  </tr>
-                  {% endfor %}
-                </table>
-              {% endfor %}
+			  <table class="measures-table">
+				<thead>
+				  <tr>
+					{% for label in measures_header %}
+					  <th>{{ label  }}</th>
+					{% endfor %}
+				  </tr>
+				</thead>
+				<tbody>
+				  {% for measure in reach.measures %}
+				    <tr>
+                      {% for field in measure %}
+	  				 	<td {% if not forloop.last %} class="measures-right"
+							{% endif %}>
+						  {% firstof field.value "Onbekend" %}
+						</td>
+		  	          {% endfor %}
+					</tr>
+		  	      {% endfor %}
+				</tbody>
+              </table>
             {% endfor %}
 
             <hr color="#B1B2B1" />

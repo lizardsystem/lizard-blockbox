@@ -66,19 +66,24 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     Uses PISA to generate a PDF report
     """
 
-    total_cost = 0.0
-    reaches = defaultdict(list)
     measures = models.Measure.objects.filter(
         short_name__in=_selected_measures(request))
+    #measures_header = [key for key in measures[0].itervalues()
+    #                   if key != 'Riviertak']
+    measures_header = [field['label'] for field in measures[0].pretty()
+                       if field['label'] != 'Riviertak']
+    total_cost = 0.0
+    reaches = defaultdict(list)
     for measure in measures:
         # total_cost = total_cost + measure.total_costs()
         if measure.total_costs:
-            total_cost = total_cost + measure.total_costs
+            total_cost += measure.total_costs
         if measure.reach:
             reach_name = measure.reach.slug
         else:
             reach_name = 'unknown'
-        reaches[reach_name].append(measure)
+        measure_p = [i for i in measure.pretty() if i['label'] != 'Riviertak']
+        reaches[reach_name].append(measure_p)
     result = []
     for name, measures in reaches.items():
         reach = {'name': name,
@@ -112,8 +117,8 @@ def generate_report(request, template='lizard_blockbox/report.html'):
          'image_url': image_url,
          'pagesize': 'A4',
          'reaches': result,
-         'total_cost': total_cost,
-         'sessionid': request.session.session_key})
+         'measures_header': measures_header,
+         'total_cost': total_cost})
 
 
 def generate_csv(request):

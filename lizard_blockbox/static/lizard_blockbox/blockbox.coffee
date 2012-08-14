@@ -28,8 +28,12 @@ RIVERLEVEL1 = "rgb(104, 184, 235)"
 RIVERLEVEL0 = "rgb(0, 156, 223)"
 
 # For measures in the map.
-MEASURECOLOR = "rgb(201, 218, 155)"
-SELECTEDMEASURECOLOR = "rgb(140, 182, 59)"
+MEASURECOLOR = "rgb(128, 153, 140)"
+SELECTEDMEASURECOLOR = "rgb(29, 82, 62)"
+
+#MEASURECOLOR = "rgb(201, 218, 155)"
+#SELECTEDMEASURECOLOR = "rgb(140, 182, 59)"
+
 
 # Original colors
 DIAMOND_COLOR = "#105987"
@@ -295,6 +299,7 @@ JSONTooltip = (name, json) ->
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults(
             fillColor: MEASURECOLOR
             strokeColor: MEASURECOLOR
+            fillOpacity: 0.7
         OpenLayers.Feature.Vector.style["default"]))
 
     styleMap.styles["default"].addRules [ new OpenLayers.Rule(
@@ -306,6 +311,7 @@ JSONTooltip = (name, json) ->
         symbolizer:
           fillColor: SELECTEDMEASURECOLOR
           strokeColor: SELECTEDMEASURECOLOR
+          fillOpacity: 0.7
     ), new OpenLayers.Rule(elseFilter: true) ]
 
 

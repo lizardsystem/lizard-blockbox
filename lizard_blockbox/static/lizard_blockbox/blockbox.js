@@ -38,9 +38,9 @@
 
   RIVERLEVEL0 = "rgb(0, 156, 223)";
 
-  MEASURECOLOR = "rgb(201, 218, 155)";
+  MEASURECOLOR = "rgb(128, 153, 140)";
 
-  SELECTEDMEASURECOLOR = "rgb(140, 182, 59)";
+  SELECTEDMEASURECOLOR = "rgb(29, 82, 62)";
 
   DIAMOND_COLOR = "#105987";
 
@@ -356,7 +356,8 @@
     var geojson_format, selectCtrl, styleMap, vector_layer;
     styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
       fillColor: MEASURECOLOR,
-      strokeColor: MEASURECOLOR
+      strokeColor: MEASURECOLOR,
+      fillOpacity: 0.7
     }, OpenLayers.Feature.Vector.style["default"]));
     styleMap.styles["default"].addRules([
       new OpenLayers.Rule({
@@ -367,7 +368,8 @@
         }),
         symbolizer: {
           fillColor: SELECTEDMEASURECOLOR,
-          strokeColor: SELECTEDMEASURECOLOR
+          strokeColor: SELECTEDMEASURECOLOR,
+          fillOpacity: 0.7
         }
       }), new OpenLayers.Rule({
         elseFilter: true
