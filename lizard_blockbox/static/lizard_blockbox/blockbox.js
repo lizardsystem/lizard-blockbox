@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURECOLOR, MeasuresMapView, PURPLE, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURECOLOR, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, km_line_layer, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showCityTooltip, showLabel, showPopup, showTooltip, toggleMeasure, updateMeasuresList, updateVertex,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURECOLOR, MeasuresMapView, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURECOLOR, STROKEWIDTH, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, km_line_layer, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showCityTooltip, showLabel, showPopup, showTooltip, toggleMeasure, updateMeasuresList, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -42,14 +42,6 @@
 
   SELECTEDMEASURECOLOR = "rgb(29, 82, 62)";
 
-  DIAMOND_COLOR = "#105987";
-
-  TRIANGLE_COLOR = "#E78B00";
-
-  SQUARE_COLOR = "#122F64";
-
-  PURPLE = "#E01B6A";
-
   BLACK = "#000000";
 
   STROKEWIDTH = 7;
@@ -62,7 +54,6 @@
     var _this = this;
     return $.get($('#blockbox-deselect-all-measures').data('deselect-url'), function(data) {
       updateMeasuresList();
-      measuresMapView.render(true, true);
       return _this;
     });
   };
@@ -76,7 +67,6 @@
       },
       success: function(data) {
         updateMeasuresList();
-        measuresMapView.render(true, true);
         return this;
       }
     });
@@ -90,6 +80,7 @@
     return $holder.load('. #page', function() {
       var sort;
       $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
+      measuresMapView.render(true, true, true);
       $("#measures-table").html($('#measures-table', $holder).html());
       sort = $("#measures-table-top").get(0).config.sortList;
       $("#measures-table-top").trigger("update");
@@ -226,6 +217,7 @@
     },
     render_measures: function() {
       var feature, selected_items, _i, _len, _ref, _ref2;
+      console.log('render_measures');
       selected_items = this.selected_items();
       _ref = this.measures.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -243,23 +235,23 @@
         _this = this;
       numResponses = 0;
       this.static_url = $('#lizard-blockbox-graph').data('static-url');
-      $.getJSON(this.static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), function(json) {
+      $.getJSON(this.static_url + 'lizard_blockbox/measures.json', function(json) {
         _this.measures = JSONTooltip('Maatregelen', json);
-        numResponses++;
-        if (numResponses === 3) _this.render(true, true, false);
+        numResponses |= 1 << 0;
+        if (numResponses === 7) _this.render(true, true, false);
         return _this;
       });
-      $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
+      $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json', function(json) {
         _this.rivers = JSONRiverLayer('Rivers', json);
-        numResponses++;
-        if (numResponses === 3) _this.render(true, true, false);
+        numResponses |= 1 << 1;
+        if (numResponses === 7) _this.render(true, true, false);
         return _this;
       });
       json_url = $('#blockbox-table').data('calculated-measures-url');
       return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
         _this.calculated = data;
-        numResponses++;
-        if (numResponses === 3) _this.render(true, true, false);
+        numResponses |= 1 << 2;
+        if (numResponses === 7) _this.render(true, true, false);
         return _this;
       });
     },
@@ -793,7 +785,6 @@
 
   km_line_layer = function() {
     var wms;
-    console.log("WMS");
     wms = new OpenLayers.Layer.WMS("5KM layer", "http://test-geoserver1.lizard.net/geoserver/deltaportaal/wms", {
       layers: "deltaportaal:5km_rivieren",
       transparent: true

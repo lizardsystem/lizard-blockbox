@@ -31,17 +31,7 @@ RIVERLEVEL0 = "rgb(0, 156, 223)"
 MEASURECOLOR = "rgb(128, 153, 140)"
 SELECTEDMEASURECOLOR = "rgb(29, 82, 62)"
 
-#MEASURECOLOR = "rgb(201, 218, 155)"
-#SELECTEDMEASURECOLOR = "rgb(140, 182, 59)"
-
-
-# Original colors
-DIAMOND_COLOR = "#105987"
-TRIANGLE_COLOR = "#E78B00"
-SQUARE_COLOR = "#122F64"
-
 # City dot color
-PURPLE = "#E01B6A"
 BLACK = "#000000"
 
 # Note on colors: setup_map_legend() at the end helps put the right colors
@@ -60,7 +50,6 @@ hasTooltip = ''
 deselectAllMeasures = () ->
     $.get($('#blockbox-deselect-all-measures').data('deselect-url'), (data) =>
             updateMeasuresList()
-            measuresMapView.render(true, true)
             @
     )
 
@@ -73,7 +62,6 @@ toggleMeasure = (measure_id) ->
         # async: false
         success: (data) ->
             updateMeasuresList()
-            measuresMapView.render(true, true)
             @
 
 window.toggleMeasure = toggleMeasure
@@ -82,11 +70,13 @@ updateMeasuresList = () ->
     $holder = $('<div/>')
     $holder.load '. #page', () ->
         $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
+        measuresMapView.render(true, true, true)
         $("#measures-table").html $('#measures-table', $holder).html()
         sort = $("#measures-table-top").get(0).config.sortList
         # trigger update for sortable table header.
         $("#measures-table-top").trigger "update"
         $("#measures-table-top").trigger "sorton", [sort]
+
 
 selectRiver = (river_name) ->
     $.ajax
@@ -161,6 +151,7 @@ MeasuresMapView = Backbone.View.extend
         @rivers.redraw()
 
     render_measures: ->
+        console.log('render_measures')
         selected_items = @selected_items()
         for feature in @measures.features
             if feature.attributes.code in selected_items
@@ -170,27 +161,30 @@ MeasuresMapView = Backbone.View.extend
         @measures.redraw()
 
     initialize: ->
+        # Variable to check the responses, implemented with bitwise or.
+        # Each json requests set its own bit.
+        # The end result is 7 or bitwise known as 0b111.
         numResponses = 0
         @static_url = $('#lizard-blockbox-graph').data 'static-url'
-        $.getJSON @static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), (json) =>
+        $.getJSON @static_url + 'lizard_blockbox/measures.json', (json) =>
             @measures = JSONTooltip 'Maatregelen', json
-            numResponses++
-            if numResponses == 3
+            numResponses |= 1 << 0
+            if numResponses == 7
                 @render(true, true, false)
             @
-        $.getJSON @static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), (json) =>
+        $.getJSON @static_url + 'lizard_blockbox/kilometers.json', (json) =>
             @rivers = JSONRiverLayer 'Rivers', json
             # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
             # Delay in the hope that this is long enough for 'map' to exist.
-            numResponses++
-            if numResponses == 3
+            numResponses |= 1 << 1
+            if numResponses == 7
                 @render(true, true, false)
             @
         json_url = $('#blockbox-table').data('calculated-measures-url')
         $.getJSON json_url + '?' + new Date().getTime(), (data) =>
             @calculated = data
-            numResponses++
-            if numResponses == 3
+            numResponses |= 1 << 2
+            if numResponses == 7
                 @render(true, true, false)
             @
 
@@ -684,7 +678,6 @@ setup_map_legend = ->
 
 
 km_line_layer = ->
-    console.log "WMS"
     wms = new OpenLayers.Layer.WMS("5KM layer", "http://test-geoserver1.lizard.net/geoserver/deltaportaal/wms"
         layers: "deltaportaal:5km_rivieren"
         transparent: true,
