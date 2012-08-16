@@ -29,6 +29,8 @@ Changelog of lizard-blockbox
 
 - Moved total investment costs up in the sidebar.
 
+- Reset selected vertex server side when selecting river.
+
 
 0.1 (2012-06-01)
 ----------------

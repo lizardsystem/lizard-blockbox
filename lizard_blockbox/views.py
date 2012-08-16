@@ -647,6 +647,7 @@ def select_river(request):
     if not request.POST:
         return
     request.session['river'] = request.POST['river_name']
+    del request.session['vertex']
     return HttpResponse()
 
 
