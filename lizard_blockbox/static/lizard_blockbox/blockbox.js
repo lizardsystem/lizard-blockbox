@@ -252,7 +252,7 @@
       this.measures();
       return $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
         _this.rivers = JSONRiverLayer('Rivers', json);
-        return setTimeout(_this.render, 370);
+        return setTimeout(_this.render(true), 370);
       });
     },
     render: function(updateMap) {
@@ -442,15 +442,7 @@
       }
       return _results;
     })();
-    reference = (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = json_data.length; _i < _len; _i++) {
-        num = json_data[_i];
-        _results.push([num.location, 0]);
-      }
-      return _results;
-    })();
+    reference = [[window.min_graph_value, 0], [window.max_graph_value, 0]];
     measures = (function() {
       var _i, _len, _results;
       _results = [];

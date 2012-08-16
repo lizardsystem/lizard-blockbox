@@ -181,7 +181,7 @@ MeasuresMapView = Backbone.View.extend
             @rivers = JSONRiverLayer 'Rivers', json
             # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
             # Delay in the hope that this is long enough for 'map' to exist.
-            setTimeout(@render, 370)
+            setTimeout(@render(true), 370)
 
     render: (updateMap) ->
         json_url = $('#blockbox-table').data('calculated-measures-url')
@@ -383,7 +383,7 @@ setMeasureSeries = () ->
 
 setMeasureResultsGraph = (json_data) ->
     vertex = ([num.location, num.vertex_level] for num in json_data)
-    reference = ([num.location, 0] for num in json_data)
+    reference = [[window.min_graph_value, 0], [window.max_graph_value, 0]]
     measures = ([num.location, num.measures_level] for num in json_data)
     window.vertex = vertex
     window.measures = measures
