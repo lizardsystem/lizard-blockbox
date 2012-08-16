@@ -233,6 +233,9 @@
     initialize: function() {
       var json_url, numResponses,
         _this = this;
+      $('#loadingModal').modal({
+        keyboard: false
+      }).show();
       numResponses = 0;
       this.static_url = $('#lizard-blockbox-graph').data('static-url');
       $.getJSON(this.static_url + 'lizard_blockbox/measures.json', function(json) {
@@ -272,7 +275,10 @@
         setFlotSeries(this.calculated);
         if (updateRivers) this.render_rivers(this.calculated);
       }
-      if (updateMeasures) return this.render_measures();
+      if (updateMeasures) this.render_measures();
+      $('#loadingModal').hide();
+      $('#loadingModal').remove();
+      return $('.modal-backdrop').remove();
     }
   });
 

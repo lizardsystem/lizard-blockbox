@@ -174,9 +174,23 @@
   </div>
 
   {{ block.super }}
+
+  <div class="modal hide" id="loadingModal">
+    <div class="modal-header">
+      <h3>Loading...</h3>
+    </div>
+    <div class="modal-body">
+      <p>Please wait while loading river data...</p>
+    </div>
+    <div class="modal-footer">
+    </div>
+  </div>
+    
+
 {% endblock %}
 
 
 {% block orthogonal-actions %}
   {% include "lizard_blockbox/scenario-actions.html" %}
 {% endblock orthogonal-actions %}
+

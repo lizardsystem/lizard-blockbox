@@ -161,6 +161,7 @@ MeasuresMapView = Backbone.View.extend
         @measures.redraw()
 
     initialize: ->
+        $('#loadingModal').modal({ keyboard: false }).show()
         # Variable to check the responses, implemented with bitwise or.
         # Each json requests set its own bit.
         # The end result is 7 or bitwise known as 0b111.
@@ -202,6 +203,9 @@ MeasuresMapView = Backbone.View.extend
                 @render_rivers(@calculated)
         if updateMeasures
             @render_measures()
+        $('#loadingModal').hide()
+        $('#loadingModal').remove()
+        $('.modal-backdrop').remove()
 
 
 measuresMapView = new MeasuresMapView()

@@ -39,6 +39,8 @@ Changelog of lizard-blockbox
 
 - Reduced and optimized ajax calls.
 
+- Added modal popup to say the site is loading (which is long in IE).
+
 
 0.1 (2012-06-01)
 ----------------
