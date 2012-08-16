@@ -37,6 +37,8 @@ Changelog of lizard-blockbox
 
 - Delay first graph render after json call, not before.
 
+- Reduced and optimized ajax calls.
+
 
 0.1 (2012-06-01)
 ----------------

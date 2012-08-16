@@ -59,7 +59,8 @@ hasTooltip = ''
 
 deselectAllMeasures = () ->
     $.get($('#blockbox-deselect-all-measures').data('deselect-url'), (data) =>
-            updatePage data
+            updateMeasuresList()
+            measuresMapView.render(true, true)
             @
     )
 
@@ -71,12 +72,13 @@ toggleMeasure = (measure_id) ->
             'measure_id': measure_id
         # async: false
         success: (data) ->
-            updatePage data
+            updateMeasuresList()
+            measuresMapView.render(true, true)
             @
 
 window.toggleMeasure = toggleMeasure
 
-updatePage = () ->
+updateMeasuresList = () ->
     $holder = $('<div/>')
     $holder.load '. #page', () ->
         $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
@@ -85,7 +87,6 @@ updatePage = () ->
         # trigger update for sortable table header.
         $("#measures-table-top").trigger "update"
         $("#measures-table-top").trigger "sorton", [sort]
-        measuresMapView.render(true)
 
 selectRiver = (river_name) ->
     $.ajax
@@ -95,7 +96,8 @@ selectRiver = (river_name) ->
             'river_name': river_name
         success: (data) ->
             updateVertex()
-            updatePage()
+            updateMeasuresList()
+            measuresMapView.render(true, false)
             @
 
 selectVertex = (vertex_id) ->
@@ -105,7 +107,7 @@ selectVertex = (vertex_id) ->
         data:
             'vertex': vertex_id
         success: (data) ->
-            measuresMapView.render(true)
+            measuresMapView.render(true, false)
             @
 
 updateVertex = ->
@@ -146,49 +148,53 @@ Backbone.history.start()
 #View for the OpenLayersMap
 MeasuresMapView = Backbone.View.extend
 
-    measures: ->
-        $.getJSON @static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), (json) =>
-            @measures = JSONTooltip 'Maatregelen', json
-            @render_measures(@measures)
-
     selected_items: ->
         ($(el).data "measure-shortname" for el in $("#selected-measures-list li a"))
 
     render_rivers: (data) ->
-        rivers = @rivers
         target_difference = {}
         for num in data
             target_difference[num.location_reach] = num.measures_level
-        for feature in rivers.features
+        for feature in @rivers.features
             attributes = feature.attributes
             attributes.target_difference = target_difference[attributes.label]
-        rivers.redraw()
-        @render_measures()
+        @rivers.redraw()
 
-    render_measures: (measures = @measures) ->
+    render_measures: ->
         selected_items = @selected_items()
-        for feature in measures.features
+        for feature in @measures.features
             if feature.attributes.code in selected_items
                 feature.attributes.selected = true
             else
                 feature.attributes.selected = false
-        measures.redraw()
+        @measures.redraw()
 
     initialize: ->
+        numResponses = 0
         @static_url = $('#lizard-blockbox-graph').data 'static-url'
-        @measures()
+        $.getJSON @static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), (json) =>
+            @measures = JSONTooltip 'Maatregelen', json
+            numResponses++
+            if numResponses == 2
+                @render()
+            @
         $.getJSON @static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), (json) =>
             @rivers = JSONRiverLayer 'Rivers', json
             # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
             # Delay in the hope that this is long enough for 'map' to exist.
-            setTimeout(@render, 370)
+            numResponses++
+            if numResponses == 2
+                @render()
+            @
 
-    render: (updateMap) ->
+    render: (updateRivers = true, updateMeasures = true) ->
         json_url = $('#blockbox-table').data('calculated-measures-url')
         $.getJSON json_url + '?' + new Date().getTime(), (data) =>
             setFlotSeries(data)
-            if updateMap
+            if updateRivers
                 @render_rivers(data)
+        if updateMeasures
+            @render_measures()
 
 
 measuresMapView = new MeasuresMapView()
@@ -627,7 +633,7 @@ resize_graphs = ->
         $('#measure_results_graph').css('width', '100%')
         $('#measure_graph').css('width', '100%')
 
-        measuresMapView.render(false)
+        measuresMapView.render(false, false)
     ,300)
 
 $('.btn.collapse-sidebar').click ->

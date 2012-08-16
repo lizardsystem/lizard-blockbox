@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURECOLOR, MeasuresMapView, PURPLE, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURECOLOR, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, km_line_layer, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showCityTooltip, showLabel, showPopup, showTooltip, toggleMeasure, updatePage, updateVertex,
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, DIAMOND_COLOR, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURECOLOR, MeasuresMapView, PURPLE, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURECOLOR, SQUARE_COLOR, STROKEWIDTH, TRIANGLE_COLOR, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, km_line_layer, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setMeasureSeries, setup_map_legend, showCityTooltip, showLabel, showPopup, showTooltip, toggleMeasure, updateMeasuresList, updateVertex,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -61,7 +61,8 @@
   deselectAllMeasures = function() {
     var _this = this;
     return $.get($('#blockbox-deselect-all-measures').data('deselect-url'), function(data) {
-      updatePage(data);
+      updateMeasuresList();
+      measuresMapView.render(true, true);
       return _this;
     });
   };
@@ -74,7 +75,8 @@
         'measure_id': measure_id
       },
       success: function(data) {
-        updatePage(data);
+        updateMeasuresList();
+        measuresMapView.render(true, true);
         return this;
       }
     });
@@ -82,7 +84,7 @@
 
   window.toggleMeasure = toggleMeasure;
 
-  updatePage = function() {
+  updateMeasuresList = function() {
     var $holder;
     $holder = $('<div/>');
     return $holder.load('. #page', function() {
@@ -91,8 +93,7 @@
       $("#measures-table").html($('#measures-table', $holder).html());
       sort = $("#measures-table-top").get(0).config.sortList;
       $("#measures-table-top").trigger("update");
-      $("#measures-table-top").trigger("sorton", [sort]);
-      return measuresMapView.render(true);
+      return $("#measures-table-top").trigger("sorton", [sort]);
     });
   };
 
@@ -105,7 +106,8 @@
       },
       success: function(data) {
         updateVertex();
-        updatePage();
+        updateMeasuresList();
+        measuresMapView.render(true, false);
         return this;
       }
     });
@@ -119,7 +121,7 @@
         'vertex': vertex_id
       },
       success: function(data) {
-        measuresMapView.render(true);
+        measuresMapView.render(true, false);
         return this;
       }
     });
@@ -197,13 +199,6 @@
   Backbone.history.start();
 
   MeasuresMapView = Backbone.View.extend({
-    measures: function() {
-      var _this = this;
-      return $.getJSON(this.static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), function(json) {
-        _this.measures = JSONTooltip('Maatregelen', json);
-        return _this.render_measures(_this.measures);
-      });
-    },
     selected_items: function() {
       var el, _i, _len, _ref, _results;
       _ref = $("#selected-measures-list li a");
@@ -215,27 +210,24 @@
       return _results;
     },
     render_rivers: function(data) {
-      var attributes, feature, num, rivers, target_difference, _i, _j, _len, _len2, _ref;
-      rivers = this.rivers;
+      var attributes, feature, num, target_difference, _i, _j, _len, _len2, _ref;
       target_difference = {};
       for (_i = 0, _len = data.length; _i < _len; _i++) {
         num = data[_i];
         target_difference[num.location_reach] = num.measures_level;
       }
-      _ref = rivers.features;
+      _ref = this.rivers.features;
       for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
         feature = _ref[_j];
         attributes = feature.attributes;
         attributes.target_difference = target_difference[attributes.label];
       }
-      rivers.redraw();
-      return this.render_measures();
+      return this.rivers.redraw();
     },
-    render_measures: function(measures) {
+    render_measures: function() {
       var feature, selected_items, _i, _len, _ref, _ref2;
-      if (measures == null) measures = this.measures;
       selected_items = this.selected_items();
-      _ref = measures.features;
+      _ref = this.measures.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         feature = _ref[_i];
         if (_ref2 = feature.attributes.code, __indexOf.call(selected_items, _ref2) >= 0) {
@@ -244,25 +236,37 @@
           feature.attributes.selected = false;
         }
       }
-      return measures.redraw();
+      return this.measures.redraw();
     },
     initialize: function() {
-      var _this = this;
+      var numResponses,
+        _this = this;
+      numResponses = 0;
       this.static_url = $('#lizard-blockbox-graph').data('static-url');
-      this.measures();
+      $.getJSON(this.static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), function(json) {
+        _this.measures = JSONTooltip('Maatregelen', json);
+        numResponses++;
+        if (numResponses === 2) _this.render();
+        return _this;
+      });
       return $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
         _this.rivers = JSONRiverLayer('Rivers', json);
-        return setTimeout(_this.render, 370);
+        numResponses++;
+        if (numResponses === 2) _this.render();
+        return _this;
       });
     },
-    render: function(updateMap) {
+    render: function(updateRivers, updateMeasures) {
       var json_url,
         _this = this;
+      if (updateRivers == null) updateRivers = true;
+      if (updateMeasures == null) updateMeasures = true;
       json_url = $('#blockbox-table').data('calculated-measures-url');
-      return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
+      $.getJSON(json_url + '?' + updateRivers + updateMeasures + new Date().getTime(), function(data) {
         setFlotSeries(data);
-        if (updateMap) return _this.render_rivers(data);
+        if (updateRivers) return _this.render_rivers(data);
       });
+      if (updateMeasures) return this.render_measures();
     }
   });
 
@@ -737,7 +741,7 @@
       $('#measure_graph').empty();
       $('#measure_results_graph').css('width', '100%');
       $('#measure_graph').css('width', '100%');
-      return measuresMapView.render(false);
+      return measuresMapView.render(false, false);
     }, 300);
   };
 
