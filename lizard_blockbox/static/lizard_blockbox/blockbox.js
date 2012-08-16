@@ -262,7 +262,7 @@
       if (updateRivers == null) updateRivers = true;
       if (updateMeasures == null) updateMeasures = true;
       json_url = $('#blockbox-table').data('calculated-measures-url');
-      $.getJSON(json_url + '?' + updateRivers + updateMeasures + new Date().getTime(), function(data) {
+      $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
         setFlotSeries(data);
         if (updateRivers) return _this.render_rivers(data);
       });
@@ -428,9 +428,8 @@
   };
 
   setMeasureSeries = function() {
-    var cities_list_url, json_url;
+    var json_url;
     json_url = $('#blockbox-table').data('measure-list-url');
-    cities_list_url = $('#blockbox-table').data('cities-list-url');
     return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
       return setMeasureGraph(data.measures, data.cities);
     });
@@ -447,15 +446,7 @@
       }
       return _results;
     })();
-    reference = (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = json_data.length; _i < _len; _i++) {
-        num = json_data[_i];
-        _results.push([num.location, num.reference_target]);
-      }
-      return _results;
-    })();
+    reference = [[window.min_graph_value, 0], [window.max_graph_value, 0]];
     measures = (function() {
       var _i, _len, _results;
       _results = [];

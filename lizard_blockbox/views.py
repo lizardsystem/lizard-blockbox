@@ -477,7 +477,6 @@ def _water_levels(request):
 
             d = {'vertex_level': vertex_level,
                  'measures_level': vertex_level + measures_level,
-                 'reference_target': 0,
                  'location': segment.location,
                  'location_reach': '%i_%s' % (segment.location,
                                               segment.reach.slug),
