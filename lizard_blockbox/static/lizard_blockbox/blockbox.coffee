@@ -170,6 +170,7 @@ MeasuresMapView = Backbone.View.extend
         @measures.redraw()
 
     initialize: ->
+        $('#loadingModal').modal({ keyboard: false }).show()
         numResponses = 0
         @static_url = $('#lizard-blockbox-graph').data 'static-url'
         $.getJSON @static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), (json) =>
@@ -208,6 +209,9 @@ MeasuresMapView = Backbone.View.extend
                 @render_rivers(@calculated)
         if updateMeasures
             @render_measures()
+        $('#loadingModal').hide()
+        $('#loadingModal').remove()
+        $('.modal-backdrop').remove()
 
 
 measuresMapView = new MeasuresMapView()
