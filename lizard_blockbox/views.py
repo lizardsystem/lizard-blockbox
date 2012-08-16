@@ -500,30 +500,6 @@ def calculated_measures_json(request):
 
 
 @never_cache
-def city_locations_json(request):
-    """Return the city locations for the selected river."""
-
-    selected_river = _selected_river(request)
-    reach = models.NamedReach.objects.get(name=selected_river)
-    subset_reaches = reach.subsetreach_set.all()
-    segments_join = (models.CityLocation.objects.filter(
-                     reach=element.reach,
-                     km__range=(element.km_from, element.km_to))
-                     for element in subset_reaches)
-
-    # Join the querysets in segments_join into one.
-    city_locations = reduce(operator.or_, segments_join)
-    city_locations = city_locations.distinct().order_by('km')
-
-    json_list = [[km, city] for km, city in
-                 city_locations.values_list('km', 'city')]
-
-    response = HttpResponse(mimetype='application/json')
-    json.dump(json_list, response)
-    return response
-
-
-@never_cache
 def vertex_json(request):
     selected_river = _selected_river(request)
     vertexes = models.Vertex.objects.filter(named_reaches__name=selected_river)
@@ -651,6 +627,25 @@ def select_river(request):
     return HttpResponse()
 
 
+def _city_locations_json(request):
+    """Return the city locations for the selected river."""
+
+    selected_river = _selected_river(request)
+    reach = models.NamedReach.objects.get(name=selected_river)
+    subset_reaches = reach.subsetreach_set.all()
+    segments_join = (models.CityLocation.objects.filter(
+                     reach=element.reach,
+                     km__range=(element.km_from, element.km_to))
+                     for element in subset_reaches)
+
+    # Join the querysets in segments_join into one.
+    city_locations = reduce(operator.or_, segments_join)
+    city_locations = city_locations.distinct().order_by('km')
+
+    return [[km, city] for km, city in
+            city_locations.values_list('km', 'city')]
+
+
 @never_cache
 def list_measures_json(request):
     """Return a list with all known measures for the second graph."""
@@ -683,6 +678,10 @@ def list_measures_json(request):
         measure['type_indicator'] = single_characters[measure['type_index']]
         measure['show'] = measure['short_name'] in measures_selected_river
 
+    cities = _city_locations_json(request)
+
     response = HttpResponse(mimetype='application/json')
-    json.dump(list(measures), response)
+    json.dump({'measures': list(measures),
+               'cities': cities},
+              response)
     return response

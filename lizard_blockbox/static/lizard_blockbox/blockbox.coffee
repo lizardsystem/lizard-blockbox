@@ -388,9 +388,7 @@ setMeasureSeries = () ->
     json_url = $('#blockbox-table').data('measure-list-url')
     cities_list_url = $('#blockbox-table').data('cities-list-url')
     $.getJSON json_url + '?' + new Date().getTime(), (data) ->
-        $.getJSON cities_list_url + '?' + new Date().getTime(), (cities) ->
-            setMeasureGraph data, cities
-
+        setMeasureGraph data.measures, data.cities
 
 
 setMeasureResultsGraph = (json_data) ->
