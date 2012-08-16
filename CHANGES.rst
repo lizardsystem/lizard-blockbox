@@ -35,6 +35,8 @@ Changelog of lizard-blockbox
 
 - Just call for calculated measures result once per change.
 
+- Delay first graph render after json call, not before.
+
 
 0.1 (2012-06-01)
 ----------------

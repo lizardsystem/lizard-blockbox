@@ -85,7 +85,7 @@ updatePage = () ->
         # trigger update for sortable table header.
         $("#measures-table-top").trigger "update"
         $("#measures-table-top").trigger "sorton", [sort]
-        measuresMapView.render()
+        measuresMapView.render(true)
 
 selectRiver = (river_name) ->
     $.ajax
@@ -105,7 +105,7 @@ selectVertex = (vertex_id) ->
         data:
             'vertex': vertex_id
         success: (data) ->
-            measuresMapView.render()
+            measuresMapView.render(true)
             @
 
 updateVertex = ->
@@ -176,20 +176,19 @@ MeasuresMapView = Backbone.View.extend
 
     initialize: ->
         @static_url = $('#lizard-blockbox-graph').data 'static-url'
-        # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
-        runDelayed = =>
-            @measures()
-            $.getJSON @static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), (json) =>
-                @rivers = JSONRiverLayer 'Rivers', json
-                @render()
-        # Delay in the hope that this is long enough for 'map' to exist.
-        setTimeout(runDelayed, 500)
+        @measures()
+        $.getJSON @static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), (json) =>
+            @rivers = JSONRiverLayer 'Rivers', json
+            # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
+            # Delay in the hope that this is long enough for 'map' to exist.
+            setTimeout(@render, 370)
 
-    render: ->
+    render: (updateMap) ->
         json_url = $('#blockbox-table').data('calculated-measures-url')
         $.getJSON json_url + '?' + new Date().getTime(), (data) =>
             setFlotSeries(data)
-            @render_rivers(data)
+            if updateMap
+                @render_rivers(data)
 
 
 measuresMapView = new MeasuresMapView()
@@ -628,7 +627,7 @@ resize_graphs = ->
         $('#measure_results_graph').css('width', '100%')
         $('#measure_graph').css('width', '100%')
 
-        #setFlotSeries()
+        measuresMapView.render(false)
     ,300)
 
 $('.btn.collapse-sidebar').click ->

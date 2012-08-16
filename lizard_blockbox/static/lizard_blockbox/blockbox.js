@@ -92,7 +92,7 @@
       sort = $("#measures-table-top").get(0).config.sortList;
       $("#measures-table-top").trigger("update");
       $("#measures-table-top").trigger("sorton", [sort]);
-      return measuresMapView.render();
+      return measuresMapView.render(true);
     });
   };
 
@@ -119,7 +119,7 @@
         'vertex': vertex_id
       },
       success: function(data) {
-        measuresMapView.render();
+        measuresMapView.render(true);
         return this;
       }
     });
@@ -247,25 +247,21 @@
       return measures.redraw();
     },
     initialize: function() {
-      var runDelayed,
-        _this = this;
+      var _this = this;
       this.static_url = $('#lizard-blockbox-graph').data('static-url');
-      runDelayed = function() {
-        _this.measures();
-        return $.getJSON(_this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
-          _this.rivers = JSONRiverLayer('Rivers', json);
-          return _this.render();
-        });
-      };
-      return setTimeout(runDelayed, 500);
+      this.measures();
+      return $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
+        _this.rivers = JSONRiverLayer('Rivers', json);
+        return setTimeout(_this.render, 370);
+      });
     },
-    render: function() {
+    render: function(updateMap) {
       var json_url,
         _this = this;
       json_url = $('#blockbox-table').data('calculated-measures-url');
       return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
         setFlotSeries(data);
-        return _this.render_rivers(data);
+        if (updateMap) return _this.render_rivers(data);
       });
     }
   });
@@ -740,7 +736,8 @@
       $('#measure_results_graph').empty();
       $('#measure_graph').empty();
       $('#measure_results_graph').css('width', '100%');
-      return $('#measure_graph').css('width', '100%');
+      $('#measure_graph').css('width', '100%');
+      return measuresMapView.render(false);
     }, 300);
   };
 
