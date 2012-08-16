@@ -424,9 +424,8 @@
   };
 
   setMeasureSeries = function() {
-    var cities_list_url, json_url;
+    var json_url;
     json_url = $('#blockbox-table').data('measure-list-url');
-    cities_list_url = $('#blockbox-table').data('cities-list-url');
     return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
       return setMeasureGraph(data.measures, data.cities);
     });
@@ -448,7 +447,7 @@
       _results = [];
       for (_i = 0, _len = json_data.length; _i < _len; _i++) {
         num = json_data[_i];
-        _results.push([num.location, num.reference_target]);
+        _results.push([num.location, 0]);
       }
       return _results;
     })();

@@ -377,14 +377,13 @@ setFlotSeries = (data) ->
 
 setMeasureSeries = () ->
     json_url = $('#blockbox-table').data('measure-list-url')
-    cities_list_url = $('#blockbox-table').data('cities-list-url')
     $.getJSON json_url + '?' + new Date().getTime(), (data) ->
         setMeasureGraph data.measures, data.cities
 
 
 setMeasureResultsGraph = (json_data) ->
     vertex = ([num.location, num.vertex_level] for num in json_data)
-    reference = ([num.location, num.reference_target] for num in json_data)
+    reference = ([num.location, 0] for num in json_data)
     measures = ([num.location, num.measures_level] for num in json_data)
     window.vertex = vertex
     window.measures = measures
