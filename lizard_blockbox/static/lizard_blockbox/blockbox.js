@@ -239,33 +239,47 @@
       return this.measures.redraw();
     },
     initialize: function() {
-      var numResponses,
+      var json_url, numResponses,
         _this = this;
       numResponses = 0;
       this.static_url = $('#lizard-blockbox-graph').data('static-url');
       $.getJSON(this.static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), function(json) {
         _this.measures = JSONTooltip('Maatregelen', json);
         numResponses++;
-        if (numResponses === 2) _this.render();
+        if (numResponses === 3) _this.render(true, true, false);
         return _this;
       });
-      return $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
+      $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
         _this.rivers = JSONRiverLayer('Rivers', json);
         numResponses++;
-        if (numResponses === 2) _this.render();
+        if (numResponses === 3) _this.render(true, true, false);
+        return _this;
+      });
+      json_url = $('#blockbox-table').data('calculated-measures-url');
+      return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
+        _this.calculated = data;
+        numResponses++;
+        if (numResponses === 3) _this.render(true, true, false);
         return _this;
       });
     },
-    render: function(updateRivers, updateMeasures) {
+    render: function(updateRivers, updateMeasures, updateCalculate) {
       var json_url,
         _this = this;
       if (updateRivers == null) updateRivers = true;
       if (updateMeasures == null) updateMeasures = true;
-      json_url = $('#blockbox-table').data('calculated-measures-url');
-      $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
-        setFlotSeries(data);
-        if (updateRivers) return _this.render_rivers(data);
-      });
+      if (updateCalculate == null) updateCalculate = true;
+      if (updateCalculate) {
+        json_url = $('#blockbox-table').data('calculated-measures-url');
+        $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
+          _this.calculated = data;
+          setFlotSeries(data);
+          if (updateRivers) return _this.render_rivers(data);
+        });
+      } else {
+        setFlotSeries(this.calculated);
+        if (updateRivers) this.render_rivers(this.calculated);
+      }
       if (updateMeasures) return this.render_measures();
     }
   });

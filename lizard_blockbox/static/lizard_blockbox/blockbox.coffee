@@ -175,24 +175,37 @@ MeasuresMapView = Backbone.View.extend
         $.getJSON @static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), (json) =>
             @measures = JSONTooltip 'Maatregelen', json
             numResponses++
-            if numResponses == 2
-                @render()
+            if numResponses == 3
+                @render(true, true, false)
             @
         $.getJSON @static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), (json) =>
             @rivers = JSONRiverLayer 'Rivers', json
             # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
             # Delay in the hope that this is long enough for 'map' to exist.
             numResponses++
-            if numResponses == 2
-                @render()
+            if numResponses == 3
+                @render(true, true, false)
             @
-
-    render: (updateRivers = true, updateMeasures = true) ->
         json_url = $('#blockbox-table').data('calculated-measures-url')
         $.getJSON json_url + '?' + new Date().getTime(), (data) =>
-            setFlotSeries(data)
+            @calculated = data
+            numResponses++
+            if numResponses == 3
+                @render(true, true, false)
+            @
+
+    render: (updateRivers = true, updateMeasures = true, updateCalculate = true) ->
+        if (updateCalculate)
+            json_url = $('#blockbox-table').data('calculated-measures-url')
+            $.getJSON json_url + '?' + new Date().getTime(), (data) =>
+                @calculated = data
+                setFlotSeries(data)
+                if updateRivers
+                    @render_rivers(data)
+        else
+            setFlotSeries(@calculated)
             if updateRivers
-                @render_rivers(data)
+                @render_rivers(@calculated)
         if updateMeasures
             @render_measures()
 
