@@ -376,11 +376,12 @@ showCityTooltip = (x, y, contents) ->
 setFlotSeries = () ->
     json_url = $('#blockbox-table').data('calculated-measures-url')
     $.getJSON json_url + '?' + new Date().getTime(), (data) ->
-        window.min_graph_value = data[0].location
-        window.max_graph_value = data[data.length-1].location
+        if data.length > 0
+            window.min_graph_value = data[0].location
+            window.max_graph_value = data[data.length-1].location
 
-        setMeasureResultsGraph data
-        setMeasureSeries()
+            setMeasureResultsGraph data
+            setMeasureSeries()
 
 
 setMeasureSeries = () ->

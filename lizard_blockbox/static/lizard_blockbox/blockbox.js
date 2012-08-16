@@ -429,10 +429,12 @@
     var json_url;
     json_url = $('#blockbox-table').data('calculated-measures-url');
     return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
-      window.min_graph_value = data[0].location;
-      window.max_graph_value = data[data.length - 1].location;
-      setMeasureResultsGraph(data);
-      return setMeasureSeries();
+      if (data.length > 0) {
+        window.min_graph_value = data[0].location;
+        window.max_graph_value = data[data.length - 1].location;
+        setMeasureResultsGraph(data);
+        return setMeasureSeries();
+      }
     });
   };
 

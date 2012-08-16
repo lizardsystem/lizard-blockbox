@@ -31,6 +31,8 @@ Changelog of lizard-blockbox
 
 - Reset selected vertex server side when selecting river.
 
+- Don't choke in JS on missing data from ajax call.
+
 
 0.1 (2012-06-01)
 ----------------

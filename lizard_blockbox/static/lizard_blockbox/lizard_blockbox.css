@@ -30,8 +30,7 @@ th.tablesorter-header {
   border-right: 1px solid #dad9c7;
   margin-left: -1px;
 }
-th.tablesorter-headerSortUp,
-th.tablesorter-headerSortDown {
+th.tablesorter-headerSortUp, th.tablesorter-headerSortDown {
   background-color: #f5f5f5;
 }
 th.tablesorter-headerSortUp {
