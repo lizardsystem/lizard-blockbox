@@ -492,9 +492,14 @@ def calculated_measures_json(request):
     """Calculate the result of the measures."""
 
     water_levels = _water_levels(request)
+    measures = _list_measures_json(request)
+    cities = _city_locations_json(request)
 
     response = HttpResponse(mimetype='application/json')
-    json.dump(water_levels, response)
+    json.dump({'water_levels': water_levels,
+               'measures': measures,
+               'cities': cities},
+               response)
     return response
 
 
@@ -645,8 +650,7 @@ def _city_locations_json(request):
             city_locations.values_list('km', 'city')]
 
 
-@never_cache
-def list_measures_json(request):
+def _list_measures_json(request):
     """Return a list with all known measures for the second graph."""
 
     measures = models.Measure.objects.all().values(
@@ -677,10 +681,4 @@ def list_measures_json(request):
         measure['type_indicator'] = single_characters[measure['type_index']]
         measure['show'] = measure['short_name'] in measures_selected_river
 
-    cities = _city_locations_json(request)
-
-    response = HttpResponse(mimetype='application/json')
-    json.dump({'measures': list(measures),
-               'cities': cities},
-              response)
-    return response
+    return list(measures)

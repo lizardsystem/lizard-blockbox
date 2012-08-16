@@ -162,30 +162,29 @@ MeasuresMapView = Backbone.View.extend
 
     initialize: ->
         $('#loadingModal').modal({ keyboard: false }).show()
-        # Variable to check the responses, implemented with bitwise or.
-        # Each json requests set its own bit.
-        # The end result is 7 or bitwise known as 0b111.
         numResponses = 0
         @static_url = $('#lizard-blockbox-graph').data 'static-url'
-        $.getJSON @static_url + 'lizard_blockbox/measures.json', (json) =>
+        $.getJSON @static_url + 'lizard_blockbox/measures.json' + '?' + new Date().getTime(), (json) =>
             @measures = JSONTooltip 'Maatregelen', json
-            numResponses |= 1 << 0
-            if numResponses == 7
+            numResponses++
+            if numResponses == 3
                 @render(true, true, false)
             @
-        $.getJSON @static_url + 'lizard_blockbox/kilometers.json', (json) =>
+
+        $.getJSON @static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), (json) =>
             @rivers = JSONRiverLayer 'Rivers', json
             # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
             # Delay in the hope that this is long enough for 'map' to exist.
-            numResponses |= 1 << 1
-            if numResponses == 7
+            numResponses++
+            if numResponses == 3
                 @render(true, true, false)
             @
+
         json_url = $('#blockbox-table').data('calculated-measures-url')
         $.getJSON json_url + '?' + new Date().getTime(), (data) =>
             @calculated = data
-            numResponses |= 1 << 2
-            if numResponses == 7
+            numResponses++
+            if numResponses == 3
                 @render(true, true, false)
             @
 
@@ -196,11 +195,11 @@ MeasuresMapView = Backbone.View.extend
                 @calculated = data
                 setFlotSeries(data)
                 if updateRivers
-                    @render_rivers(data)
+                    @render_rivers(data['water_levels'])
         else
             setFlotSeries(@calculated)
             if updateRivers
-                @render_rivers(@calculated)
+                @render_rivers(@calculated['water_levels'])
         if updateMeasures
             @render_measures()
         $('#loadingModal').hide()
@@ -384,19 +383,13 @@ showCityTooltip = (x, y, contents) ->
 
 
 setFlotSeries = (data) ->
-    if data.length > 0
-        window.min_graph_value = data[0].location
-        window.max_graph_value = data[data.length-1].location
+    water_levels = data['water_levels']
+    if water_levels.length > 0
+        window.min_graph_value = water_levels[0].location
+        window.max_graph_value = water_levels[water_levels.length-1].location
 
-        setMeasureResultsGraph data
-        setMeasureSeries()
-
-
-setMeasureSeries = () ->
-    json_url = $('#blockbox-table').data('measure-list-url')
-    $.getJSON json_url + '?' + new Date().getTime(), (data) ->
-        setMeasureGraph data.measures, data.cities
-
+        setMeasureResultsGraph data['water_levels']
+        setMeasureGraph data['measures'], data['cities']
 
 setMeasureResultsGraph = (json_data) ->
     vertex = ([num.location, num.vertex_level] for num in json_data)
