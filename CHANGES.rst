@@ -33,6 +33,8 @@ Changelog of lizard-blockbox
 
 - Don't choke in JS on missing data from ajax call.
 
+- Just call for calculated measures result once per change.
+
 
 0.1 (2012-06-01)
 ----------------

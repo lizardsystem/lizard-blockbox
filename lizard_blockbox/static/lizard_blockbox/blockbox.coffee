@@ -77,7 +77,6 @@ toggleMeasure = (measure_id) ->
 window.toggleMeasure = toggleMeasure
 
 updatePage = () ->
-    setFlotSeries()
     $holder = $('<div/>')
     $holder.load '. #page', () ->
         $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
@@ -97,8 +96,6 @@ selectRiver = (river_name) ->
         success: (data) ->
             updateVertex()
             updatePage()
-            #setFlotSeries()
-            #measuresMapView.render()
             @
 
 selectVertex = (vertex_id) ->
@@ -108,7 +105,6 @@ selectVertex = (vertex_id) ->
         data:
             'vertex': vertex_id
         success: (data) ->
-            setFlotSeries()
             measuresMapView.render()
             @
 
@@ -158,17 +154,16 @@ MeasuresMapView = Backbone.View.extend
     selected_items: ->
         ($(el).data "measure-shortname" for el in $("#selected-measures-list li a"))
 
-    render_rivers: (rivers = @Rivers) ->
-        json_url = $('#blockbox-table').data('calculated-measures-url')
-        $.getJSON json_url + '?' + new Date().getTime(), (data) =>
-            target_difference = {}
-            for num in data
-                target_difference[num.location_reach] = num.measures_level
-            for feature in rivers.features
-                attributes = feature.attributes
-                attributes.target_difference = target_difference[attributes.label]
-            rivers.redraw()
-            @render_measures()
+    render_rivers: (data) ->
+        rivers = @rivers
+        target_difference = {}
+        for num in data
+            target_difference[num.location_reach] = num.measures_level
+        for feature in rivers.features
+            attributes = feature.attributes
+            attributes.target_difference = target_difference[attributes.label]
+        rivers.redraw()
+        @render_measures()
 
     render_measures: (measures = @measures) ->
         selected_items = @selected_items()
@@ -179,26 +174,25 @@ MeasuresMapView = Backbone.View.extend
                 feature.attributes.selected = false
         measures.redraw()
 
-    rivers: ->
-        $.getJSON @static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), (json) =>
-            @Rivers = JSONRiverLayer 'Rivers', json
-            @render_rivers(@Rivers)
-
     initialize: ->
         @static_url = $('#lizard-blockbox-graph').data 'static-url'
         # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
         runDelayed = =>
             @measures()
-            @rivers()
+            $.getJSON @static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), (json) =>
+                @rivers = JSONRiverLayer 'Rivers', json
+                @render()
         # Delay in the hope that this is long enough for 'map' to exist.
         setTimeout(runDelayed, 500)
 
     render: ->
-        @render_rivers()
+        json_url = $('#blockbox-table').data('calculated-measures-url')
+        $.getJSON json_url + '?' + new Date().getTime(), (data) =>
+            setFlotSeries(data)
+            @render_rivers(data)
 
 
 measuresMapView = new MeasuresMapView()
-window.mMV = measuresMapView
 
 #######################################################
 # Popup                                               #
@@ -373,15 +367,13 @@ showCityTooltip = (x, y, contents) ->
   ).appendTo("body").fadeIn 200
 
 
-setFlotSeries = () ->
-    json_url = $('#blockbox-table').data('calculated-measures-url')
-    $.getJSON json_url + '?' + new Date().getTime(), (data) ->
-        if data.length > 0
-            window.min_graph_value = data[0].location
-            window.max_graph_value = data[data.length-1].location
+setFlotSeries = (data) ->
+    if data.length > 0
+        window.min_graph_value = data[0].location
+        window.max_graph_value = data[data.length-1].location
 
-            setMeasureResultsGraph data
-            setMeasureSeries()
+        setMeasureResultsGraph data
+        setMeasureSeries()
 
 
 setMeasureSeries = () ->
@@ -638,7 +630,7 @@ resize_graphs = ->
         $('#measure_results_graph').css('width', '100%')
         $('#measure_graph').css('width', '100%')
 
-        setFlotSeries()
+        #setFlotSeries()
     ,300)
 
 $('.btn.collapse-sidebar').click ->
@@ -688,7 +680,6 @@ km_line_layer = ->
     `undefined`
 
 $(document).ready ->
-    setFlotSeries()
     setup_map_legend()
     $("#blockbox-river .chzn-select").chosen().change(
         () ->

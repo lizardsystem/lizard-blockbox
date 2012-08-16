@@ -84,7 +84,6 @@
 
   updatePage = function() {
     var $holder;
-    setFlotSeries();
     $holder = $('<div/>');
     return $holder.load('. #page', function() {
       var sort;
@@ -120,7 +119,6 @@
         'vertex': vertex_id
       },
       success: function(data) {
-        setFlotSeries();
         measuresMapView.render();
         return this;
       }
@@ -216,27 +214,22 @@
       }
       return _results;
     },
-    render_rivers: function(rivers) {
-      var json_url,
-        _this = this;
-      if (rivers == null) rivers = this.Rivers;
-      json_url = $('#blockbox-table').data('calculated-measures-url');
-      return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
-        var attributes, feature, num, target_difference, _i, _j, _len, _len2, _ref;
-        target_difference = {};
-        for (_i = 0, _len = data.length; _i < _len; _i++) {
-          num = data[_i];
-          target_difference[num.location_reach] = num.measures_level;
-        }
-        _ref = rivers.features;
-        for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
-          feature = _ref[_j];
-          attributes = feature.attributes;
-          attributes.target_difference = target_difference[attributes.label];
-        }
-        rivers.redraw();
-        return _this.render_measures();
-      });
+    render_rivers: function(data) {
+      var attributes, feature, num, rivers, target_difference, _i, _j, _len, _len2, _ref;
+      rivers = this.rivers;
+      target_difference = {};
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        num = data[_i];
+        target_difference[num.location_reach] = num.measures_level;
+      }
+      _ref = rivers.features;
+      for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
+        feature = _ref[_j];
+        attributes = feature.attributes;
+        attributes.target_difference = target_difference[attributes.label];
+      }
+      rivers.redraw();
+      return this.render_measures();
     },
     render_measures: function(measures) {
       var feature, selected_items, _i, _len, _ref, _ref2;
@@ -253,31 +246,31 @@
       }
       return measures.redraw();
     },
-    rivers: function() {
-      var _this = this;
-      return $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
-        _this.Rivers = JSONRiverLayer('Rivers', json);
-        return _this.render_rivers(_this.Rivers);
-      });
-    },
     initialize: function() {
       var runDelayed,
         _this = this;
       this.static_url = $('#lizard-blockbox-graph').data('static-url');
       runDelayed = function() {
         _this.measures();
-        return _this.rivers();
+        return $.getJSON(_this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
+          _this.rivers = JSONRiverLayer('Rivers', json);
+          return _this.render();
+        });
       };
       return setTimeout(runDelayed, 500);
     },
     render: function() {
-      return this.render_rivers();
+      var json_url,
+        _this = this;
+      json_url = $('#blockbox-table').data('calculated-measures-url');
+      return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
+        setFlotSeries(data);
+        return _this.render_rivers(data);
+      });
     }
   });
 
   measuresMapView = new MeasuresMapView();
-
-  window.mMV = measuresMapView;
 
   showPopup = function(feature) {
     var href_text, popup;
@@ -425,17 +418,13 @@
     }).appendTo("body").fadeIn(200);
   };
 
-  setFlotSeries = function() {
-    var json_url;
-    json_url = $('#blockbox-table').data('calculated-measures-url');
-    return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
-      if (data.length > 0) {
-        window.min_graph_value = data[0].location;
-        window.max_graph_value = data[data.length - 1].location;
-        setMeasureResultsGraph(data);
-        return setMeasureSeries();
-      }
-    });
+  setFlotSeries = function(data) {
+    if (data.length > 0) {
+      window.min_graph_value = data[0].location;
+      window.max_graph_value = data[data.length - 1].location;
+      setMeasureResultsGraph(data);
+      return setMeasureSeries();
+    }
   };
 
   setMeasureSeries = function() {
@@ -753,8 +742,7 @@
       $('#measure_results_graph').empty();
       $('#measure_graph').empty();
       $('#measure_results_graph').css('width', '100%');
-      $('#measure_graph').css('width', '100%');
-      return setFlotSeries();
+      return $('#measure_graph').css('width', '100%');
     }, 300);
   };
 
@@ -813,7 +801,6 @@
   };
 
   $(document).ready(function() {
-    setFlotSeries();
     setup_map_legend();
     $("#blockbox-river .chzn-select").chosen().change(function() {
       selectRiver(this.value);
