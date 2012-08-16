@@ -432,9 +432,7 @@
     json_url = $('#blockbox-table').data('measure-list-url');
     cities_list_url = $('#blockbox-table').data('cities-list-url');
     return $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
-      return $.getJSON(cities_list_url + '?' + new Date().getTime(), function(cities) {
-        return setMeasureGraph(data, cities);
-      });
+      return setMeasureGraph(data.measures, data.cities);
     });
   };
 
