@@ -139,8 +139,32 @@
           <th>PDF</th>
         </tr>
       </thead>
+
       <tbody id="measures-table">
         {% for measure in view.measures %}
+
+        {% if forloop.counter|divisibleby:"7" %}
+          <tr>
+    	    <td><strong>Geselecteerd</strong></td>        
+            <td><strong>Naam</strong></td>
+            <td><strong>Code</strong></td>
+            <td><strong>Type</strong></td>
+            <td><strong>Km van</strong></td>
+            <td><strong>Km tot</strong></td>
+            <td><strong>Riviertak</strong></td>
+            <td><strong>Rivierdeel</strong></td>
+            <td><strong>MHW winst cm</strong></td>
+            <td><strong>MHW winst m2</strong></td>
+            <td><strong>Kosten investering</strong></td>
+            <td><strong>Baten</strong></td>
+            <td><strong>Kosten B&amp;O</strong></td>
+            <td><strong>Herinvestering</strong></td>
+            <td><strong>Schade</strong></td>
+            <td><strong>Kosten totaal</strong></td>
+            <td><strong>Ruimtelijke kwaliteit</strong></td>
+            <td><strong>PDF</strong></td>
+          </tr>
+        {% endif %}
           <tr>
 	    <td>
 	      {% if measure.selected %}
@@ -148,7 +172,7 @@
 		  {% else %}
 		  <span class="icon-remove"></span>Nee
 	      {% endif %}
-	    </td>
+	    </td>        
         <td style="cursor:pointer;">
           <a href="#"
              class="blockbox-toggle-measure"
