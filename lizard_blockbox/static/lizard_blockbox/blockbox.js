@@ -98,7 +98,7 @@
       success: function(data) {
         updateVertex();
         updateMeasuresList();
-        measuresMapView.render(true, false);
+        measuresMapView.render(true, false, true);
         return this;
       }
     });
@@ -112,7 +112,7 @@
         'vertex': vertex_id
       },
       success: function(data) {
-        measuresMapView.render(true, false);
+        measuresMapView.render(true, false, true);
         return this;
       }
     });
@@ -217,7 +217,6 @@
     },
     render_measures: function() {
       var feature, selected_items, _i, _len, _ref, _ref2;
-      console.log('render_measures');
       selected_items = this.selected_items();
       _ref = this.measures.features;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -245,7 +244,7 @@
         return _this;
       });
       $.getJSON(this.static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), function(json) {
-        _this.rivers = JSONRiverLayer('Rivers', json);
+        window.riverJSON = json;
         numResponses++;
         if (numResponses === 3) _this.render(true, true, false);
         return _this;
@@ -269,16 +268,22 @@
         $.getJSON(json_url + '?' + new Date().getTime(), function(data) {
           _this.calculated = data;
           setFlotSeries(data);
-          if (updateRivers) return _this.render_rivers(data['water_levels']);
+          if (updateRivers) {
+            _this.rivers.destroy();
+            _this.rivers = JSONRiverLayer('Rivers', data['water_levels']);
+          }
+          return $('#loadingModal').modal('hide');
         });
       } else {
         setFlotSeries(this.calculated);
-        if (updateRivers) this.render_rivers(this.calculated['water_levels']);
+        if (updateRivers) {
+          if (this.rivers) this.river.destroy();
+          this.rivers = JSONRiverLayer('Rivers', this.calculated['water_levels']);
+        }
       }
       if (updateMeasures) this.render_measures();
-      $('#loadingModal').hide();
-      $('#loadingModal').remove();
-      return $('.modal-backdrop').remove();
+      $('#loadingModal').modal('hide');
+      return this;
     }
   });
 
@@ -310,8 +315,8 @@
     return rule;
   };
 
-  JSONRiverLayer = function(name, json) {
-    var geojson_format, rules, styleMap, vector_layer;
+  JSONRiverLayer = function(name, water_levels) {
+    var feature, features, geojson_format, layer_data, num, rules, styleMap, target_difference, vector_layer, _i, _j, _len, _len2;
     rules = [
       new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Comparison({
@@ -353,7 +358,33 @@
       styleMap: styleMap
     });
     map.addLayer(vector_layer);
-    vector_layer.addFeatures(geojson_format.read(json));
+    features = (function() {
+      var _i, _len, _ref, _ref2, _results;
+      _ref = window.riverJSON['features'];
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        feature = _ref[_i];
+        if (_ref2 = feature['properties']['label'], __indexOf.call(window.riverProperties, _ref2) >= 0) {
+          _results.push(feature);
+        }
+      }
+      return _results;
+    })();
+    target_difference = {};
+    for (_i = 0, _len = water_levels.length; _i < _len; _i++) {
+      num = water_levels[_i];
+      target_difference[num.location_reach] = num.measures_level;
+    }
+    for (_j = 0, _len2 = features.length; _j < _len2; _j++) {
+      feature = features[_j];
+      feature['properties']['target_difference'] = target_difference[feature['properties']['label']];
+    }
+    layer_data = {
+      type: "FeatureCollection",
+      features: features
+    };
+    window.layer_data = layer_data;
+    vector_layer.addFeatures(geojson_format.read(layer_data));
     return vector_layer;
   };
 
@@ -459,6 +490,15 @@
       for (_i = 0, _len = json_data.length; _i < _len; _i++) {
         num = json_data[_i];
         _results.push([num.location, num.measures_level]);
+      }
+      return _results;
+    })();
+    window.riverProperties = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = json_data.length; _i < _len; _i++) {
+        num = json_data[_i];
+        _results.push(num.location_reach);
       }
       return _results;
     })();
@@ -787,7 +827,8 @@
     var wms;
     wms = new OpenLayers.Layer.WMS("5KM layer", "http://test-geoserver1.lizard.net/geoserver/deltaportaal/wms", {
       layers: "deltaportaal:5km_rivieren",
-      transparent: true
+      transparent: true,
+      tiled: true
     }, {
       opacity: 1
     });

@@ -87,7 +87,7 @@ selectRiver = (river_name) ->
         success: (data) ->
             updateVertex()
             updateMeasuresList()
-            measuresMapView.render(true, false)
+            measuresMapView.render(true, false, true)
             @
 
 selectVertex = (vertex_id) ->
@@ -97,7 +97,7 @@ selectVertex = (vertex_id) ->
         data:
             'vertex': vertex_id
         success: (data) ->
-            measuresMapView.render(true, false)
+            measuresMapView.render(true, false, true)
             @
 
 updateVertex = ->
@@ -151,7 +151,6 @@ MeasuresMapView = Backbone.View.extend
         @rivers.redraw()
 
     render_measures: ->
-        console.log('render_measures')
         selected_items = @selected_items()
         for feature in @measures.features
             if feature.attributes.code in selected_items
@@ -172,9 +171,7 @@ MeasuresMapView = Backbone.View.extend
             @
 
         $.getJSON @static_url + 'lizard_blockbox/kilometers.json' + '?' + new Date().getTime(), (json) =>
-            @rivers = JSONRiverLayer 'Rivers', json
-            # Dirty hack, the global 'map' variable doesn't exist early enough for IE.
-            # Delay in the hope that this is long enough for 'map' to exist.
+            window.riverJSON = json
             numResponses++
             if numResponses == 3
                 @render(true, true, false)
@@ -195,19 +192,22 @@ MeasuresMapView = Backbone.View.extend
                 @calculated = data
                 setFlotSeries(data)
                 if updateRivers
-                    @render_rivers(data['water_levels'])
+                    @rivers.destroy()
+                    @rivers = JSONRiverLayer('Rivers',data['water_levels'])
+                $('#loadingModal').modal('hide')
         else
             setFlotSeries(@calculated)
             if updateRivers
-                @render_rivers(@calculated['water_levels'])
+                if @rivers
+                    @river.destroy()
+                @rivers = JSONRiverLayer('Rivers', @calculated['water_levels'])
         if updateMeasures
             @render_measures()
-        $('#loadingModal').hide()
-        $('#loadingModal').remove()
-        $('.modal-backdrop').remove()
+        $('#loadingModal').modal('hide')
+        @
 
 
-measuresMapView = new MeasuresMapView()
+ssssmeasuresMapView = new MeasuresMapView()
 
 #######################################################
 # Popup                                               #
@@ -250,7 +250,7 @@ RiverLayerRule = (from, to, color) ->
     )
     rule
 
-JSONRiverLayer = (name, json) ->
+JSONRiverLayer = (name, water_levels) ->
     rules = [
         new OpenLayers.Rule
             filter: new OpenLayers.Filter.Comparison
@@ -300,7 +300,24 @@ JSONRiverLayer = (name, json) ->
         styleMap: styleMap
     )
     map.addLayer(vector_layer)
-    vector_layer.addFeatures(geojson_format.read(json))
+
+    # Get the correct JSON
+    features = (feature for feature in window.riverJSON['features'] when feature['properties']['label'] in window.riverProperties)
+
+    target_difference = {}
+    for num in water_levels
+        target_difference[num.location_reach] = num.measures_level
+
+    for feature in features
+        feature['properties']['target_difference'] = target_difference[feature['properties']['label']]
+
+    layer_data =
+        type: "FeatureCollection"
+        features: features
+
+    window.layer_data = layer_data
+
+    vector_layer.addFeatures(geojson_format.read(layer_data))
     vector_layer
 
 
@@ -395,6 +412,7 @@ setMeasureResultsGraph = (json_data) ->
     vertex = ([num.location, num.vertex_level] for num in json_data)
     reference = [[window.min_graph_value, 0], [window.max_graph_value, 0]]
     measures = ([num.location, num.measures_level] for num in json_data)
+    window.riverProperties = (num.location_reach for num in json_data)
     window.vertex = vertex
     window.measures = measures
     selected_river = $("#blockbox-river .chzn-select")[0].value
@@ -678,6 +696,7 @@ km_line_layer = ->
     wms = new OpenLayers.Layer.WMS("5KM layer", "http://test-geoserver1.lizard.net/geoserver/deltaportaal/wms"
         layers: "deltaportaal:5km_rivieren"
         transparent: true,
+        tiled: true,
     ,
         opacity: 1
     )
