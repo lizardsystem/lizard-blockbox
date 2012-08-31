@@ -1,18 +1,15 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
-import csv
-import logging
-import operator
-import os
-import StringIO
-import urllib
-import urlparse
-
 from cgi import escape
 from collections import defaultdict
 from datetime import datetime
 from hashlib import md5
-
-from xhtml2pdf import pisa
+import StringIO
+import csv
+import logging
+import operator
+import os
+import urllib
+import urlparse
 
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
@@ -26,13 +23,12 @@ from django.template.loader import get_template
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
-
-
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
 from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
+from xhtml2pdf import pisa
 
 from lizard_blockbox import models
 from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
