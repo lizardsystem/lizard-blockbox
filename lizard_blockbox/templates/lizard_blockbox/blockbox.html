@@ -103,11 +103,11 @@
     </p>
 	<h3>Downloads</h3>
     <p class="muted">
-      Genereer een <a href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
+      Genereer een <a class="force-popup" href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
         met de geselecteerde maatregelen.
     </p>
     <p>
-        <a href="{% url lizard_blockbox.generate_report %}"><img src="{{ STATIC_URL }}lizard_blockbox/pdf_icon.png"/></a>
+        <a class="force-popup" href="{% url lizard_blockbox.generate_report %}"><img src="{{ STATIC_URL }}lizard_blockbox/pdf_icon.png"/></a>
         <a href="{% url lizard_blockbox.generate_csv %}"><img src="{{ STATIC_URL }}lizard_blockbox/csv_icon.png"/></a>
     </p>
 {% endblock %}
