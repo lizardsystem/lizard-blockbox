@@ -704,6 +704,11 @@ km_line_layer = ->
     `undefined`
 
 $(document).ready ->
+
+    $(".force-popup").click (e) ->
+      e.preventDefault()
+      window.open(e.currentTarget.href)
+    
     setup_map_legend()
     $("#blockbox-river .chzn-select").chosen().change(
         () ->
