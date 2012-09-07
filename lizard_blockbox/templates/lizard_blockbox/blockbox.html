@@ -144,7 +144,9 @@
         {% for measure in view.measures %}
 
         {% if forloop.counter|divisibleby:"7" %}
-          <tr>
+        </tbody>
+        <tbody class="tablesorter-infoOnly">
+          <tr class="repeating-header">
     	    <td><strong>Geselecteerd</strong></td>        
             <td><strong>Naam</strong></td>
             <td><strong>Code</strong></td>
@@ -164,6 +166,8 @@
             <td><strong>Ruimtelijke kwaliteit</strong></td>
             <td><strong>PDF</strong></td>
           </tr>
+        </tbody>
+        <tbody id="measures-table">  
         {% endif %}
           <tr>
 	    <td>
