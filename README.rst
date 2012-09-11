@@ -45,3 +45,11 @@ Technologies used
  - OpenLayers, jQuery, Flot (for the graph)
  - FxCanvas for making Flot perform reasonably (instead of excanvas)
  - X-Accel for serving factsheets
+
+
+Issues
+------
+
+Issues for the Blockbox specifically are gathered at Github and are managed through Huboard:
+
+http://huboard.com/lizardsystem/lizard-blockbox/board
