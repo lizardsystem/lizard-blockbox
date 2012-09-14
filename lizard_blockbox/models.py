@@ -61,6 +61,11 @@ class SubsetReach(models.Model):
     km_from = models.IntegerField()
     km_to = models.IntegerField()
 
+    def __unicode__(self):
+        return 'Subset reach {reach} of {named}'.format(
+            reach=self.reach.slug,
+            named=self.named_reach.name)
+
 
 class CityLocation(models.Model):
     """River City locations."""
