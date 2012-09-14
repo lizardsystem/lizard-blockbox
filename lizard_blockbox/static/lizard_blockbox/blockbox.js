@@ -320,7 +320,6 @@
     }).done(function(data) {
       var short_url;
       short_url = $(data).find('#special_url')[0].href;
-      console.log("short_url:", short_url);
       $('#shorturl').val(short_url);
       return $('#shorturl').select();
     });

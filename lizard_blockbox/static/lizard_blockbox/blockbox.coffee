@@ -240,7 +240,6 @@ $('a#generate_shorturl_button').click ->
       url: "/blokkendoos/geselecteerd"
     ).done (data) ->
       short_url = $(data).find('#special_url')[0].href
-      console.log "short_url:", short_url
       $('#shorturl').val(short_url)
       $('#shorturl').select()
 
