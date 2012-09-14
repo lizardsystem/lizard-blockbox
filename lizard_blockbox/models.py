@@ -36,7 +36,7 @@ class RiverSegment(gis_models.Model):
     objects = gis_models.GeoManager()
 
     def __unicode__(self):
-        return '%i' % self.location
+        return '%i (%s)' % (self.location, self.reach)
 
 
 class NamedReach(models.Model):
@@ -186,6 +186,10 @@ class WaterLevelDifference(models.Model):
     reference_value = models.ForeignKey(ReferenceValue)
     level_difference = models.FloatField()
 
+    def reference(self):
+        # For the admin.
+        return self.reference_value.reference
+
 
 class Vertex(models.Model):
     """Vertex
@@ -197,6 +201,14 @@ class Vertex(models.Model):
     name = models.CharField(max_length=100)
     named_reaches = models.ManyToManyField(
         NamedReach, null=True, blank=True)
+
+    def named_reaches_string(self):
+        # For the admin.
+        return ', '.join(
+            self.named_reaches.all().values_list('name', flat=True))
+
+    def __unicode__(self):
+        return self.name
 
 
 class VertexValue(models.Model):
