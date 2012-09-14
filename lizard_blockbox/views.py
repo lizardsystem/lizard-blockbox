@@ -208,11 +208,12 @@ class BlockboxView(MapView):
         result = []
         # print models.Measure._meta.fields
         for name, measures in reaches.items():
+            measures.sort(key=lambda x: x.km_from)
             reach = {'name': name,
                      'amount': len(measures),
                      'measures': measures}
             result.append(reach)
-        result.sort(key=lambda x: x['amount'], reverse=True)
+        result.sort(key=lambda x: x['name'])
         return result
 
     def investment_costs(self):
