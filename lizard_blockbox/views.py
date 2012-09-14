@@ -528,11 +528,11 @@ def select_vertex(request):
 
 def _selected_vertex(request):
     """Return the selected vertex."""
-
     if not 'vertex' in request.session:
         selected_river = _selected_river(request)
-        vertex = models.Vertex.objects.filter(
-            named_reaches__name=selected_river).order_by('name')[0]
+        available_vertices = models.Vertex.objects.filter(
+            named_reaches__name=selected_river).order_by('header', 'name')
+        vertex = available_vertices[0]
         request.session['vertex'] = vertex.id
         return vertex
     return models.Vertex.objects.get(id=request.session['vertex'])
