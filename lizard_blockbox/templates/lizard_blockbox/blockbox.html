@@ -71,11 +71,12 @@
     <p class="muted">
 	  <a href='#' id="blockbox-deselect-all-measures"
 		 data-deselect-url="{% url lizard_blockbox.bookmarked_measures '' %}">
-		Deselecteer alle maatregelen</a>
+		Deselecteer alle maatregelen!</a>
 	</p>
 	<p class="muted">
       Klik op een maatregel om hem te deselecteren.
     </p>
+
     <ul id="selected-measures-list" class="without-bullets">
       <p>
         Totale investeringskosten: {{ view.investment_costs }} mln
@@ -125,8 +126,7 @@
 
   <div id="blockbox-table"
        data-measure-toggle-url="{% url lizard_blockbox_toggle_measure %}"
-       data-calculated-measures-url="{% url calculated_measures_json %}"
-    <h2>Alle maatregelen</h2>
+       data-calculated-measures-url="{% url calculated_measures_json %}">
     <table id="measures-table-top"
 	   class="table table-striped table-bordered">
       <thead>
