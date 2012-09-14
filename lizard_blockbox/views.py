@@ -23,6 +23,7 @@ from django.template.loader import get_template
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
+from django.views.generic.base import RedirectView
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
@@ -389,27 +390,16 @@ class SelectedMeasuresView(UiView):
         return result
 
 
-class BookmarkedMeasuresView(SelectedMeasuresView):
+class BookmarkedMeasuresView(RedirectView):
     """Show info on the measures as selected by the URL."""
-    to_bookmark_url = None
+    permanent = False
 
-    @property
-    def page_title(self):
-        return "Bewaarde blokkendoos maatregelen (%s stuks)" % (
-            len(self.selected_names()))
-
-    def selected_names(self):
-        """Return and set selected measures from URL info.
-
-        The last part of the url, extracted as 'selected', is a
-        comma-separated string with shortnames.
-
-        """
+    def get_redirect_url(self, **kwargs):
         semicolon_separated = self.kwargs['selected']
         short_names = set(semicolon_separated.split(';'))
         # put them on the session
         self.request.session[SELECTED_MEASURES_KEY] = short_names
-        return short_names
+        return reverse('lizard_blockbox.home')
 
 
 @permission_required(VIEW_PERM)
