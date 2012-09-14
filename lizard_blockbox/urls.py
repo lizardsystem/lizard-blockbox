@@ -28,10 +28,10 @@ urlpatterns = patterns(
     url(r'^geselecteerd/(?P<selected>[^/]*)/$',
         BookmarkedMeasuresView.as_view(),
         name='lizard_blockbox.bookmarked_measures'),
-    url(r'^table/$',
-        BlockboxView.as_view(
-            template_name='lizard_blockbox/blockbox-table.html'),
-        name='lizard_blockbox_table'),
+    # url(r'^table/$',
+    #     BlockboxView.as_view(
+    #         template_name='lizard_blockbox/blockbox-table.html'),
+    #     name='lizard_blockbox_table'),
     url(r'^toggle_measure/$',
         'lizard_blockbox.views.toggle_measure',
         name='lizard_blockbox_toggle_measure'),

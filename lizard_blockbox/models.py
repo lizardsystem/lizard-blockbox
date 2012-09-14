@@ -36,7 +36,7 @@ class RiverSegment(gis_models.Model):
     objects = gis_models.GeoManager()
 
     def __unicode__(self):
-        return '%i' % self.location
+        return '%i (%s)' % (self.location, self.reach)
 
 
 class NamedReach(models.Model):
@@ -60,6 +60,11 @@ class SubsetReach(models.Model):
     named_reach = models.ForeignKey(NamedReach)
     km_from = models.IntegerField()
     km_to = models.IntegerField()
+
+    def __unicode__(self):
+        return 'Subset reach {reach} of {named}'.format(
+            reach=self.reach.slug,
+            named=self.named_reach.name)
 
 
 class CityLocation(models.Model):
@@ -166,15 +171,11 @@ class ReferenceValue(models.Model):
     riversegment = models.ForeignKey(RiverSegment)
     reference = models.FloatField()
 
-    def __unicode__(self):
-        return '%s Reference: %s' % (
-            self.riversegment, self.flooding_chance)
-
 
 class WaterLevelDifference(models.Model):
     """Water Level Difference
 
-    per Riversegmentand Measure.
+    per Riversegment and Measure.
 
     Dutch: *peilverschil*.
 
@@ -183,13 +184,11 @@ class WaterLevelDifference(models.Model):
     riversegment = models.ForeignKey(RiverSegment)
     measure = models.ForeignKey(Measure)
     reference_value = models.ForeignKey(ReferenceValue)
-
     level_difference = models.FloatField()
 
-    def __unicode__(self):
-        return '%s %s Reference: %s Difference: %s' % (
-            self.riversegment, self.measure, self.flooding_chance,
-            self.level_difference)
+    def reference(self):
+        # For the admin.
+        return self.reference_value.reference
 
 
 class Vertex(models.Model):
@@ -202,6 +201,14 @@ class Vertex(models.Model):
     name = models.CharField(max_length=100)
     named_reaches = models.ManyToManyField(
         NamedReach, null=True, blank=True)
+
+    def named_reaches_string(self):
+        # For the admin.
+        return ', '.join(
+            self.named_reaches.all().values_list('name', flat=True))
+
+    def __unicode__(self):
+        return self.name
 
 
 class VertexValue(models.Model):
