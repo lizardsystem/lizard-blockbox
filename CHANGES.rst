@@ -41,6 +41,8 @@ Changelog of lizard-blockbox
 
 - Added modal popup to say the site is loading (which is long in IE).
 
+- Removed scroll bars from map in pdf export.
+
 
 0.1 (2012-06-01)
 ----------------
