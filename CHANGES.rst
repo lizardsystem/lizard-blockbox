@@ -43,6 +43,8 @@ Changelog of lizard-blockbox
 
 - Removed scroll bars from map in pdf export.
 
+- Consistent sorting of selected measures in left sidebar.
+
 
 0.1 (2012-06-01)
 ----------------
