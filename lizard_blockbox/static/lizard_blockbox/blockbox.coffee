@@ -207,7 +207,7 @@ MeasuresMapView = Backbone.View.extend
         @
 
 
-ssssmeasuresMapView = new MeasuresMapView()
+measuresMapView = new MeasuresMapView()
 
 #######################################################
 # Popup                                               #
@@ -229,6 +229,30 @@ showPopup = (feature) ->
     )
     feature.popup = popup
     map.addPopup popup
+
+
+#######################################################
+# Short URL handling                                  #
+#######################################################
+
+$('a#generate_shorturl_button').click ->
+    $.ajax(
+      url: "/blokkendoos/geselecteerd"
+    ).done (data) ->
+      short_url = $(data).find('#special_url')[0].href
+      console.log "short_url:", short_url
+      $('#shorturl').val(short_url)
+      $('#shorturl').select()
+
+
+
+
+      
+
+
+    
+
+
 
 
 #######################################################
@@ -666,6 +690,7 @@ $('.btn.collapse-rightbar').click ->
 doit = undefined
 $(window).resize ->
     resize_graphs()
+    clip.reposition()
 
 window.resize_graphs = resize_graphs
 

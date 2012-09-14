@@ -67,6 +67,17 @@
     </form>
 
 
+    <h3>Bookmark</h3>
+    <p class="muted"/>
+    Gebruik deze URL om de huidige set maatregelen te kopieren.
+    </p>
+    <a class="btn" id="generate_shorturl_button" href="#"><i class="icon-share"></i></a>
+    <input name="shorturl" type="text" id="shorturl" style="margin-top:10px;width:200px;" />
+    
+
+    
+
+
     <h3>Geselecteerde maatregelen</h3>
     <p class="muted">
 	  <a href='#' id="blockbox-deselect-all-measures"
@@ -96,12 +107,12 @@
         {% endfor %}
       {% endfor %}
     </ul>
-	<h3>Overzichts Pagina</h3>
+	<!-- <h3>Overzichts Pagina</h3>
     <p class="muted">
       Ga naar de <a href="{% url lizard_blockbox.selected_measures %}">
         overzichtspagina over de geselecteerde maatregelen
       </a> voor meer informatie. Hier kunt u de gekozen set ook bewaren.
-    </p>
+    </p> -->
 	<h3>Downloads</h3>
     <p class="muted">
       Genereer een <a class="force-popup" href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
