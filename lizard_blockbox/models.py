@@ -171,15 +171,11 @@ class ReferenceValue(models.Model):
     riversegment = models.ForeignKey(RiverSegment)
     reference = models.FloatField()
 
-    def __unicode__(self):
-        return '%s Reference: %s' % (
-            self.riversegment, self.flooding_chance)
-
 
 class WaterLevelDifference(models.Model):
     """Water Level Difference
 
-    per Riversegmentand Measure.
+    per Riversegment and Measure.
 
     Dutch: *peilverschil*.
 
@@ -188,13 +184,7 @@ class WaterLevelDifference(models.Model):
     riversegment = models.ForeignKey(RiverSegment)
     measure = models.ForeignKey(Measure)
     reference_value = models.ForeignKey(ReferenceValue)
-
     level_difference = models.FloatField()
-
-    def __unicode__(self):
-        return '%s %s Reference: %s Difference: %s' % (
-            self.riversegment, self.measure, self.flooding_chance,
-            self.level_difference)
 
 
 class Vertex(models.Model):
