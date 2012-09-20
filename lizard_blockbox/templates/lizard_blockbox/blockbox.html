@@ -73,9 +73,9 @@
     </p>
     <a class="btn has_popover" data-content="Klik hier om de bookmark URL te genereren. Deze kunt u vervolgens knippen-en-plakken in bijvoorbeeld een e-mail, of u kunt de pagina in uw browser-favorieten zetten." data-original-title="Bookmark" id="generate_shorturl_button" href="#"><i class="icon-share"></i></a>
     <input name="shorturl" type="text" id="shorturl" style="margin-top:10px;width:200px;" />
-    
 
-    
+
+
 
 
     <h3>Geselecteerde maatregelen</h3>
@@ -151,14 +151,14 @@
         </tr>
       </thead>
 
-      <tbody id="measures-table">
+      <tbody>
         {% for measure in view.measures %}
 
         {% if forloop.counter|divisibleby:"7" %}
         </tbody>
         <tbody class="tablesorter-infoOnly">
           <tr class="repeating-header">
-    	    <td><strong>Geselecteerd</strong></td>        
+    	    <td><strong>Geselecteerd</strong></td>
             <td><strong>Naam</strong></td>
             <td><strong>Code</strong></td>
             <td><strong>Type</strong></td>
@@ -178,7 +178,7 @@
             <td><strong>PDF</strong></td>
           </tr>
         </tbody>
-        <tbody id="measures-table">  
+        <tbody>
         {% endif %}
           <tr>
 	    <td>
@@ -187,7 +187,7 @@
 		  {% else %}
 		  <span class="icon-remove"></span>Nee
 	      {% endif %}
-	    </td>        
+	    </td>
         <td style="cursor:pointer;">
           <a href="#"
              class="blockbox-toggle-measure"
@@ -231,4 +231,3 @@
 {% block orthogonal-actions %}
   {% include "lizard_blockbox/scenario-actions.html" %}
 {% endblock orthogonal-actions %}
-
