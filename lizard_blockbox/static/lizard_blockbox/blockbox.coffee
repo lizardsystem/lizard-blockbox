@@ -71,11 +71,9 @@ updateMeasuresList = () ->
     $holder.load '. #page', () ->
         $("#selected-measures-list").html($('#selected-measures-list', $holder).html())
         measuresMapView.render(true, true, true)
-        $("#measures-table").html $('#measures-table', $holder).html()
+        $("#measures-table-top").html $('#measures-table-top', $holder).html()
         sort = $("#measures-table-top").get(0).config.sortList
-        # trigger update for sortable table header.
-        $("#measures-table-top").trigger "update"
-        $("#measures-table-top").trigger "sorton", [sort]
+        $('#measures-table-top').tablesorter()
 
 
 selectRiver = (river_name) ->
@@ -246,10 +244,10 @@ $('a#generate_shorturl_button').click ->
 
 
 
-      
 
 
-    
+
+
 
 
 
@@ -732,7 +730,7 @@ $(document).ready ->
     $(".force-popup").click (e) ->
       e.preventDefault()
       window.open(e.currentTarget.href)
-    
+
     setup_map_legend()
     $("#blockbox-river .chzn-select").chosen().change(
         () ->
