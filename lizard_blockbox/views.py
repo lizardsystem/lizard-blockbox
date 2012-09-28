@@ -17,7 +17,7 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
 from django.utils import simplejson as json
@@ -67,10 +67,16 @@ def generate_report(request, template='lizard_blockbox/report.html'):
         short_name__in=_selected_measures(request))
     #measures_header = [key for key in measures[0].itervalues()
     #                   if key != 'Riviertak']
+
+    if len(measures) == 0:
+        return HttpResponseRedirect("/blokkendoos")
+
+
     measures_header = [field['label'] for field in measures[0].pretty()
                        if field['label'] != 'Riviertak']
     total_cost = 0.0
     reaches = defaultdict(list)
+    
     for measure in measures:
         # total_cost = total_cost + measure.total_costs()
         if measure.total_costs:

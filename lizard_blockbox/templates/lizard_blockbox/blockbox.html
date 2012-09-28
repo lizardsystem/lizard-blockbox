@@ -91,10 +91,10 @@
       Klik op een maatregel om hem te deselecteren.
     </p>
 
+    <p>
+      Totale investeringskosten: {{ view.investment_costs }} mln
+    </p>
     <ul id="selected-measures-list" class="without-bullets">
-      <p>
-        Totale investeringskosten: {{ view.investment_costs }} mln
-      </p>
       {% for reach in view.measures_per_reach %}
         <h4>{{ reach.name }}</h4>
         {% for measure in reach.measures %}
