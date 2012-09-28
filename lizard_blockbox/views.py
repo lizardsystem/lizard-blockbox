@@ -109,17 +109,14 @@ def generate_report(request, template='lizard_blockbox/report.html'):
         domain = settings.BLOCKBOX_DOMAIN_PREFIX + domain
     graph_map_url = urlparse.urlunparse(('http', domain, path, '',
                                          querystring, ''))
-    qs = urllib.urlencode({'url': graph_map_url,
-                           'width': 1024,
-                           'height': 900})
-    domain = 'screenshotter.lizard.net'
-    path = '/s/'
-    image_url = urlparse.urlunparse(('http', domain, path, '', qs, ''))
-
+    
+    
+    image_url = str('http://screenshotter.lizard.net/s/1024x768/') + str(graph_map_url)
+    print "DEBUGGING: -------> ", str(urllib.unquote(image_url))
     return render_to_pdf(
         'lizard_blockbox/report.html',
         {'date': datetime.now(),
-         'image_url': image_url,
+         'image_url': urllib.unquote(image_url),
          'pagesize': 'A4',
          'reaches': result,
          'measures_header': measures_header,
@@ -309,6 +306,10 @@ class PlainGraphMapView(BlockboxView):
 
     def get_context_data(self, **kwargs):
         # Parse QueryString
+
+        print "------------------>"
+        print self.request.GET
+
         session = self.request.session
         measures = set(self.request.GET.get('measures').split(';'))
         session[SELECTED_MEASURES_KEY] = measures
