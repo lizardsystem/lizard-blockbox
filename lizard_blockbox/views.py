@@ -17,7 +17,7 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse
 from django.template import Context
 from django.template.loader import get_template
 from django.utils import simplejson as json
@@ -104,9 +104,9 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     graph_map_url = urlparse.urlunparse(('http', domain, path, '',
                                          querystring, ''))
 
+    image_url = str('http://screenshotter.lizard.net/s/1024x768/') + \
+        str(graph_map_url)
 
-    image_url = str('http://screenshotter.lizard.net/s/1024x768/') + str(graph_map_url)
-    print "DEBUGGING: -------> ", str(urllib.unquote(image_url))
     return render_to_pdf(
         'lizard_blockbox/report.html',
         {'date': datetime.now(),
