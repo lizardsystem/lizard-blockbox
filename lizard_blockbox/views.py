@@ -66,8 +66,10 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     measures = models.Measure.objects.filter(
         short_name__in=_selected_measures(request))
 
-    measures_header = [field['label'] for field in measures[0].pretty()
-                       if field['label'] != 'Riviertak']
+    measures_header = []
+    if measures.count() != 0:
+        measures_header = [field['label'] for field in measures[0].pretty()
+                           if field['label'] != 'Riviertak']
     total_cost = 0.0
     reaches = defaultdict(list)
 
@@ -101,6 +103,7 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     domain = Site.objects.get_current().domain
     if hasattr(settings, 'BLOCKBOX_DOMAIN_PREFIX'):
         domain = settings.BLOCKBOX_DOMAIN_PREFIX + domain
+
     graph_map_url = urlparse.urlunparse(('http', domain, path, '',
                                          querystring, ''))
 
