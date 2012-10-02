@@ -106,15 +106,9 @@ def generate_report(request, template='lizard_blockbox/report.html'):
 
     graph_map_url = urlparse.urlunparse(('http', domain, path, '',
                                          querystring, ''))
-<<<<<<< HEAD
-    
-    
-    image_url = str('http://screenshotter.lizard.net/s/1024x768/') + str(graph_map_url)
-=======
 
     image_url = str('http://screenshotter.lizard.net/s/1024x768/') + \
         str(graph_map_url)
->>>>>>> 3546b99764aa1218c72cf28967eab67f771fdbc6
 
     return render_to_pdf(
         'lizard_blockbox/report.html',
