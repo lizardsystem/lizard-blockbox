@@ -24,9 +24,20 @@ class Reach(models.Model):
         verbose_name_plural = _('reaches')
 
 
+class Trajectory(models.Model):
+    """A trajectory reach name."""
+
+    name = models.TextField(blank=False,
+                            help_text=u"The name of the trajectory.")
+    reach = models.ManyToManyField(Reach, null=True, blank=True)
+
+    def __unicode__(self):
+        return u'%s' % self.name
+
+
 class RiverSegment(gis_models.Model):
     """
-    A RiverSegement
+    A RiverSegement.
 
     """
 

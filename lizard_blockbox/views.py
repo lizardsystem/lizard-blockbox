@@ -78,7 +78,13 @@ def generate_report(request, template='lizard_blockbox/report.html'):
         if measure.total_costs:
             total_cost += measure.total_costs
         if measure.reach:
-            reach_name = measure.reach.slug
+            try:
+                trajectory = measure.reach.trajectory_set.get()
+            except measure.reach.DoesNotExist, \
+                    measure.reach.MultipleObjectsReturned:
+                reach_name = measure.reach.slug
+            else:
+                reach_name = trajectory.name
         else:
             reach_name = 'unknown'
         measure_p = [i for i in measure.pretty() if i['label'] != 'Riviertak']
@@ -202,7 +208,13 @@ class BlockboxView(MapView):
 
         for measure in measures:
             if measure.reach:
-                reach_name = measure.reach.slug
+                try:
+                    trajectory = measure.reach.trajectory_set.get()
+                except measure.reach.DoesNotExist, \
+                        measure.reach.MultipleObjectsReturned:
+                    reach_name = measure.reach.slug
+                else:
+                    reach_name = trajectory.name
             else:
                 reach_name = 'unknown'
             reaches[reach_name].append(measure)

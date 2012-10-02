@@ -10,7 +10,7 @@ from lizard_blockbox import models
 
 class Command(BaseCommand):
     args = '<excelfile excelfile ...>'
-    help = ("Imports the trajectory classifications excelfile, "
+    help = ("Imports the trajectory excelfile, "
             "To flush use the management command: import_measure_xls --flush")
 
     def handle(self, *args, **options):
@@ -27,13 +27,11 @@ class Command(BaseCommand):
     @transaction.commit_on_success
     def parse_sheet(self, sheet):
         for row_nr in xrange(1, sheet.nrows):
-            name, reach_slug, km_from, km_to = sheet.row_values(row_nr)
-            km_from, km_to = int(km_from), int(km_to)
-            reach, _ = models.Reach.objects.get_or_create(slug=reach_slug)
-            named_reach, _ = models.NamedReach.objects.get_or_create(name=name)
+            name, reach_slugs, _ = sheet.row_values(row_nr)
+            reaches = reach_slugs.split(', ')
 
-            models.SubsetReach.objects.get_or_create(
-                reach=reach,
-                named_reach=named_reach,
-                km_from=km_from,
-                km_to=km_to)
+            tr, _ = models.Trajectory.objects.get_or_create(name=name)
+            for reach_name in reaches:
+                reach = models.Reach.objects.get(slug=reach_name.strip())
+                tr.reach.add(reach)
+                tr.save()
