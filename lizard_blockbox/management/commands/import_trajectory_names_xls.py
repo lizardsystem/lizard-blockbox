@@ -27,7 +27,7 @@ class Command(BaseCommand):
     @transaction.commit_on_success
     def parse_sheet(self, sheet):
         for row_nr in xrange(1, sheet.nrows):
-            name, reach_slugs, _ = sheet.row_values(row_nr)
+            _, reach_slugs, name = sheet.row_values(row_nr)
             reaches = reach_slugs.split(', ')
 
             tr, _ = models.Trajectory.objects.get_or_create(name=name)
