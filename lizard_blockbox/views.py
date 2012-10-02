@@ -17,7 +17,7 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse
 from django.template import Context
 from django.template.loader import get_template
 from django.utils import simplejson as json
@@ -65,18 +65,14 @@ def generate_report(request, template='lizard_blockbox/report.html'):
 
     measures = models.Measure.objects.filter(
         short_name__in=_selected_measures(request))
-    #measures_header = [key for key in measures[0].itervalues()
-    #                   if key != 'Riviertak']
 
-    if len(measures) == 0:
-        return HttpResponseRedirect("/blokkendoos")
-
-
-    measures_header = [field['label'] for field in measures[0].pretty()
-                       if field['label'] != 'Riviertak']
+    measures_header = []
+    if measures.count() != 0:
+        measures_header = [field['label'] for field in measures[0].pretty()
+                           if field['label'] != 'Riviertak']
     total_cost = 0.0
     reaches = defaultdict(list)
-    
+
     for measure in measures:
         # total_cost = total_cost + measure.total_costs()
         if measure.total_costs:
@@ -107,11 +103,18 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     domain = Site.objects.get_current().domain
     if hasattr(settings, 'BLOCKBOX_DOMAIN_PREFIX'):
         domain = settings.BLOCKBOX_DOMAIN_PREFIX + domain
+
     graph_map_url = urlparse.urlunparse(('http', domain, path, '',
                                          querystring, ''))
+<<<<<<< HEAD
     
     
     image_url = str('http://screenshotter.lizard.net/s/1024x768/') + str(graph_map_url)
+=======
+
+    image_url = str('http://screenshotter.lizard.net/s/1024x768/') + \
+        str(graph_map_url)
+>>>>>>> 3546b99764aa1218c72cf28967eab67f771fdbc6
 
     return render_to_pdf(
         'lizard_blockbox/report.html',

@@ -727,13 +727,6 @@ km_line_layer = ->
 
 $(document).ready ->
 
-    $(".force-popup").click (e) ->
-        e.preventDefault()
-        if $('#selected-measures-list li').length is 0
-            alert "Selecteer eerst één of meerdere maatregelen a.u.b."
-        else
-            window.open(e.currentTarget.href)
-
     setup_map_legend()
     $("#blockbox-river .chzn-select").chosen().change(
         () ->
