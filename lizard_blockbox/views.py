@@ -112,7 +112,7 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     
     
     image_url = str('http://screenshotter.lizard.net/s/1024x768/') + str(graph_map_url)
-    print "DEBUGGING: -------> ", str(urllib.unquote(image_url))
+
     return render_to_pdf(
         'lizard_blockbox/report.html',
         {'date': datetime.now(),
@@ -306,9 +306,6 @@ class PlainGraphMapView(BlockboxView):
 
     def get_context_data(self, **kwargs):
         # Parse QueryString
-
-        print "------------------>"
-        print self.request.GET
 
         session = self.request.session
         measures = set(self.request.GET.get('measures').split(';'))
