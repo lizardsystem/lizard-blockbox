@@ -157,7 +157,18 @@ def generate_csv(request):
     fieldnames = [_('reach'), _('reach kilometer'),
                   _('remaining water level rise in m')]
     writer.writerow(fieldnames)
-    water_levels = _water_levels(request)
+
+    # Get the segments in the trajectory in with the selected river is.
+    river = _selected_river(request)
+    # Just get the first reach since reaches can only be in one trajectory.
+    reach = models.NamedReach.objects.get(name=river
+                                          ).subsetreach_set.all()[0].reach
+    reaches = reach.trajectory_set.get().reach.all()
+    segments = models.RiverSegment.objects.filter(reach__in=reaches)
+
+    water_levels = (_segment_level(segment, measures, selected_vertex)
+                    for segment in segments)
+
     for water_level in water_levels:
         writer.writerow([water_level['location_segment'],
                          water_level['location'],
@@ -450,6 +461,25 @@ def _available_factsheets():
     return factsheets
 
 
+def _segment_level(segment, measures, selected_vertex):
+    measures_level = segment.waterleveldifference_set.filter(
+        measure__in=measures).aggregate(
+        ld=Sum('level_difference'))['ld'] or 0
+    try:
+        vertex_level = models.VertexValue.objects.get(
+            vertex=selected_vertex, riversegment=segment).value
+    except models.VertexValue.DoesNotExist:
+        return
+
+    return {'vertex_level': vertex_level,
+            'measures_level': vertex_level + measures_level,
+            'location': segment.location,
+            'location_reach': '%i_%s' % (segment.location,
+                                         segment.reach.slug),
+            'location_segment': segment.reach.slug,
+            }
+
+
 def _water_levels(request):
     selected_river = _selected_river(request)
     selected_measures = _selected_measures(request)
@@ -463,28 +493,9 @@ def _water_levels(request):
 
         measures = models.Measure.objects.filter(
             short_name__in=selected_measures)
-
         riversegments = namedreach2riversegments(selected_river)
-
-        water_levels = []
-        for segment in riversegments:
-            measures_level = segment.waterleveldifference_set.filter(
-                measure__in=measures).aggregate(
-                ld=Sum('level_difference'))['ld'] or 0
-            try:
-                vertex_level = models.VertexValue.objects.get(
-                    vertex=selected_vertex, riversegment=segment).value
-            except models.VertexValue.DoesNotExist:
-                continue
-
-            d = {'vertex_level': vertex_level,
-                 'measures_level': vertex_level + measures_level,
-                 'location': segment.location,
-                 'location_reach': '%i_%s' % (segment.location,
-                                              segment.reach.slug),
-                 'location_segment': segment.reach.slug,
-                 }
-            water_levels.append(d)
+        water_levels = [_segment_level(segment, measures, selected_vertex)
+                        for segment in riversegments]
         cache.set(cache_key, water_levels, 5 * 60)
     return water_levels
 
