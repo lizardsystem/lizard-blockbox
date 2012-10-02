@@ -316,9 +316,6 @@ class PlainGraphMapView(BlockboxView):
     def get_context_data(self, **kwargs):
         # Parse QueryString
 
-        print "------------------>"
-        print self.request.GET
-
         session = self.request.session
         measures = set(self.request.GET.get('measures').split(';'))
         session[SELECTED_MEASURES_KEY] = measures
