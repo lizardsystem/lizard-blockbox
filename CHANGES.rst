@@ -5,6 +5,10 @@ Changelog of lizard-blockbox
 0.2 (unreleased)
 ----------------
 
+- Removed the sub-headers in the measure table, they don't work well with
+  sorting. Instead there's a footer at the bottom now; this is sufficient for
+  most tables. Otherwise it takes two days of work.
+
 - Added CSV export.
 
 - Fixed dimensions of the measures table.
