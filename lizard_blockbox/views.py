@@ -80,8 +80,7 @@ def generate_report(request, template='lizard_blockbox/report.html'):
         if measure.reach:
             try:
                 trajectory = measure.reach.trajectory_set.get()
-            except measure.reach.DoesNotExist, \
-                    measure.reach.MultipleObjectsReturned:
+            except (measure.reach.DoesNotExist, measure.reach.MultipleObjectsReturned):
                 reach_name = measure.reach.slug
             else:
                 reach_name = trajectory.name
@@ -543,10 +542,14 @@ def select_vertex(request):
 
 def _selected_vertex(request):
     """Return the selected vertex."""
-    if not 'vertex' in request.session:
-        selected_river = _selected_river(request)
-        available_vertices = models.Vertex.objects.filter(
-            named_reaches__name=selected_river).order_by('header', 'name')
+
+    selected_river = _selected_river(request)
+    available_vertices = models.Vertex.objects.filter(
+        named_reaches__name=selected_river).order_by('header', 'name')
+    available_vertices_ids = [i.id for i in available_vertices]
+
+    if (not 'vertex' in request.session or
+        int(request.session['vertex']) not in available_vertices_ids):
         vertex = available_vertices[0]
         request.session['vertex'] = vertex.id
         return vertex
