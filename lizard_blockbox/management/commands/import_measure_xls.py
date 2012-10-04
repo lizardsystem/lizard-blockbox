@@ -29,7 +29,7 @@ class Command(BaseCommand):
             for model in ('RiverSegment', 'Measure',
                           'ReferenceValue', 'WaterLevelDifference',
                           'Reach', 'NamedReach', 'SubsetReach',
-                          'CityLocation', 'Vertex', 'VertexValue'
+                          'CityLocation', 'Vertex', 'VertexValue',
                           'Trajectory'):
                 getattr(models, model).objects.all().delete()
 
