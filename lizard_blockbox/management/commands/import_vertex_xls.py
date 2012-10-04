@@ -31,8 +31,7 @@ class Command(BaseCommand):
 
     def parse(self, excel):
         wb = xlrd.open_workbook(excel)
-        # The first sheet has general information about the strategies.
-        map(self.parse_sheet, wb.sheets()[1:])
+        map(self.parse_sheet, wb.sheets())
 
     @transaction.commit_on_success
     def parse_sheet(self, sheet):
