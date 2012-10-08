@@ -3,17 +3,15 @@ python:
   - 2.6
   - 2.7
 env:
-  - DJANGO=1.3.1
   - DJANGO=1.4
 notifications:
   irc: "irc.freenode.org#nens"
   email: false
 before_install:
-  - sudo apt-get build-dep python-psycopg2
+  - sudo apt-get install python-psycopg2
 install:
-  - pip install pep8 --use-mirrors
-  - pip install psycopg2
-  - python bootstrap.py 
+  - deactivate
+  - python bootstrap.py
 script:
-  - bin/buildout 
-  - pep8 --exclude=migrations --ignore=E123,E126,E225,E501 lizard_blockbox
+  - bin/buildout
+  - bin/pep8 --exclude=migrations --ignore=E123,E126,E225,E501 lizard_blockbox
