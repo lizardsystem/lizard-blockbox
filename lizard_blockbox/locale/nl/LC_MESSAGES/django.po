@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-11 08:32-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 2012-10-15 04:29-0500\n"
+"PO-Revision-Date: 2012-10-15 11:29+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Floating point number: converts empty string to None"
 msgstr ""
 
-#: models.py:23 models.py:120 views.py:98
+#: models.py:23 models.py:125 views.py:156
 msgid "reach"
 msgstr "Riviertak"
 
@@ -29,26 +29,26 @@ msgstr "Riviertak"
 msgid "reaches"
 msgstr "Riviertakken"
 
-#: views.py:98
+#: views.py:156
 msgid "reach kilometer"
 msgstr "Rivierkilometer"
 
-#: views.py:98
+#: views.py:157
 msgid "remaining water level rise in m"
 msgstr "Resterende waterstandsstijging in m"
 
-#: views.py:118
+#: views.py:190
 msgid "Show table"
 msgstr "Toon tabel"
 
-#: views.py:119
+#: views.py:191
 msgid "Show map"
 msgstr "Toon kaart"
 
-#: views.py:122
+#: views.py:194
 msgid "Switch between a graph+map view and a graph+table view."
 msgstr "Schakel tussen de grafiek+kaart en de grafiek+tabel layout"
 
-#: templates/lizard_blockbox/selected_measures.html:79
+#: templates/lizard_blockbox/selected_measures.html:78
 msgid "m"
-msgstr ""
+msgstr "m"
