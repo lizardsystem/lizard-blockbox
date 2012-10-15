@@ -59,7 +59,19 @@
       </select>
     </form>
 	<span>Selecteer een mogelijke strategie DPRD/DPIJ:</span>
-    <form id="blockbox-vertex"
+	<div>
+    <a class="has_popover"
+	   id="blockbox-strategy-info"
+	   title="Blokkendoos strategiën"
+       data-content="Mogelijke strategieën DPIJ: Winterpeil + 0,20 m              Winterpeil IJsselmeer wordt met 0,20 m verhoogd t.o.v. huidig winterpeil (- 0,40 m NAP)</br>
+Mogelijke strategieën DPIJ: Winterpeil + 0,50 m              Winterpeil IJsselmeer wordt met 0,50 m verhoogd t.o.v. huidig winterpeil (- 0,40 m NAP); </br>
+Mogelijke strategieën DPRD: Opt. Huidige strategie (1)   Faalkans Maeslantkering wordt met factor 10 verkleind</br>
+Mogelijke strategieën DPRD: Gesloten zeezijde (2A)       Maeslantkering in de Nieuwe Waterweg wordt vervangen door een dam c.q. schutsluizen + extra waterberging Grevelingen<br>
+Mogelijke strategieën DPRD: Lek extra ontzien (4A)        Lek extra ontzien, zoveel mogelijk via de IJssel afvoeren (+ 400 m3/s extra t.o.v. Referentie DPR 2100)</br>
+Mogelijke strategieën DPRD: Lek extra ontzien (4C)        Lek extra ontzien, zoveel mogelijk via de Waal afvoeren (+ 800 m3/s extra t.o.v. Referentie DPR 2100). Drie beweegbare rivierkeringen in Beneden Merwede, Spui en Kil. Verdubbeling doorstroomprofiel Nieuwe Merwede</br>"
+href="#"><i class="icon-info-sign icon-grey"></i></a>
+
+	<form id="blockbox-vertex"
 	  data-select-vertex-url="{% url lizard_blockbox_select_vertex %}"
 	  data-update-vertex-url="{% url lizard_blockbox_vertex_list %}">
       <select data-placeholder="Kies een hoekpunt"
@@ -68,8 +80,7 @@
 	      style="width:250px;">
       </select>
     </form>
-
-
+	</div>
     <h3>Bookmark</h3>
     <p class="muted" />
     Gebruik deze URL om de huidige set maatregelen te bookmarken.
@@ -118,7 +129,7 @@
     </p> -->
 	<h3>Downloads</h3>
     <p class="muted">
-      Genereer een <a href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
+      Genereer een <a target="_blank" href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
         met de geselecteerde maatregelen.
     </p>
     <p>

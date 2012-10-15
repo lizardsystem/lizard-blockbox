@@ -134,9 +134,9 @@ def generate_csv(request):
 
     writer.writerow(['Titel', 'Code', 'Type', 'Km van', 'Km tot', 'Riviertak',
                      'Rivierdeel', 'MHW winst m', 'MHW winst m2',
-                     'Kosten investering', 'Baten', 'Kosten B&O',
-                     'herinvestering', 'Schade', 'Kosten totaal',
-                     'Ruimtelijke kwaliteit'])
+                     'Kosten investering', 'Levensduur kosten (ME)',
+                     'Projectkosten gehele lifecyle (ME)',
+                     'Investering per m2'])
     measures = models.Measure.objects.filter(
         short_name__in=_selected_measures(request))
     for measure in measures:
@@ -144,10 +144,8 @@ def generate_csv(request):
                          measure.measure_type, measure.km_from, measure.km_to,
                          measure.reach, measure.riverpart,
                          measure.mhw_profit_cm / 100, measure.mhw_profit_m2,
-                         measure.investment_costs, measure.benefits,
-                         measure.b_o_costs, measure.reinvestment,
-                         measure.damage, measure.total_costs,
-                         measure.quality_of_environment])
+                         measure.investment_costs, measure.life_costs,
+                         measure.total_costs, measure.investment_m2])
 
     writer.writerow([])
     selected_vertex = _selected_vertex(request)
@@ -164,7 +162,8 @@ def generate_csv(request):
     reach = models.NamedReach.objects.get(name=river
                                           ).subsetreach_set.all()[0].reach
     reaches = reach.trajectory_set.get().reach.all()
-    segments = models.RiverSegment.objects.filter(reach__in=reaches)
+    segments = models.RiverSegment.objects.filter(reach__in=reaches
+                                                  ).order_by('location')
 
     water_levels = (_segment_level(segment, measures, selected_vertex)
                     for segment in segments)
@@ -494,8 +493,9 @@ def _water_levels(request):
         measures = models.Measure.objects.filter(
             short_name__in=selected_measures)
         riversegments = namedreach2riversegments(selected_river)
-        water_levels = [_segment_level(segment, measures, selected_vertex)
+        segment_levels = [_segment_level(segment, measures, selected_vertex)
                         for segment in riversegments]
+        water_levels = [segment for segment in segment_levels if segment]
         cache.set(cache_key, water_levels, 5 * 60)
     return water_levels
 
