@@ -80,7 +80,8 @@ def generate_report(request, template='lizard_blockbox/report.html'):
         if measure.reach:
             try:
                 trajectory = measure.reach.trajectory_set.get()
-            except (measure.reach.DoesNotExist, measure.reach.MultipleObjectsReturned):
+            except (measure.reach.DoesNotExist,
+                    measure.reach.MultipleObjectsReturned):
                 reach_name = measure.reach.slug
             else:
                 reach_name = trajectory.name
