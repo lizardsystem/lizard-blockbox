@@ -28,7 +28,7 @@ class Command(BaseCommand):
     def parse_sheet(self, sheet):
         for row_nr in xrange(1, sheet.nrows):
             measure, excluding = sheet.row_values(row_nr)
-            excludes = [i.strip() for i in excluding.split(';')]
+            excludes = [i.strip() for i in unicode(excluding).split(';')]
             try:
                 measure = models.Measure.objects.get(short_name=measure)
             except models.Measure.DoesNotExist:

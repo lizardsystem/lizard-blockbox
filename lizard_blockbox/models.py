@@ -131,18 +131,12 @@ class Measure(models.Model):
         'MHW winst m2', blank=True, null=True)
     investment_costs = EmptyStringFloatField(
         'Kosten investering', blank=True, null=True)
-    benefits = EmptyStringFloatField(
-        'Baten', blank=True, null=True)
-    b_o_costs = EmptyStringFloatField(
-        'Kosten B&O', blank=True, null=True)
-    reinvestment = EmptyStringFloatField(
-        'Herinvestering', blank=True, null=True)
-    damage = models.CharField(
-        'Schade', max_length=100, blank=True, null=True)
+    life_costs = EmptyStringFloatField(
+        'Levensduur kosten (ME)', blank=True, null=True)
     total_costs = EmptyStringFloatField(
-        'Kosten totaal', blank=True, null=True)
-    quality_of_environment = models.CharField(
-        'Ruimtelijke kwaliteit',
+        'Projectkosten gehele lifecyle (ME)', blank=True, null=True)
+    investment_m2 = models.CharField(
+        'Investering/m2',
         max_length=100, blank=True, null=True)
 
     exclude = models.ManyToManyField(

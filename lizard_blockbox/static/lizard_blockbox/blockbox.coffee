@@ -16,16 +16,16 @@ GREEN = "#635E0D"
 
 # For shades in the map. The light one is the most extreme.
 # Every shade has 25% lighter saturation.
-RIVERLEVEL9 = "rgb(195, 0, 120)"
-RIVERLEVEL8 = "rgb(203, 81, 145)"
-RIVERLEVEL7 = "rgb(219, 155, 192)"
-RIVERLEVEL6 = "rgb(214, 128, 25)"
-RIVERLEVEL5 = "rgb(241, 205, 58)"
-RIVERLEVEL4 = "rgb(247, 239, 212)"
-RIVERLEVEL3 = "rgb(217, 235, 250)"
-RIVERLEVEL2 = "rgb(177, 215, 245)"
-RIVERLEVEL1 = "rgb(104, 184, 235)"
-RIVERLEVEL0 = "rgb(0, 156, 223)"
+RIVERLEVEL9 = "rgb(106, 19, 25)"
+RIVERLEVEL8 = "rgb(143, 61, 56)"
+RIVERLEVEL7 = "rgb(237, 36, 34)"
+RIVERLEVEL6 = "rgb(241, 73, 55)"
+RIVERLEVEL5 = "rgb(236, 0, 137"
+RIVERLEVEL4 = "rgb(240, 64, 166)"
+RIVERLEVEL3 = "rgb(247, 153, 207)"
+RIVERLEVEL2 = "rgb(164, 219, 116)"
+RIVERLEVEL1 = "rgb(105, 197, 47)"
+RIVERLEVEL0 = "rgb(11, 74, 55)"
 
 # For measures in the map.
 MEASURECOLOR = "rgb(128, 153, 140)"

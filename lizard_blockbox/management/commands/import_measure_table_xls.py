@@ -29,9 +29,7 @@ class Command(BaseCommand):
         col_names = (
             'name', 'short_name', 'measure_type', 'km_from', 'km_to',
             'reach', 'riverpart', 'mhw_profit_cm', 'mhw_profit_m2',
-            'investment_costs', 'benefits', 'b_o_costs', 'reinvestment',
-            'damage', 'total_costs', 'quality_of_environment'
-            )
+            'investment_costs', 'life_costs', 'total_costs', 'investment_m2')
 
         col_index = dict(zip(col_names, xrange(len(col_names))))
 

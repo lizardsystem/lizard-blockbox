@@ -38,7 +38,7 @@ urlpatterns = patterns(
     url(r'^select_river/$',
         'lizard_blockbox.views.select_river',
         name='lizard_blockbox_select_river'),
-    url(r'(?P<measure>[\w\-,]+)/pdf/$',
+    url(r'(?P<measure>[\w\-,+]+)/pdf/$',
         'lizard_blockbox.views.fetch_factsheet',
         name="measure_factsheet"),
     url(r'^api/measures/calculated/$',

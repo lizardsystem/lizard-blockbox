@@ -248,24 +248,28 @@ class BlockboxView(MapView):
         return [field['label'] for field in measure.pretty()]
 
     def measures(self):
-        measures_ids = namedreach2measures(_selected_river(self.request))
-        measures = models.Measure.objects.filter(short_name__in=measures_ids)
-        selected_measures = _selected_measures(self.request)
-        available_factsheets = _available_factsheets()
+        try:
+            measures_ids = namedreach2measures(_selected_river(self.request))
+            measures = models.Measure.objects.filter(short_name__in=measures_ids)
+            selected_measures = _selected_measures(self.request)
+            available_factsheets = _available_factsheets()
         # selected_river = _selected_river(self.request)
-        result = []
-        for measure_obj in measures:
-            measure = {}
-            measure['fields'] = measure_obj.pretty()
-            measure['selected'] = measure_obj.short_name in selected_measures
-            measure['name'] = unicode(measure_obj)
-            measure['short_name'] = measure_obj.short_name
-            if measure_obj.short_name in available_factsheets:
-                measure['pdf_link'] = reverse(
-                    'measure_factsheet',
-                    kwargs={'measure': measure_obj.short_name})
-            result.append(measure)
-        return result
+            result = []
+            for measure_obj in measures:
+                measure = {}
+                measure['fields'] = measure_obj.pretty()
+                measure['selected'] = measure_obj.short_name in selected_measures
+                measure['name'] = unicode(measure_obj)
+                measure['short_name'] = measure_obj.short_name
+                if measure_obj.short_name in available_factsheets:
+                    measure['pdf_link'] = reverse(
+                        'measure_factsheet',
+                        kwargs={'measure': measure_obj.short_name})
+                result.append(measure)
+            print("length: %s" %len(result))
+            return result
+        except Exception as E:
+            import ipdb; ipdb.set_trace()
 
     @property
     def legends(self):
@@ -290,7 +294,7 @@ class BlockboxView(MapView):
             # text, level
             ['> 2.00', 'riverlevel-9'],
             ['1.00 - 2.00', 'riverlevel-8'],
-            ['0.80 1.00', 'riverlevel-7'],
+            ['0.80 - 1.00', 'riverlevel-7'],
             ['0.60 - 0.80', 'riverlevel-6'],
             ['0.40 - 0.60', 'riverlevel-5'],
             ['0.20 - 0.40', 'riverlevel-4'],

@@ -27,7 +27,7 @@ class Command(BaseCommand):
     @transaction.commit_on_success
     def parse_sheet(self, sheet):
         for row_nr in xrange(1, sheet.nrows):
-            km, city, reach_slug, _ = sheet.row_values(row_nr)
+            km, city, reach_slug = sheet.row_values(row_nr)[:3]
             reach = models.Reach.objects.get(slug=reach_slug)
             models.CityLocation.objects.create(
                 km=int(km), city=city, reach=reach)
