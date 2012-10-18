@@ -26,7 +26,7 @@
 
   RIVERLEVEL6 = "rgb(241, 73, 55)";
 
-  RIVERLEVEL5 = "rgb(236, 0, 137";
+  RIVERLEVEL5 = "rgb(236, 0, 137)";
 
   RIVERLEVEL4 = "rgb(240, 64, 166)";
 
