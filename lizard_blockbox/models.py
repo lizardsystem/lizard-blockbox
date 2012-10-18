@@ -155,9 +155,14 @@ class Measure(models.Model):
         for field in self._meta.fields:
             if field.name in ignore:
                 continue
+
+            value = getattr(self, field.name)
+            if isinstance(value, float) and 'costs' in field.name:
+                value = round(value, 2)
+
             result.append({'label': field.verbose_name,
                            'name': field.name,
-                           'value': getattr(self, field.name)})
+                           'value': value})
         return result
 
     class Meta:

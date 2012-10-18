@@ -80,6 +80,7 @@
     return $holder.load('. #page', function() {
       var sort;
       $("#selected-measures-list").html($('#selected-measures-list', $holder).html());
+      $('#investmentcosts').html($('#investmentcosts', $holder).html());
       measuresMapView.render(true, true, true);
       $("#measures-table-top").html($('#measures-table-top', $holder).html());
       sort = $("#measures-table-top").get(0).config.sortList;

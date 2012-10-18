@@ -63,12 +63,16 @@
     <a class="has_popover"
 	   id="blockbox-strategy-info"
 	   title="Blokkendoos strategiën"
-       data-content="Mogelijke strategieën DPIJ: Winterpeil + 0,20 m              Winterpeil IJsselmeer wordt met 0,20 m verhoogd t.o.v. huidig winterpeil (- 0,40 m NAP)</br>
-Mogelijke strategieën DPIJ: Winterpeil + 0,50 m              Winterpeil IJsselmeer wordt met 0,50 m verhoogd t.o.v. huidig winterpeil (- 0,40 m NAP); </br>
-Mogelijke strategieën DPRD: Opt. Huidige strategie (1)   Faalkans Maeslantkering wordt met factor 10 verkleind</br>
-Mogelijke strategieën DPRD: Gesloten zeezijde (2A)       Maeslantkering in de Nieuwe Waterweg wordt vervangen door een dam c.q. schutsluizen + extra waterberging Grevelingen<br>
-Mogelijke strategieën DPRD: Lek extra ontzien (4A)        Lek extra ontzien, zoveel mogelijk via de IJssel afvoeren (+ 400 m3/s extra t.o.v. Referentie DPR 2100)</br>
-Mogelijke strategieën DPRD: Lek extra ontzien (4C)        Lek extra ontzien, zoveel mogelijk via de Waal afvoeren (+ 800 m3/s extra t.o.v. Referentie DPR 2100). Drie beweegbare rivierkeringen in Beneden Merwede, Spui en Kil. Verdubbeling doorstroomprofiel Nieuwe Merwede</br>"
+       data-content="
+<strong>Mogelijke strategieën DPIJ:</strong></br>
+- Winterpeil + 0,20 m (t.o.v. huidig winterpeil IJsselmeer)</br>
+- Winterpeil + 0,50 m (t.o.v. huidig winterpeil (IJsselmeer)</br>
+</br>
+<strong>Mogelijke strategieën DPRD:</strong></br>
+- Opt. Huidige strategie (1): Faalkans Maeslantkering factor 10 kleiner</br>
+- Gesloten zeezijde (2A): Dam in Nieuwe Waterweg + extra waterberging Grevelingen </br>
+- Lek extra ontzien (4A): Minder via Lek, meer via IJssel (+ 400 m3/s extra t.o.v. Referentie DPR 2100) </br>
+- Lek extra ontzien (4C): Minder via Lek, meer via Waal (+ 800 m3/s extra t.o.v. Referentie DPR 2100). Beweegbare rivierkeringen in Beneden Merwede, Spui, Kil. Verdubbeling profiel Nieuwe Merwede"
 href="#"><i class="icon-info-sign icon-grey"></i></a>
 
 	<form id="blockbox-vertex"
@@ -102,7 +106,7 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
       Klik op een maatregel om hem te deselecteren.
     </p>
 
-    <p>
+    <p id="investmentcosts">
       Totale investeringskosten: {{ view.investment_costs }} mln
     </p>
     <ul id="selected-measures-list" class="without-bullets">

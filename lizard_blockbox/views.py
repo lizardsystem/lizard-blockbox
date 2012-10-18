@@ -599,8 +599,8 @@ def _investment_costs(request):
 
     for measure in measures:
         if measure.investment_costs:
-            investment_costs = investment_costs + measure.investment_costs
-    return investment_costs
+            investment_costs += measure.investment_costs
+    return round(investment_costs, 2)
 
 
 @never_cache
