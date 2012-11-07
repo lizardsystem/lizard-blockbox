@@ -36,9 +36,10 @@ class Command(BaseCommand):
         for row_nr in xrange(1, sheet.nrows):
             row_values = sheet.row_values(row_nr)
             short_name = row_values[col_index['short_name']]
+
             if isinstance(short_name, float):
                 # Integers are read as floats, so integerize them.
-                short_name = int(short_name)
+                row_values[col_index['short_name']] = int(short_name)
 
             default_values = dict(zip(col_names, row_values))
             default_values['reach'], _ = models.Reach.objects.get_or_create(
