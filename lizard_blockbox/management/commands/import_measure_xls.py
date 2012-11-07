@@ -19,8 +19,7 @@ class Command(BaseCommand):
                     action='store_true',
                     dest='flush',
                     default=False,
-                    help='Flush all blockbox models for a clean import'),
-        )
+                    help='Flush all blockbox models for a clean import'),)
 
     def handle(self, *args, **options):
         flush = options['flush']
@@ -47,8 +46,12 @@ class Command(BaseCommand):
 
     @transaction.commit_on_success
     def parse_sheet(self, sheet):
+        short_name = sheet.name
+        if isinstance(short_name, float):
+            short_name = int(short_name)
         measure, created = models.Measure.objects.get_or_create(
-            short_name=sheet.name)
+            short_name=short_name)
+
         if not created:
             # Measure exists.
             return
