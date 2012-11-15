@@ -33,6 +33,8 @@ from xhtml2pdf import pisa
 
 from lizard_blockbox import models
 from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
+from lizard_blockbox.utils import UnicodeWriter
+
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
 VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
@@ -129,8 +131,8 @@ def generate_report(request, template='lizard_blockbox/report.html'):
 def generate_csv(request):
     response = HttpResponse(mimetype='application/csv')
     response['Content-Disposition'] = 'filename=blokkendoos-report.csv'
-    writer = csv.writer(response, dialect='excel', delimiter=';',
-                        quoting=csv.QUOTE_ALL)
+    writer = UnicodeWriter(response, dialect='excel', delimiter=';',
+                           quoting=csv.QUOTE_ALL)
 
     writer.writerow(['Titel', 'Code', 'Type', 'Km van', 'Km tot', 'Riviertak',
                      'Rivierdeel', 'MHW winst m', 'MHW winst m2',
