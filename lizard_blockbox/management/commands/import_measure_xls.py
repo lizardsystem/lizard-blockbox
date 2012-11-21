@@ -41,8 +41,20 @@ class Command(BaseCommand):
         map(self.parse, args)
 
     def parse(self, excel):
+
+        def exception_parse(sheet):
+            try:
+                self.parse_sheet(sheet)
+            except Exception:
+                # Bare except due to a possible multitude in errors in the
+                # provided data
+                print "There is an error at the following place:"
+                print "Filename: {}".format(excel)
+                print "Sheet: {}".format(sheet.name)
+                sys.exit(2)
+
         wb = xlrd.open_workbook(excel)
-        map(self.parse_sheet, wb.sheets())
+        map(exception_parse, wb.sheets())
 
     @transaction.commit_on_success
     def parse_sheet(self, sheet):

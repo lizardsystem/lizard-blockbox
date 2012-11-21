@@ -21,8 +21,20 @@ class Command(BaseCommand):
         map(self.parse, args)
 
     def parse(self, excel):
+        def exception_parse(sheet):
+            try:
+                self.parse_sheet(sheet)
+            except Exception:
+                # Bare except due to a possible multitude in errors in the
+                # provided data
+                print "There is an error at the following place:"
+                print "Filename: {}".format(excel)
+                print "Sheet: {}".format(sheet.name)
+                raise
+                sys.exit(2)
+
         wb = xlrd.open_workbook(excel)
-        map(self.parse_sheet, wb.sheets())
+        map(exception_parse, wb.sheets())
 
     @transaction.commit_on_success
     def parse_sheet(self, sheet):
@@ -45,7 +57,13 @@ class Command(BaseCommand):
             default_values['reach'], _ = models.Reach.objects.get_or_create(
                 slug=default_values['reach'])
             measure, _ = models.Measure.objects.get_or_create(
-                short_name=short_name)
+                short_name=row_values[col_index['short_name']])
+
+            # km_from and km_to are integers.
+            # DB save doesnt automatically converted '' to None.
+            for item in ('km_from', 'km_to'):
+                if default_values[item] == '':
+                    default_values[item] = None
 
             models.Measure.objects.filter(id=measure.id).update(
                 **default_values)
