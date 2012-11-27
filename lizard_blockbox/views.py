@@ -142,10 +142,13 @@ def generate_csv(request):
     measures = models.Measure.objects.filter(
         short_name__in=_selected_measures(request))
     for measure in measures:
+        # mhw_profit_cm must be a number not None
+        mhw_profit_cm = measure.mhw_profit_cm or 0
+
         writer.writerow([measure.name, measure.short_name,
                          measure.measure_type, measure.km_from, measure.km_to,
                          measure.reach, measure.riverpart,
-                         measure.mhw_profit_cm / 100, measure.mhw_profit_m2,
+                         mhw_profit_cm / 100, measure.mhw_profit_m2,
                          measure.investment_costs, measure.life_costs,
                          measure.total_costs, measure.investment_m2])
 
