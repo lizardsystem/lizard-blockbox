@@ -328,7 +328,7 @@ class PlainGraphMapView(BlockboxView):
     required_permission = None
     template_name = 'lizard_blockbox/report_map_template.html'
     # Don't show the login modal for a pdf.
-    model_for_pdf_view = False
+    modal_for_pdf_view = False
 
     def get_context_data(self, **kwargs):
         # Parse QueryString
