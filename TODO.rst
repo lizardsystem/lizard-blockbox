@@ -1,5 +1,4 @@
 TODO
 ====
 
-- Add a description
-- Develop product
+- All features are complete for now.
