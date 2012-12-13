@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.2 (unreleased)
+0.2 (2012-12-13)
 ----------------
 
 - Removed the sub-headers in the measure table, they don't work well with
