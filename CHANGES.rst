@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.3 (unreleased)
+0.3 (2012-12-19)
 ----------------
 
 - Remove water levels locations from csv export that don't have a water level.
