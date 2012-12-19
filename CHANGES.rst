@@ -5,8 +5,9 @@ Changelog of lizard-blockbox
 0.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- Remove water levels locations from csv export that don't have a water level.
+  The csv export crashed when scenario was used that didn't define water levels 
+  for all kilometers in the reach.
 
 0.2 (2012-12-13)
 ----------------

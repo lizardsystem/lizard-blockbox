@@ -172,6 +172,7 @@ def generate_csv(request):
 
     water_levels = (_segment_level(segment, measures, selected_vertex)
                     for segment in segments)
+    water_levels = (level for level in water_levels if level is not None)
 
     for water_level in water_levels:
         writer.writerow([water_level['location_segment'],
