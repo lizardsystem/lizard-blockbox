@@ -254,14 +254,12 @@ $('a#generate_shorturl_button').click ->
       $('#shorturl').select()
 
 
+#######################################################
+# Save map extent when downloading a pdf              #
+#######################################################
 
-
-
-
-
-
-
-
+$('a#report-pdf').click ->
+    mapSaveLocation()
 
 
 #######################################################
