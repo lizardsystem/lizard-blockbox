@@ -115,16 +115,17 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     graph_map_url = urlparse.urlunparse(('http', domain, path, '',
                                          querystring, ''))
 
-    graph_map_url = urllib.urlencode({'url': graph_map_url})
-    image_url = str('http://screenshotter.lizard.net/?') + \
-        str(graph_map_url)
-
+    graph_map_url = urllib.urlencode({'url': graph_map_url,
+                                      'width': 1280,
+                                      'height': 800})
+    image_url = urlparse.urlunparse(('http', 'screenshotter.lizard.net/', '',
+                                     '', graph_map_url, ''))
     logger.info(image_url)
 
     return render_to_pdf(
         'lizard_blockbox/report.html',
         {'date': datetime.now(),
-         'image_url': urllib.unquote(image_url),
+         'image_url': image_url,
          'pagesize': 'A4',
          'reaches': result,
          'measures_header': measures_header,
