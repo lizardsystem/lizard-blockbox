@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.4 (unreleased)
+0.4 (2013-01-28)
 ----------------
 
 - Use new screenshot service.
