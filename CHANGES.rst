@@ -5,7 +5,7 @@ Changelog of lizard-blockbox
 0.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add a small delay on the pdf image generation to get the graph right.
 
 
 0.4 (2013-01-28)
