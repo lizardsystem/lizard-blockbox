@@ -39,8 +39,10 @@ DATABASES = {
     }
 SITE_ID = 1
 INSTALLED_APPS = [
-    'lizard_blockbox',
     'lizard_ui',
+    'lizard_map',
+    'lizard_blockbox',
+    'lizard_security',
     'staticfiles',
     'compressor',
     'south',
@@ -57,7 +59,7 @@ ROOT_URLCONF = 'lizard_blockbox.urls'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     # Uncomment this one if you use lizard-map.
-    # 'lizard_map.context_processors.processor.processor',
+    'lizard_map.context_processors.processor.processor',
     # Default django 1.3 processors.
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",

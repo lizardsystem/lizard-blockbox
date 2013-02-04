@@ -14,6 +14,7 @@ install_requires = [
     'django-extensions',
     'django-nose',
     'lizard-ui >= 4.0b4',
+    'lizard-map',
     'pkginfo',
     'xlrd',
     'xhtml2pdf',
