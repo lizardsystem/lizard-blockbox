@@ -117,7 +117,8 @@ def generate_report(request, template='lizard_blockbox/report.html'):
 
     graph_map_url = urllib.urlencode({'url': graph_map_url,
                                       'width': 1280,
-                                      'height': 800})
+                                      'height': 800,
+                                      'delay': 100})
     image_url = urlparse.urlunparse(('http', 'screenshotter.lizard.net/', '',
                                      '', graph_map_url, ''))
     logger.info(image_url)
