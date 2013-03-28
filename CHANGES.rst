@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.6 (unreleased)
+0.6 (2013-03-28)
 ----------------
 
 - Using different nginx-internal file path for factsheet file hosting. The
