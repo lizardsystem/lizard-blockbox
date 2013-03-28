@@ -451,7 +451,7 @@ def fetch_factsheet(request, measure):
         raise Http404
 
     response = HttpResponse()
-    response['X-Accel-Redirect'] = '/protected/%s.pdf' % measure
+    response['X-Accel-Redirect'] = '/factsheets/%s.pdf' % measure
     response['Content-Disposition'] = 'attachment; filename="%s.pdf"' % measure
     # content-type is set in nginx.
     response['Content-Type'] = ''
