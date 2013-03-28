@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Using different nginx-internal file path for factsheet file hosting. The
+  old path conflicted with another deltaportaal config setting.
 
 
 0.5 (2013-02-04)
@@ -24,7 +25,7 @@ Changelog of lizard-blockbox
 ----------------
 
 - Remove water levels locations from csv export that don't have a water level.
-  The csv export crashed when scenario was used that didn't define water levels 
+  The csv export crashed when scenario was used that didn't define water levels
   for all kilometers in the reach.
 
 0.2 (2012-12-13)
