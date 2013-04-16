@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.7 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Removed now-unused ``the_geom`` field on riversegments. The geometry is
+  loaded from a geojson file now.
 
 
 0.6 (2013-03-28)
