@@ -230,5 +230,43 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
 
 
 {% block orthogonal-actions %}
-  {% include "lizard_blockbox/scenario-actions.html" %}
+  <div class="btn-toolbar">
+    <div class="btn-group"
+         title="Selecteren uit referentiesituatie 2015 of zichtjaren 2050 en 2100 (indien informatie beschikbaar)."
+         style="top:5px;"
+         data-toggle="buttons-radio"
+		 id="year-buttons">
+      <a id="year-2015" class="btn" href="#">2015</a>
+      <a id="year-2050" class="btn active" href="#">2050</a>
+      <a id="year-2100" class="btn" href="#" >2100</a>
+    </div>
+
+    <div class="btn-group"
+         title="Selecteren uit Deltascenario’s Rust, Druk, Stoom of Warm (indien informatie beschikbaar)."
+         style="top:5px;"
+         data-toggle="buttons-radio">
+      <a id="scenario-rust" class="btn" href="#">Rust</a>
+      <a id="scenario-druk" class="btn active" href="#">Druk</a>
+      <a id="scenario-stoom" class="btn" href="#">Stoom</a>
+      <a id="scenario-warm" class="btn" href="#">Warm</a>
+    </div>
+
+  </div>
+
+   <a class="has_popover_north"
+      style="position:absolute;left:720px;top:10px;color:black;text-decoration:none;"
+      data-content="Voor de Blokkendoos Rivieren zijn Stoom en Warm zijn aan
+      elkaar gelijk,<br>
+omdat sociaal economische scenario's geen effect hebben op de waterstanden in de rivier.<br>
+Stoom en Warm gaan in 2100 uit van:<br>
+
+- Zeespiegelstijging: +0,85 m <br>
+- Afvoer Rijn bij Lobith: 18.000 m3/s <br>
+- Afvoer Maas bij Borgharen: 4.600 m3/s<br>
+"
+     rel="popover"
+     href="#"
+     data-original-title="Deltascenario's">
+     <i class="icon-info-sign"></i>
+  </a>
 {% endblock orthogonal-actions %}
