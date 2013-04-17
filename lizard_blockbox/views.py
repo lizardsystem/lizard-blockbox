@@ -23,6 +23,7 @@ from django.template.loader import get_template
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST
 from django.views.generic.base import RedirectView
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
@@ -555,12 +556,10 @@ def vertex_json(request):
 
 
 @never_cache
+@require_POST
 @permission_required(VIEW_PERM)
 def select_vertex(request):
     """Select the vertex."""
-
-    if not request.POST:
-        return
     request.session['vertex'] = request.POST['vertex']
     return HttpResponse()
 
@@ -635,11 +634,10 @@ def _investment_costs(request):
 
 
 @never_cache
+@require_POST
 @permission_required(VIEW_PERM)
 def toggle_measure(request):
     """Toggle a measure on or off."""
-    if not request.POST:
-        return
     measure_id = request.POST['measure_id']
     selected_measures = _selected_measures(request)
     # Fix for empty u'' that somehow showed up.
@@ -669,24 +667,23 @@ def toggle_measure(request):
 
 
 @never_cache
+@require_POST
 @permission_required(VIEW_PERM)
 def select_river(request):
     """Select a river."""
-    if not request.POST:
-        return
     request.session['river'] = request.POST['river_name']
     del request.session['vertex']
     return HttpResponse()
 
 
 @never_cache
+@require_POST
 @permission_required(VIEW_PERM)
 def select_year(request):
     """Select a year (for the vertices)."""
-    if not request.POST:
-        return HttpResponse()
-    request.session[YEAR_SESSION_KEY] = request.POST['year']
-    # del request.session['vertex']
+    year = request.POST['year']
+    assert year in ['2050', '2100']
+    request.session[YEAR_SESSION_KEY] = year
     return HttpResponse()
 
 
