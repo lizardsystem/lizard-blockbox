@@ -597,7 +597,7 @@ def _selected_river(request):
 def _selected_year(request):
     """Return the selected year"""
     if not YEAR_SESSION_KEY in request.session:
-        request.session[YEAR_SESSION_KEY] = 2100
+        request.session[YEAR_SESSION_KEY] = '2100'
     return request.session[YEAR_SESSION_KEY]
 
 
