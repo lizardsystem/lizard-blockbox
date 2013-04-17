@@ -159,7 +159,9 @@ def generate_csv(request):
 
     writer.writerow([])
     selected_vertex = _selected_vertex(request)
+    selected_year = _selected_year(request)
     writer.writerow(['Strategie:', selected_vertex.name])
+    writer.writerow(['Geselecteerd zichtjaar:', selected_year])
 
     writer.writerow([])
     fieldnames = [_('reach'), _('reach kilometer'),
@@ -175,7 +177,8 @@ def generate_csv(request):
     segments = models.RiverSegment.objects.filter(reach__in=reaches
                                                   ).order_by('location')
 
-    water_levels = (_segment_level(segment, measures, selected_vertex)
+    water_levels = (_segment_level(segment, measures, selected_vertex,
+                                   selected_year)
                     for segment in segments)
     water_levels = (level for level in water_levels if level is not None)
 
@@ -478,13 +481,14 @@ def _available_factsheets():
     return factsheets
 
 
-def _segment_level(segment, measures, selected_vertex):
+def _segment_level(segment, measures, selected_vertex, selected_year):
     measures_level = segment.waterleveldifference_set.filter(
         measure__in=measures).aggregate(
         ld=Sum('level_difference'))['ld'] or 0
     try:
         vertex_level = models.VertexValue.objects.get(
             vertex=selected_vertex, riversegment=segment).value
+        # ^^^ TODO: selected year
     except models.VertexValue.DoesNotExist:
         return
 
@@ -501,7 +505,9 @@ def _water_levels(request):
     selected_river = _selected_river(request)
     selected_measures = _selected_measures(request)
     selected_vertex = _selected_vertex(request)
+    selected_year = _selected_year(request)
     cache_key = (str(selected_river) + str(selected_vertex.id) +
+                 selected_year +
                  ''.join(selected_measures))
     cache_key = md5(cache_key).hexdigest()
     water_levels = cache.get(cache_key)
@@ -511,7 +517,8 @@ def _water_levels(request):
         measures = models.Measure.objects.filter(
             short_name__in=selected_measures)
         riversegments = namedreach2riversegments(selected_river)
-        segment_levels = [_segment_level(segment, measures, selected_vertex)
+        segment_levels = [_segment_level(segment, measures, selected_vertex,
+                                         selected_year)
                         for segment in riversegments]
         water_levels = [segment for segment in segment_levels if segment]
         cache.set(cache_key, water_levels, 5 * 60)
