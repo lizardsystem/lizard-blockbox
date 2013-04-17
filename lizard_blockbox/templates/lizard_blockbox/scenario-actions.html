@@ -1,1 +1,29 @@
-{# Empty, to be overwritten in project #}
+{# Note: this used to be inside the deltaportaal project, but we now need #}
+{# to manage it ourselves. #}
+<div class="btn-toolbar">
+  <div class="btn-group">
+    <span class="btn" disabled="true" href="#">2015</span>
+    <span class="btn" disabled="true" href="#">2050</span>
+    <span class="btn active" href="#">2100</span>
+  </div>
+  <div class="btn-group has_popover_north"
+       title="Deltascenario's"
+       data-content="<img src='/static_media/deltaportaal/scenarios_smaller.jpg'>">
+    <span class="btn" disabled="true" href="#">Rust</span>
+    <span class="btn" disabled="true" href="#">Druk</span>
+    <span class="btn active" href="#">Stoom</span>
+    <span class="btn active" href="#">Warm</span>
+  </div>
+  <div class="btn-group has_popover_north" id="scenario-info" style="bottom:18px;"
+      data-toggle="buttons-radio"
+      title="Blokkendoos Rivieren"
+      data-content="De Blokkendoos Rivieren bevat op dit moment alleen informatie voor het zichtjaar 2100. Stoom en Warm zijn aan elkaar gelijk, omdat sociaal economische scenario's geen effect hebben op de waterstanden in de rivier.
+Stoom en Warm gaan in 2100 uit van:</br>
+
+- Zeespiegelstijging: +0,85 m </br>
+- Afvoer Rijn bij Lobith: 18.000 m3/s </br>
+- Afvoer Maas bij Borgharen: 4.600 m3/s</br>
+">
+  <a href="#" class="scenario-info"><i class="icon-info-sign icon-grey"></i></a>
+  </div>
+</div>
