@@ -225,9 +225,7 @@ class BlockboxView(MapView):
 
     @property
     def selected_year(self):
-        result = _selected_year(self.request)
-        logger.info("year: %r", result)
-        return result
+        return _selected_year(self.request)
 
     def measures_per_reach(self):
         """Return selected measures, sorted per reach."""
