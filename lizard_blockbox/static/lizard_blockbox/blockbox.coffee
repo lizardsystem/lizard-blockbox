@@ -717,6 +717,11 @@ $("a.post-year").live 'click', (e) ->
         url: $(@).attr('href')
         data:
             'year': $(@).data('year')
+        success: (data) ->
+            updateVertex()
+            updateMeasuresList()
+            measuresMapView.render(true, false, true)
+            @
 
 
 setup_map_legend = ->

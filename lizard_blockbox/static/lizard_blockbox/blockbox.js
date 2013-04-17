@@ -787,6 +787,12 @@
       url: $(this).attr('href'),
       data: {
         'year': $(this).data('year')
+      },
+      success: function(data) {
+        updateVertex();
+        updateMeasuresList();
+        measuresMapView.render(true, false, true);
+        return this;
       }
     });
   });
