@@ -8,6 +8,10 @@ Changelog of lizard-blockbox
 - Removed now-unused ``the_geom`` field on riversegments. The geometry is
   loaded from a geojson file now.
 
+- Added field for 'protection_level' on WaterLevelDifference.
+
+- Added field for 'year' on VertexValue.
+
 
 0.6 (2013-03-28)
 ----------------

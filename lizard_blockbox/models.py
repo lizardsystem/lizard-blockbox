@@ -193,6 +193,13 @@ class WaterLevelDifference(models.Model):
     riversegment = models.ForeignKey(RiverSegment)
     measure = models.ForeignKey(Measure)
     reference_value = models.ForeignKey(ReferenceValue)
+    protection_level = models.CharField(
+        max_length=4,
+        choices=(
+            ("250", "1 / 250"),
+            ("1250", "1 / 1250")),
+        default="1250")
+
     level_difference = models.FloatField()
 
     def reference(self):
@@ -225,4 +232,10 @@ class VertexValue(models.Model):
 
     vertex = models.ForeignKey(Vertex)
     riversegment = models.ForeignKey(RiverSegment)
+    year = models.CharField(
+        max_length=4,
+        choices=(
+            ('2050', '2050'),
+            ('2100', '2100')),
+        default='2100')
     value = models.FloatField()
