@@ -709,6 +709,16 @@ $("#blockbox-deselect-all-measures").live 'click', (e) ->
     e.preventDefault()
     deselectAllMeasures()
 
+
+$("a.post-year").live 'click', (e) ->
+    e.preventDefault()
+    $.ajax
+        type: 'POST'
+        url: $(@).attr('href')
+        data:
+            'year': $(@).data('year')
+
+
 setup_map_legend = ->
     $('.legend-riverlevel-9').css("background-color", RIVERLEVEL9)
     $('.legend-riverlevel-8').css("background-color", RIVERLEVEL8)

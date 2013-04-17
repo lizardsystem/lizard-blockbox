@@ -38,7 +38,7 @@ from lizard_blockbox.utils import UnicodeWriter
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
 VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
-
+YEAR_SESSION_KEY = 'blockbox_year'
 logger = logging.getLogger(__name__)
 
 
@@ -219,6 +219,12 @@ class BlockboxView(MapView):
             if reach['name'] == selected_river:
                 reach['selected'] = True
         return reaches
+
+    @property
+    def selected_year(self):
+        result = _selected_year(self.request)
+        logger.info("year: %r", result)
+        return result
 
     def measures_per_reach(self):
         """Return selected measures, sorted per reach."""
@@ -582,6 +588,13 @@ def _selected_river(request):
     return request.session['river']
 
 
+def _selected_year(request):
+    """Return the selected year"""
+    if not YEAR_SESSION_KEY in request.session:
+        request.session[YEAR_SESSION_KEY] = 2100
+    return request.session[YEAR_SESSION_KEY]
+
+
 def _selected_measures(request):
     """Return selected measures."""
 
@@ -657,6 +670,17 @@ def select_river(request):
         return
     request.session['river'] = request.POST['river_name']
     del request.session['vertex']
+    return HttpResponse()
+
+
+@never_cache
+@permission_required(VIEW_PERM)
+def select_year(request):
+    """Select a year (for the vertices)."""
+    if not request.POST:
+        return HttpResponse()
+    request.session[YEAR_SESSION_KEY] = request.POST['year']
+    # del request.session['vertex']
     return HttpResponse()
 
 

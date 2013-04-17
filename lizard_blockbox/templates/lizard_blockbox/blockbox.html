@@ -232,23 +232,25 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
 {% block orthogonal-actions %}
   <div class="btn-toolbar">
     <div class="btn-group"
-         title="Selecteren uit referentiesituatie 2015 of zichtjaren 2050 en 2100 (indien informatie beschikbaar)."
+         title="Selecteren uit zichtjaren 2050 en 2100)."
          style="top:5px;"
-         data-toggle="buttons-radio"
-		 id="year-buttons">
-      <a id="year-2015" class="btn" href="#">2015</a>
-      <a id="year-2050" class="btn active" href="#">2050</a>
-      <a id="year-2100" class="btn" href="#" >2100</a>
+         data-toggle="buttons-radio">
+      <span class="btn" disabled="true" href="#">2015</span>
+      <a data-year="2050"
+         class="post-year btn {% if view.selected_year == '2050' %}active{% endif %}"
+         href="{% url lizard_blockbox_select_year %}">2050</a>
+      <a data-year="2100"
+         class="post-year btn {% if view.selected_year == '2100' %}active{% endif %}"
+         href="{% url lizard_blockbox_select_year %}">2100</a>
     </div>
 
     <div class="btn-group"
          title="Selecteren uit Deltascenario’s Rust, Druk, Stoom of Warm (indien informatie beschikbaar)."
-         style="top:5px;"
-         data-toggle="buttons-radio">
-      <a id="scenario-rust" class="btn" href="#">Rust</a>
-      <a id="scenario-druk" class="btn active" href="#">Druk</a>
-      <a id="scenario-stoom" class="btn" href="#">Stoom</a>
-      <a id="scenario-warm" class="btn" href="#">Warm</a>
+         style="top:5px;">
+      <span class="btn" disabled="true" href="#">Rust</span>
+      <span class="btn" disabled="true" href="#">Druk</span>
+      <span class="btn active" href="#">Stoom</span>
+      <span class="btn active" href="#">Warm</span>
     </div>
 
   </div>
