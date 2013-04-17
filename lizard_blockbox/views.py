@@ -487,8 +487,9 @@ def _segment_level(segment, measures, selected_vertex, selected_year):
         ld=Sum('level_difference'))['ld'] or 0
     try:
         vertex_level = models.VertexValue.objects.get(
-            vertex=selected_vertex, riversegment=segment).value
-        # ^^^ TODO: selected year
+            vertex=selected_vertex,
+            riversegment=segment,
+            year=selected_year).value
     except models.VertexValue.DoesNotExist:
         return
 
