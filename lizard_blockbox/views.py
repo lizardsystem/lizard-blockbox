@@ -23,6 +23,7 @@ from django.template.loader import get_template
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST
 from django.views.generic.base import RedirectView
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
@@ -38,7 +39,7 @@ from lizard_blockbox.utils import UnicodeWriter
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
 VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
-
+YEAR_SESSION_KEY = 'blockbox_year'
 logger = logging.getLogger(__name__)
 
 
@@ -159,7 +160,9 @@ def generate_csv(request):
 
     writer.writerow([])
     selected_vertex = _selected_vertex(request)
+    selected_year = _selected_year(request)
     writer.writerow(['Strategie:', selected_vertex.name])
+    writer.writerow(['Geselecteerd zichtjaar:', selected_year])
 
     writer.writerow([])
     fieldnames = [_('reach'), _('reach kilometer'),
@@ -175,7 +178,8 @@ def generate_csv(request):
     segments = models.RiverSegment.objects.filter(reach__in=reaches
                                                   ).order_by('location')
 
-    water_levels = (_segment_level(segment, measures, selected_vertex)
+    water_levels = (_segment_level(segment, measures, selected_vertex,
+                                   selected_year)
                     for segment in segments)
     water_levels = (level for level in water_levels if level is not None)
 
@@ -219,6 +223,10 @@ class BlockboxView(MapView):
             if reach['name'] == selected_river:
                 reach['selected'] = True
         return reaches
+
+    @property
+    def selected_year(self):
+        return _selected_year(self.request)
 
     def measures_per_reach(self):
         """Return selected measures, sorted per reach."""
@@ -472,13 +480,15 @@ def _available_factsheets():
     return factsheets
 
 
-def _segment_level(segment, measures, selected_vertex):
+def _segment_level(segment, measures, selected_vertex, selected_year):
     measures_level = segment.waterleveldifference_set.filter(
         measure__in=measures).aggregate(
         ld=Sum('level_difference'))['ld'] or 0
     try:
         vertex_level = models.VertexValue.objects.get(
-            vertex=selected_vertex, riversegment=segment).value
+            vertex=selected_vertex,
+            riversegment=segment,
+            year=selected_year).value
     except models.VertexValue.DoesNotExist:
         return
 
@@ -495,7 +505,9 @@ def _water_levels(request):
     selected_river = _selected_river(request)
     selected_measures = _selected_measures(request)
     selected_vertex = _selected_vertex(request)
+    selected_year = _selected_year(request)
     cache_key = (str(selected_river) + str(selected_vertex.id) +
+                 selected_year +
                  ''.join(selected_measures))
     cache_key = md5(cache_key).hexdigest()
     water_levels = cache.get(cache_key)
@@ -505,7 +517,8 @@ def _water_levels(request):
         measures = models.Measure.objects.filter(
             short_name__in=selected_measures)
         riversegments = namedreach2riversegments(selected_river)
-        segment_levels = [_segment_level(segment, measures, selected_vertex)
+        segment_levels = [_segment_level(segment, measures, selected_vertex,
+                                         selected_year)
                         for segment in riversegments]
         water_levels = [segment for segment in segment_levels if segment]
         cache.set(cache_key, water_levels, 5 * 60)
@@ -543,12 +556,10 @@ def vertex_json(request):
 
 
 @never_cache
+@require_POST
 @permission_required(VIEW_PERM)
 def select_vertex(request):
     """Select the vertex."""
-
-    if not request.POST:
-        return
     request.session['vertex'] = request.POST['vertex']
     return HttpResponse()
 
@@ -580,6 +591,13 @@ def _selected_river(request):
                     request.session['river'])
         request.session['river'] = available_reaches[0]
     return request.session['river']
+
+
+def _selected_year(request):
+    """Return the selected year"""
+    if not YEAR_SESSION_KEY in request.session:
+        request.session[YEAR_SESSION_KEY] = '2100'
+    return request.session[YEAR_SESSION_KEY]
 
 
 def _selected_measures(request):
@@ -616,11 +634,10 @@ def _investment_costs(request):
 
 
 @never_cache
+@require_POST
 @permission_required(VIEW_PERM)
 def toggle_measure(request):
     """Toggle a measure on or off."""
-    if not request.POST:
-        return
     measure_id = request.POST['measure_id']
     selected_measures = _selected_measures(request)
     # Fix for empty u'' that somehow showed up.
@@ -650,13 +667,23 @@ def toggle_measure(request):
 
 
 @never_cache
+@require_POST
 @permission_required(VIEW_PERM)
 def select_river(request):
     """Select a river."""
-    if not request.POST:
-        return
     request.session['river'] = request.POST['river_name']
     del request.session['vertex']
+    return HttpResponse()
+
+
+@never_cache
+@require_POST
+@permission_required(VIEW_PERM)
+def select_year(request):
+    """Select a year (for the vertices)."""
+    year = request.POST['year']
+    assert year in ['2050', '2100']
+    request.session[YEAR_SESSION_KEY] = year
     return HttpResponse()
 
 
