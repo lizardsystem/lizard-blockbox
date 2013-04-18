@@ -41,7 +41,7 @@ class TestCommand(TestCase):
         reach = factories.ReachFactory.create(slug="reach_slug")
         factories.RiverSegmentFactory.create(location=1.0, reach=reach)
 
-        row = [1.0, 55.0, None, -1, "reach_slug", -2]
+        row = [1.0, 55.0, None, -3, "reach_slug", -4]
 
         command = import_measure_xls.Command()
 
@@ -53,8 +53,8 @@ class TestCommand(TestCase):
 
         diff_1250 = models.WaterLevelDifference.objects.filter(
             protection_level="1250")[0]
-        self.assertEquals(diff_1250.level_difference, -1)
+        self.assertEquals(diff_1250.level_difference, -3)
 
         diff_250 = models.WaterLevelDifference.objects.filter(
             protection_level="250")[0]
-        self.assertEquals(diff_250.level_difference, -2)
+        self.assertEquals(diff_250.level_difference, -4)
