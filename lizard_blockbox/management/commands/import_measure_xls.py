@@ -74,7 +74,7 @@ class Command(BaseCommand):
         # Row has either 5 or 6 values; make sure it has 6
         row_values = (tuple(row_values) + (None,))[:6]
 
-        (location, reference, _, difference, reach_slug, difference_250) =\
+        (location, _, _, difference, reach_slug, difference_250) =\
             row_values
 
         reach = models.Reach.objects.get(slug=reach_slug)
@@ -85,13 +85,13 @@ class Command(BaseCommand):
         if isinstance(location, basestring):
             if not location.endswith('_N'):
                 # Take only the North reaches for Now
-                continue
+                return
             else:
                 location = float(location.strip('_N'))
 
         # We only use the values at integer kilometer marks
         if not location.is_integer():
-            continue
+            return
 
         try:
             riversegment = models.RiverSegment.objects.get(
@@ -99,7 +99,7 @@ class Command(BaseCommand):
         except models.RiverSegment.DoesNotExist:
             print 'This location does not exist: %i %s' % (
                 location, reach_slug)
-            continue
+            return
 
         models.WaterLevelDifference.objects.create(
             riversegment=riversegment,
@@ -113,5 +113,5 @@ class Command(BaseCommand):
                 riversegment=riversegment,
                 measure=measure,
                 protection_level="250",
-                level_difference=difference,
+                level_difference=difference_250,
                 )
