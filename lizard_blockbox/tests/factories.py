@@ -53,3 +53,12 @@ class VertexFactory(factory.Factory):
 
     name = "Some vertex"
     header = "Some header"
+
+
+class VertexValueFactory(factory.Factory):
+    FACTORY_FOR = models.VertexValue
+
+    vertex = factory.SubFactory(VertexFactory)
+    riversegment = factory.SubFactory(RiverSegmentFactory)
+    year = "2100"
+    value = 1.0
