@@ -209,6 +209,13 @@ class Vertex(models.Model):
         return ', '.join(
             self.named_reaches.all().values_list('name', flat=True))
 
+    @property
+    def years(self):
+        """Return sorted list of years that are present in this
+        vertex' values."""
+        return list(sorted(value['year'] for value in
+                self.vertexvalue_set.values('year').distinct()))
+
     def __unicode__(self):
         return self.name
 
