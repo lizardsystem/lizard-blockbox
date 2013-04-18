@@ -14,6 +14,66 @@ from django.test import TestCase
 from lizard_blockbox.tests import factories
 
 
+class TestNamedReach(TestCase):
+    def test_protection_levels_within_subsetreach(self):
+        namedreach = factories.NamedReachFactory.create()
+        reach = factories.ReachFactory.create()
+
+        factories.SubsetReachFactory.create(
+            reach=reach, named_reach=namedreach,
+            km_from=1, km_to=100)
+
+        segment = factories.RiverSegmentFactory(
+            location=50, reach=reach)
+
+        measure = factories.MeasureFactory.create()
+
+        factories.WaterLevelDifferenceFactory.create(
+            riversegment=segment, measure=measure, protection_level="1250")
+        factories.WaterLevelDifferenceFactory.create(
+            riversegment=segment, measure=measure, protection_level="250")
+
+        self.assertEquals(namedreach.protection_levels, ["250", "1250"])
+
+    def test_250_doesnt_occur(self):
+        namedreach = factories.NamedReachFactory.create()
+        reach = factories.ReachFactory.create()
+
+        factories.SubsetReachFactory.create(
+            reach=reach, named_reach=namedreach,
+            km_from=1, km_to=100)
+
+        segment = factories.RiverSegmentFactory(
+            location=50, reach=reach)
+
+        measure = factories.MeasureFactory.create()
+
+        factories.WaterLevelDifferenceFactory.create(
+            riversegment=segment, measure=measure, protection_level="1250")
+
+        self.assertEquals(namedreach.protection_levels, ["1250"])
+
+    def test_250_occurs_outside_of_km_from_to(self):
+        namedreach = factories.NamedReachFactory.create()
+        reach = factories.ReachFactory.create()
+
+        factories.SubsetReachFactory.create(
+            reach=reach, named_reach=namedreach,
+            km_from=1, km_to=100)
+
+        segment = factories.RiverSegmentFactory(
+            location=150, reach=reach)
+
+        measure = factories.MeasureFactory.create()
+
+        factories.WaterLevelDifferenceFactory.create(
+            riversegment=segment, measure=measure, protection_level="1250")
+        factories.WaterLevelDifferenceFactory.create(
+            riversegment=segment, measure=measure, protection_level="250")
+
+        self.assertEquals(namedreach.protection_levels, ["1250"])
+
+
 class TestVertex(TestCase):
     def test_years(self):
         vertex = factories.VertexFactory.create()
