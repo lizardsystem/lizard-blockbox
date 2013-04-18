@@ -70,6 +70,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     )
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+SOUTH_TESTS_MIGRATE = False
 
 # Used for django-staticfiles (and for media files
 STATIC_URL = '/static_media/'
