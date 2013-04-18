@@ -192,10 +192,6 @@ class WaterLevelDifference(models.Model):
 
     level_difference = models.FloatField()
 
-    def reference(self):
-        # For the admin.
-        return self.reference_value.reference
-
 
 class Vertex(models.Model):
     """Vertex

@@ -26,7 +26,7 @@ class Command(BaseCommand):
         if flush:
             # Delete all objects from models.
             for model in ('RiverSegment', 'Measure',
-                          'ReferenceValue', 'WaterLevelDifference',
+                          'WaterLevelDifference',
                           'Reach', 'NamedReach', 'SubsetReach',
                           'CityLocation', 'Vertex', 'VertexValue',
                           'Trajectory'):

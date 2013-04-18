@@ -4,7 +4,7 @@ from lizard_blockbox import models
 
 
 class WaterLevelDifferenceAdmin(admin.ModelAdmin):
-    list_display = ('riversegment', 'measure', 'reference', 'level_difference')
+    list_display = ('riversegment', 'measure', 'level_difference')
     list_filter = ('measure',)
 
 
@@ -29,4 +29,3 @@ admin.site.register(models.WaterLevelDifference, WaterLevelDifferenceAdmin)
 admin.site.register(models.SubsetReach)
 admin.site.register(models.Vertex, VertexAdmin)
 admin.site.register(models.VertexValue, VertexValueAdmin)
-# admin.site.register(models.CityLocation)
