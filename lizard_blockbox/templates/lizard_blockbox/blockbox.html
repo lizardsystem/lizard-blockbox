@@ -42,27 +42,27 @@
 {% endblock css %}
 
 {% block sidebar %}
-    <h2>Rivierselectie</h2>
-	<span>Selecteer een rivier:</span>
-    <form id="blockbox-river"
-	  data-select-river-url="{% url lizard_blockbox_select_river %}">
-      <select data-placeholder="Kies een rivier"
-	      class="chzn-select"
-	      tabindex="2"
-	      style="width:250px;">
-	    {% for reach in view.reaches %}
-          <option value="{{reach.name}}"
-                  {% if reach.selected %}SELECTED{% endif %}>
-            {{ reach.name }}
-          </option>
-        {% endfor %}
-      </select>
-    </form>
-	<span>Selecteer een mogelijke strategie DPRD/DPIJ:</span>
-	<div>
+  <h2>Rivierselectie</h2>
+  <span>Selecteer een rivier:</span>
+  <form id="blockbox-river"
+	data-select-river-url="{% url lizard_blockbox_select_river %}">
+    <select data-placeholder="Kies een rivier"
+	    class="chzn-select"
+	    tabindex="2"
+	    style="width:250px;">
+      {% for reach in view.reaches %}
+        <option value="{{reach.name}}"
+                {% if reach.selected %}SELECTED{% endif %}>
+          {{ reach.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+  <span>Selecteer een mogelijke strategie DPRD/DPIJ:</span>
+  <div>
     <a class="has_popover"
-	   id="blockbox-strategy-info"
-	   title="Blokkendoos strategiën"
+       id="blockbox-strategy-info"
+       title="Blokkendoos strategiën"
        data-content="
 <strong>Mogelijke strategieën DPIJ:</strong></br>
 - Winterpeil + 0,20 m (t.o.v. huidig winterpeil IJsselmeer)</br>
@@ -75,7 +75,7 @@
 - Lek extra ontzien (4C): Minder via Lek, meer via Waal (+ 800 m3/s extra t.o.v. Referentie DPR 2100). Beweegbare rivierkeringen in Beneden Merwede, Spui, Kil. Verdubbeling profiel Nieuwe Merwede"
 href="#"><i class="icon-info-sign icon-grey"></i></a>
 
-	<form id="blockbox-vertex"
+    <form id="blockbox-vertex"
 	  data-select-vertex-url="{% url lizard_blockbox_select_vertex %}"
 	  data-update-vertex-url="{% url lizard_blockbox_vertex_list %}">
       <select data-placeholder="Kies een hoekpunt"
@@ -84,62 +84,54 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
 	      style="width:250px;">
       </select>
     </form>
-	</div>
-    <h3>Bookmark</h3>
-    <p class="muted" />
+  </div>
+  <h3>Bookmark</h3>
+  <p class="muted">
     Gebruik deze URL om de huidige set maatregelen te bookmarken.
-    </p>
-    <a class="btn has_popover" data-content="Klik hier om de bookmark URL te genereren. Deze kunt u vervolgens knippen-en-plakken in bijvoorbeeld een e-mail, of u kunt de pagina in uw browser-favorieten zetten." data-original-title="Bookmark" id="generate_shorturl_button" href="#"><i class="icon-share"></i></a>
-    <input name="shorturl" type="text" id="shorturl" style="margin-top:10px;width:200px;" />
+  </p>
+  <a class="btn has_popover" data-content="Klik hier om de bookmark URL te genereren. Deze kunt u vervolgens knippen-en-plakken in bijvoorbeeld een e-mail, of u kunt de pagina in uw browser-favorieten zetten." data-original-title="Bookmark" id="generate_shorturl_button" href="#"><i class="icon-share"></i></a>
+  <input name="shorturl" type="text" id="shorturl" style="margin-top:10px;width:200px;" />
 
 
+  <h3>Geselecteerde maatregelen</h3>
+  <p class="muted">
+    <a href='#' id="blockbox-deselect-all-measures"
+       data-deselect-url="{% url lizard_blockbox.bookmarked_measures '' %}">
+      Deselecteer alle maatregelen</a>
+  </p>
+  <p class="muted">
+    Klik op een maatregel om hem te deselecteren.
+  </p>
 
-
-
-    <h3>Geselecteerde maatregelen</h3>
-    <p class="muted">
-	  <a href='#' id="blockbox-deselect-all-measures"
-		 data-deselect-url="{% url lizard_blockbox.bookmarked_measures '' %}">
-		Deselecteer alle maatregelen</a>
-	</p>
-	<p class="muted">
-      Klik op een maatregel om hem te deselecteren.
-    </p>
-
-    <p id="investmentcosts">
-      Totale investeringskosten: {{ view.investment_costs }} mln
-    </p>
-    <ul id="selected-measures-list" class="without-bullets">
-      {% for reach in view.measures_per_reach %}
-        <h4>{{ reach.name }}</h4>
-        {% for measure in reach.measures %}
-          <li>
-            <a href="#"
-               class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
+  <p id="investmentcosts">
+    Totale investeringskosten: {{ view.investment_costs }} mln
+  </p>
+  <ul id="selected-measures-list" class="without-bullets">
+    {% for reach in view.measures_per_reach %}
+      <h4>{{ reach.name }}</h4>
+      {% for measure in reach.measures %}
+        <li>
+          <a href="#"
+             class="sidebar-measure blockbox-toggle-measure padded-sidebar-item"
              data-measure-id="{{ measure.short_name }}"
-               data-measure-shortname="{{ measure.short_name }}">
-              <span class="measure-km">{{ measure.km_from }}:</span>
-              {% firstof measure.name measure.short_name %}
-            </a>
-          </li>
-        {% endfor %}
+             data-measure-shortname="{{ measure.short_name }}">
+            <span class="measure-km">{{ measure.km_from }}:</span>
+            {% firstof measure.name measure.short_name %}
+          </a>
+        </li>
       {% endfor %}
-    </ul>
-	<!-- <h3>Overzichts Pagina</h3>
-    <p class="muted">
-      Ga naar de <a href="{% url lizard_blockbox.selected_measures %}">
-        overzichtspagina over de geselecteerde maatregelen
-      </a> voor meer informatie. Hier kunt u de gekozen set ook bewaren.
-    </p> -->
-	<h3>Downloads</h3>
-    <p class="muted">
-      Genereer een <a target="_blank" id="report-pdf" href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
-        met de geselecteerde maatregelen.
-    </p>
-    <p>
-        <a id="report-pdf" href="{% url lizard_blockbox.generate_report %}"><img src="{{ STATIC_URL }}lizard_blockbox/pdf_icon.png"/></a>
-        <a href="{% url lizard_blockbox.generate_csv %}"><img src="{{ STATIC_URL }}lizard_blockbox/csv_icon.png"/></a>
-    </p>
+    {% endfor %}
+  </ul>
+
+  <h3>Downloads</h3>
+  <p class="muted">
+    Genereer een <a target="_blank" id="report-pdf" href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
+    met de geselecteerde maatregelen.
+  </p>
+  <p>
+    <a id="report-pdf" href="{% url lizard_blockbox.generate_report %}"><img src="{{ STATIC_URL }}lizard_blockbox/pdf_icon.png"/></a>
+    <a href="{% url lizard_blockbox.generate_csv %}"><img src="{{ STATIC_URL }}lizard_blockbox/csv_icon.png"/></a>
+  </p>
 {% endblock %}
 
 {% block content %}
