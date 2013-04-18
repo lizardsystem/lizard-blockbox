@@ -171,16 +171,6 @@ class Measure(models.Model):
         ordering = ('km_from',)
 
 
-class ReferenceValue(models.Model):
-    """Reference Value for the water height
-
-    per Riversegment and Measure.
-
-    """
-    riversegment = models.ForeignKey(RiverSegment)
-    reference = models.FloatField()
-
-
 class WaterLevelDifference(models.Model):
     """Water Level Difference
 
@@ -192,7 +182,7 @@ class WaterLevelDifference(models.Model):
 
     riversegment = models.ForeignKey(RiverSegment)
     measure = models.ForeignKey(Measure)
-    reference_value = models.ForeignKey(ReferenceValue)
+
     protection_level = models.CharField(
         max_length=4,
         choices=(
