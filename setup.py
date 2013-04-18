@@ -22,6 +22,7 @@ install_requires = [
     'reportlab',
     'html5lib',
     'pyPdf',
+    'factory_boy',
     ],
 
 tests_require = [

@@ -26,7 +26,7 @@ class Command(BaseCommand):
         if flush:
             # Delete all objects from models.
             for model in ('RiverSegment', 'Measure',
-                          'ReferenceValue', 'WaterLevelDifference',
+                          'WaterLevelDifference',
                           'Reach', 'NamedReach', 'SubsetReach',
                           'CityLocation', 'Vertex', 'VertexValue',
                           'Trajectory'):
@@ -68,37 +68,50 @@ class Command(BaseCommand):
             # Measure exists.
             return
         for row_nr in xrange(1, sheet.nrows):
-            location, reference, _, difference, reach_slug = \
-                sheet.row_values(row_nr)
+            self.parse_row(measure, sheet.row_values(row_nr))
 
-            reach = models.Reach.objects.get(slug=reach_slug)
+    def parse_row(self, measure, row_values):
+        # Row has either 5 or 6 values; make sure it has 6
+        row_values = (tuple(row_values) + (None,))[:6]
 
-            #The Meuse has both North and South (Z) kilometers with the same
-            #kilometer identifier.
-            #XXX: ToDo 68_N > 68, 69_N > 68.5, 68_Z -> 69, 69_Z -> 69.5
-            if isinstance(location, basestring):
-                if not location.endswith('_N'):
-                    # Take only the North reaches for Now
-                    continue
-                else:
-                    location = float(location.strip('_N'))
+        (location, _, _, difference, reach_slug, difference_250) =\
+            row_values
 
-            if not location.is_integer():
-                continue
-            try:
-                riversegment = models.RiverSegment.objects.get(
-                    location=location, reach=reach)
-            except models.RiverSegment.DoesNotExist:
-                print 'This location does not exist: %i %s' % (
-                    location, reach_slug)
-                continue
+        reach = models.Reach.objects.get(slug=reach_slug)
 
-            ref_val = models.ReferenceValue.objects.get(
-                riversegment=riversegment)
+        #The Meuse has both North and South (Z) kilometers with the same
+        #kilometer identifier.
+        #XXX: ToDo 68_N > 68, 69_N > 68.5, 68_Z -> 69, 69_Z -> 69.5
+        if isinstance(location, basestring):
+            if not location.endswith('_N'):
+                # Take only the North reaches for Now
+                return
+            else:
+                location = float(location.strip('_N'))
 
+        # We only use the values at integer kilometer marks
+        if not location.is_integer():
+            return
+
+        try:
+            riversegment = models.RiverSegment.objects.get(
+                location=location, reach=reach)
+        except models.RiverSegment.DoesNotExist:
+            print 'This location does not exist: %i %s' % (
+                location, reach_slug)
+            return
+
+        models.WaterLevelDifference.objects.create(
+            riversegment=riversegment,
+            measure=measure,
+            protection_level="1250",
+            level_difference=difference,
+            )
+
+        if difference_250 is not None:
             models.WaterLevelDifference.objects.create(
                 riversegment=riversegment,
                 measure=measure,
-                reference_value=ref_val,
-                level_difference=difference,
+                protection_level="250",
+                level_difference=difference_250,
                 )
