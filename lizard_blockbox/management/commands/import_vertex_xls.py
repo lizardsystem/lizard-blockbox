@@ -55,15 +55,10 @@ class Command(BaseCommand):
         vertexes = dict(enumerate(vertexes, 2))
 
         for row_nr in xrange(2, sheet.nrows):
-
             row = sheet.row_values(row_nr)
             reach = models.Reach.objects.get(slug=row[1].strip())
             riversegment, _ = models.RiverSegment.objects.get_or_create(
                 location=row[0], reach=reach)
-
-            models.ReferenceValue.objects.get_or_create(
-                riversegment=riversegment,
-                defaults={'reference': row[2]})
 
             for col_nr, vertex in vertexes.iteritems():
                 value = row[col_nr]
