@@ -215,6 +215,7 @@ class Vertex(models.Model):
 
 class VertexValue(models.Model):
     """Vertex Value for a specific location."""
+    YEARS = frozenset(["2050", "2100"])
 
     vertex = models.ForeignKey(Vertex)
     riversegment = models.ForeignKey(RiverSegment)

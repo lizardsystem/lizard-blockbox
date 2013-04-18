@@ -46,3 +46,10 @@ class MeasureFactory(factory.Factory):
     life_costs = None
     total_costs = None
     investment_m2 = None
+
+
+class VertexFactory(factory.Factory):
+    FACTORY_FOR = models.Vertex
+
+    name = "Some vertex"
+    header = "Some header"
