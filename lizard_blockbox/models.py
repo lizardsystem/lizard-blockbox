@@ -59,6 +59,27 @@ class NamedReach(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def protection_levels(self):
+        """Return list of protection levels that are present in in
+        waterleveldifference for measures in this namedreach's
+        reaches."""
+
+        # Note: we know that all measure include the protection level
+        # "1250".  So if we find one case that includes the other one,
+        # "250", we know what to return.
+
+        # I can't do this in one query, sorry.
+        for subsetreach in self.subsetreach_set.all():
+            if (WaterLevelDifference.objects.filter(
+                protection_level="250",
+                riversegment__reach__subsetreach=subsetreach,
+                riversegment__location__lte=subsetreach.km_to,
+                riversegment__location__gte=subsetreach.km_from).exists()):
+                return ["250", "1250"]
+
+        return ["1250"]
+
 
 class SubsetReach(models.Model):
     """A subset Reach

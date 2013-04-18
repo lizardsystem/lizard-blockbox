@@ -30,6 +30,21 @@ class RiverSegmentFactory(factory.Factory):
     reach = factory.SubFactory(ReachFactory)
 
 
+class NamedReachFactory(factory.Factory):
+    FACTORY_FOR = models.NamedReach
+
+    name = "Some named reach"
+
+
+class SubsetReachFactory(factory.Factory):
+    FACTORY_FOR = models.SubsetReach
+
+    reach = factory.SubFactory(ReachFactory)
+    named_reach = factory.SubFactory(NamedReachFactory)
+    km_from = 1
+    km_to = 100
+
+
 class MeasureFactory(factory.Factory):
     FACTORY_FOR = models.Measure
 
@@ -46,6 +61,15 @@ class MeasureFactory(factory.Factory):
     life_costs = None
     total_costs = None
     investment_m2 = None
+
+
+class WaterLevelDifferenceFactory(factory.Factory):
+    FACTORY_FOR = models.WaterLevelDifference
+
+    riversegment = factory.SubFactory(RiverSegmentFactory)
+    measure = factory.SubFactory(MeasureFactory)
+    protection_level = "1250"
+    level_difference = -1
 
 
 class VertexFactory(factory.Factory):
