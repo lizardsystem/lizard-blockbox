@@ -156,7 +156,12 @@
       ];
       options_html = options.join("");
       $('#blockbox-protection-level select').html(options_html);
-      return $('#blockbox-protection-level .chzn-select').trigger("liszt:updated");
+      $('#blockbox-protection-level .chzn-select').trigger("liszt:updated");
+      if (data.length === 1) {
+        return $('#blockbox-protection-level').hide();
+      } else {
+        return $('#blockbox-protection-level').show();
+      }
     });
   };
   BlockboxRouter = (function() {

@@ -140,6 +140,10 @@ updateProtectionLevel = ->
         options_html = options.join ""
         $('#blockbox-protection-level select').html options_html
         $('#blockbox-protection-level .chzn-select').trigger "liszt:updated"
+        if data.length == 1
+            $('#blockbox-protection-level').hide()
+        else
+            $('#blockbox-protection-level').show()
         )
 
 class BlockboxRouter extends Backbone.Router
