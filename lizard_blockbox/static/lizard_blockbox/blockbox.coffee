@@ -96,6 +96,7 @@ selectRiver = (river_name) ->
             'river_name': river_name
         success: (data) ->
             updateVertex()
+            updateProtectionLevel()
             updateMeasuresList()
             measuresMapView.render(true, false, true)
             @
@@ -120,6 +121,25 @@ updateVertex = ->
         html=groups.join ""
         $('#blockbox-vertex select').html html
         $('#blockbox-vertex .chzn-select').trigger "liszt:updated"
+        )
+
+selectProtectionLevel = (level) ->
+    $.ajax
+        type: 'POST'
+        url: $('#blockbox-protection-level').data 'select-protection-level-url'
+        data:
+            'level': level
+        success: (data) ->
+            measuresMapView.render(true, false, true)
+            @
+
+updateProtectionLevel = ->
+    $.getJSON($('#blockbox-protection-level').data('update-protection-level-url') + '?' + new Date().getTime(), (data) ->
+
+        options =  ["<option value='#{level}'>1 / #{level}</option>" for level in data]
+        options_html = options.join ""
+        $('#blockbox-protection-level select').html options_html
+        $('#blockbox-protection-level .chzn-select').trigger "liszt:updated"
         )
 
 class BlockboxRouter extends Backbone.Router
@@ -719,6 +739,7 @@ $("a.post-year").live 'click', (e) ->
             'year': $(@).data('year')
         success: (data) ->
             updateVertex()
+            updateProtectionLevel()
             updateMeasuresList()
             measuresMapView.render(true, false, true)
             @
@@ -762,6 +783,12 @@ $(document).ready ->
     $("#blockbox-vertex .chzn-select").chosen().change(
         () ->
             selectVertex @value
+            @
+        )
+    updateProtectionLevel()
+    $("#blockbox-protection-level .chzn-select").chosen().change(
+        () ->
+            selectProtectionLevel @value
             @
         )
     km_line_layer()

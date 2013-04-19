@@ -85,6 +85,18 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
       </select>
     </form>
   </div>
+
+  <form id="blockbox-protection-level"
+	data-select-protection-level-url="{% url lizard_blockbox_select_protection_level %}"
+	  data-update-protection-level-url="{% url lizard_blockbox_protection_level_list %}">
+    <select data-placeholder="Kies een beschermingsniveau"
+	    class="chzn-select"
+	    tabindex="2"
+	    style="width:250px;">
+    </select>
+  </form>
+
+
   <h3>Bookmark</h3>
   <p class="muted">
     Gebruik deze URL om de huidige set maatregelen te bookmarken.

@@ -1,5 +1,5 @@
 (function() {
-  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURECOLOR, MeasuresMapView, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURECOLOR, STROKEWIDTH, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, km_line_layer, measuresMapView, resize_graphs, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setup_map_legend, showCityTooltip, showLabel, showPopup, showTooltip, toggleMeasure, updateMeasuresList, updateVertex;
+  var ANIMATION_DURATION, BLACK, BLUE, BlockboxRouter, GRAY, GREEN, JSONRiverLayer, JSONTooltip, LIGHTBLUE, MEASURECOLOR, MeasuresMapView, RED, RIVERLEVEL0, RIVERLEVEL1, RIVERLEVEL2, RIVERLEVEL3, RIVERLEVEL4, RIVERLEVEL5, RIVERLEVEL6, RIVERLEVEL7, RIVERLEVEL8, RIVERLEVEL9, RiverLayerRule, SELECTEDMEASURECOLOR, STROKEWIDTH, YELLOW, deselectAllMeasures, doit, graphTimer, hasTooltip, km_line_layer, measuresMapView, resize_graphs, selectProtectionLevel, selectRiver, selectVertex, setFlotSeries, setMeasureGraph, setMeasureResultsGraph, setup_map_legend, showCityTooltip, showLabel, showPopup, showTooltip, toggleMeasure, updateMeasuresList, updateProtectionLevel, updateVertex;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -78,6 +78,7 @@
       },
       success: function(data) {
         updateVertex();
+        updateProtectionLevel();
         updateMeasuresList();
         measuresMapView.render(true, false, true);
         return this;
@@ -124,6 +125,38 @@
       html = groups.join("");
       $('#blockbox-vertex select').html(html);
       return $('#blockbox-vertex .chzn-select').trigger("liszt:updated");
+    });
+  };
+  selectProtectionLevel = function(level) {
+    return $.ajax({
+      type: 'POST',
+      url: $('#blockbox-protection-level').data('select-protection-level-url'),
+      data: {
+        'level': level
+      },
+      success: function(data) {
+        measuresMapView.render(true, false, true);
+        return this;
+      }
+    });
+  };
+  updateProtectionLevel = function() {
+    return $.getJSON($('#blockbox-protection-level').data('update-protection-level-url') + '?' + new Date().getTime(), function(data) {
+      var level, options, options_html;
+      options = [
+        (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = data.length; _i < _len; _i++) {
+            level = data[_i];
+            _results.push("<option value='" + level + "'>1 / " + level + "</option>");
+          }
+          return _results;
+        })()
+      ];
+      options_html = options.join("");
+      $('#blockbox-protection-level select').html(options_html);
+      return $('#blockbox-protection-level .chzn-select').trigger("liszt:updated");
     });
   };
   BlockboxRouter = (function() {
@@ -790,6 +823,7 @@
       },
       success: function(data) {
         updateVertex();
+        updateProtectionLevel();
         updateMeasuresList();
         measuresMapView.render(true, false, true);
         return this;
@@ -831,6 +865,11 @@
     updateVertex();
     $("#blockbox-vertex .chzn-select").chosen().change(function() {
       selectVertex(this.value);
+      return this;
+    });
+    updateProtectionLevel();
+    $("#blockbox-protection-level .chzn-select").chosen().change(function() {
+      selectProtectionLevel(this.value);
       return this;
     });
     km_line_layer();

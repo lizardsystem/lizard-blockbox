@@ -564,6 +564,26 @@ def select_vertex(request):
     return HttpResponse()
 
 
+@never_cache
+def protection_level_json(request):
+    response = HttpResponse(mimetype='application/json')
+    json.dump(_available_protection_levels(request), response)
+    return response
+
+
+@never_cache
+@require_POST
+@permission_required(VIEW_PERM)
+def select_protection_level(request):
+    """Select 1/250 or 1/1250 protection level."""
+    available = _available_protection_levels(request)
+    chosen = request.POST['protection_level']
+    if not chosen in available:
+        chosen = available[0]
+    request.session['protection_level'] = chosen
+    return HttpResponse()
+
+
 def _selected_vertex(request):
     """Return the selected vertex."""
 
@@ -591,6 +611,11 @@ def _selected_river(request):
                     request.session['river'])
         request.session['river'] = available_reaches[0]
     return request.session['river']
+
+
+def _available_protection_levels(request):
+    named_reach = models.NamedReach.objects.get(name=_selected_river(request))
+    return named_reach.protection_levels
 
 
 def _selected_year(request):
@@ -673,6 +698,8 @@ def select_river(request):
     """Select a river."""
     request.session['river'] = request.POST['river_name']
     del request.session['vertex']
+    request.session['protection_level'] = _available_protection_levels(
+        request)[0]
     return HttpResponse()
 
 
