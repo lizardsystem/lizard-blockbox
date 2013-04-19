@@ -161,8 +161,11 @@ def generate_csv(request):
     writer.writerow([])
     selected_vertex = _selected_vertex(request)
     selected_year = _selected_year(request)
+    selected_protection_level = _selected_protection_level(request)
     writer.writerow(['Strategie:', selected_vertex.name])
     writer.writerow(['Geselecteerd zichtjaar:', selected_year])
+    writer.writerow(['Geselecteerd beschermingsniveau:',
+                     '1 / %s' % selected_protection_level])
 
     writer.writerow([])
     fieldnames = [_('reach'), _('reach kilometer'),
@@ -179,7 +182,7 @@ def generate_csv(request):
                                                   ).order_by('location')
 
     water_levels = (_segment_level(segment, measures, selected_vertex,
-                                   selected_year)
+                                   selected_year, selected_protection_level)
                     for segment in segments)
     water_levels = (level for level in water_levels if level is not None)
 
@@ -480,9 +483,11 @@ def _available_factsheets():
     return factsheets
 
 
-def _segment_level(segment, measures, selected_vertex, selected_year):
+def _segment_level(segment, measures, selected_vertex, selected_year,
+                   protection_level):
     measures_level = segment.waterleveldifference_set.filter(
-        measure__in=measures).aggregate(
+        measure__in=measures,
+        protection_level=protection_level).aggregate(
         ld=Sum('level_difference'))['ld'] or 0
     try:
         vertex_level = models.VertexValue.objects.get(
@@ -506,8 +511,9 @@ def _water_levels(request):
     selected_measures = _selected_measures(request)
     selected_vertex = _selected_vertex(request)
     selected_year = _selected_year(request)
+    selected_protection_level = _selected_protection_level(request)
     cache_key = (str(selected_river) + str(selected_vertex.id) +
-                 selected_year +
+                 selected_year + selected_protection_level +
                  ''.join(selected_measures))
     cache_key = md5(cache_key).hexdigest()
     water_levels = cache.get(cache_key)
@@ -518,7 +524,7 @@ def _water_levels(request):
             short_name__in=selected_measures)
         riversegments = namedreach2riversegments(selected_river)
         segment_levels = [_segment_level(segment, measures, selected_vertex,
-                                         selected_year)
+                                         selected_year, selected_protection_level)
                         for segment in riversegments]
         water_levels = [segment for segment in segment_levels if segment]
         cache.set(cache_key, water_levels, 5 * 60)
@@ -564,6 +570,33 @@ def select_vertex(request):
     return HttpResponse()
 
 
+@never_cache
+def protection_level_json(request):
+    response = HttpResponse(mimetype='application/json')
+    json.dump(_available_protection_levels(request), response)
+    return response
+
+
+@never_cache
+@require_POST
+@permission_required(VIEW_PERM)
+def select_protection_level(request):
+    """Select 1/250 or 1/1250 protection level."""
+    available = _available_protection_levels(request)
+    chosen = request.POST['level']
+    if not chosen in available:
+        chosen = available[0]
+    request.session['protection_level'] = chosen
+    return HttpResponse()
+
+
+def _selected_protection_level(request):
+    if not 'protection_level' in request.session:
+        request.session['protection_level'] = _available_protection_levels(
+            request)[0]
+    return request.session['protection_level']
+
+
 def _selected_vertex(request):
     """Return the selected vertex."""
 
@@ -591,6 +624,11 @@ def _selected_river(request):
                     request.session['river'])
         request.session['river'] = available_reaches[0]
     return request.session['river']
+
+
+def _available_protection_levels(request):
+    named_reach = models.NamedReach.objects.get(name=_selected_river(request))
+    return named_reach.protection_levels
 
 
 def _selected_year(request):
@@ -673,6 +711,8 @@ def select_river(request):
     """Select a river."""
     request.session['river'] = request.POST['river_name']
     del request.session['vertex']
+    request.session['protection_level'] = _available_protection_levels(
+        request)[0]
     return HttpResponse()
 
 
