@@ -10,6 +10,9 @@ Changelog of lizard-blockbox
 
 - Added field for 'protection_level' on WaterLevelDifference.
 
+- Using protection levels in the user interface and filtering water level
+  differences on the chosen protection level (when applicable).
+
 - Added field for 'year' on VertexValue.
 
 - Changed the import_measure_xls script: if a row has six values instead of five,
