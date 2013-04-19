@@ -136,7 +136,7 @@ selectProtectionLevel = (level) ->
 updateProtectionLevel = ->
     $.getJSON($('#blockbox-protection-level').data('update-protection-level-url') + '?' + new Date().getTime(), (data) ->
 
-        options =  ["<option value='#{level}'>1 / #{level}</option>" for level in data]
+        options =  ["<option value='#{level}'>Beschermingsniveau 1/#{level}</option>" for level in data]
         options_html = options.join ""
         $('#blockbox-protection-level select').html options_html
         $('#blockbox-protection-level .chzn-select').trigger "liszt:updated"

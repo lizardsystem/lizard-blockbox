@@ -164,7 +164,8 @@ def generate_csv(request):
     selected_protection_level = _selected_protection_level(request)
     writer.writerow(['Strategie:', selected_vertex.name])
     writer.writerow(['Geselecteerd zichtjaar:', selected_year])
-    writer.writerow(['Geselecteerd beschermingsniveau:', selected_protection_level])
+    writer.writerow(['Geselecteerd beschermingsniveau:',
+                     '1 / %s' % selected_protection_level])
 
     writer.writerow([])
     fieldnames = [_('reach'), _('reach kilometer'),

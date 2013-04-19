@@ -149,7 +149,7 @@
           _results = [];
           for (_i = 0, _len = data.length; _i < _len; _i++) {
             level = data[_i];
-            _results.push("<option value='" + level + "'>1 / " + level + "</option>");
+            _results.push("<option value='" + level + "'>Beschermingsniveau 1/" + level + "</option>");
           }
           return _results;
         })()
