@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.7 (unreleased)
+0.7 (2013-04-22)
 ----------------
 
 - Removed now-unused ``the_geom`` field on riversegments. The geometry is
