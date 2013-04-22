@@ -15,15 +15,15 @@ Changelog of lizard-blockbox
 
 - Added field for 'year' on VertexValue.
 
-- Changed the import_measure_xls script: if a row has six values instead of five,
-  the sixth is assumed to contain the water level difference for the 1:250 protection
-  level.
+- Changed the import_measure_xls script: if a row has six values instead of
+  five, the sixth is assumed to contain the water level difference for the
+  1:250 protection level.
 
 - Removed unused ReferenceValue model.
 
-- Changed the import_vertex_xls script: headers may now start with the year (2050
-  or 2100) followed by a :, and this year value will be saved with the VertexValue.
-  If no year is present, assume 2100.
+- Changed the import_vertex_xls script: headers may now start with the year
+  (2050 or 2100) followed by a :, and this year value will be saved with the
+  VertexValue.  If no year is present, assume 2100.
 
 
 0.6 (2013-03-28)
