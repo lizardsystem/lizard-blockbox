@@ -807,7 +807,9 @@
   doit = void 0;
   $(window).resize(function() {
     resize_graphs();
-    return clip.reposition();
+    if (clip !== void 0) {
+      return clip.reposition();
+    }
   });
   window.resize_graphs = resize_graphs;
   $(".blockbox-toggle-measure").live('click', function(e) {

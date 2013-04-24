@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.8 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added "if undefined" to work around missing 'clip' variable if we're not
+  using the flash canvas.
 
 
 0.7 (2013-04-22)

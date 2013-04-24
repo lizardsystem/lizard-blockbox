@@ -721,7 +721,9 @@ $('.btn.collapse-rightbar').click ->
 doit = undefined
 $(window).resize ->
     resize_graphs()
-    clip.reposition()
+    if (clip != undefined)
+        # This seems to be used only for the flash backend [Reinout].
+        clip.reposition()
 
 window.resize_graphs = resize_graphs
 
