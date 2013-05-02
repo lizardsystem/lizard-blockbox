@@ -5,6 +5,8 @@ Changelog of lizard-blockbox
 0.8 (unreleased)
 ----------------
 
+- Better error logging in xls import.
+
 - Added "if undefined" to work around missing 'clip' variable if we're not
   using the flash canvas.
 
