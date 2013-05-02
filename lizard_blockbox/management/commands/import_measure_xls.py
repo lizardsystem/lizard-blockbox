@@ -1,12 +1,15 @@
-import sys
-import xlrd
-
 from optparse import make_option
+import logging
+import sys
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
+import xlrd
 
 from lizard_blockbox import models
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -48,9 +51,8 @@ class Command(BaseCommand):
             except Exception:
                 # Bare except due to a possible multitude in errors in the
                 # provided data
-                print "There is an error at the following place:"
-                print "Filename: {}".format(excel)
-                print "Sheet: {}".format(sheet.name)
+                logger.exception("Error in file %s in sheet %s",
+                                 excel, sheet.name)
                 sys.exit(2)
 
         wb = xlrd.open_workbook(excel)
@@ -77,7 +79,10 @@ class Command(BaseCommand):
         (location, _, _, difference, reach_slug, difference_250) =\
             row_values
 
-        reach = models.Reach.objects.get(slug=reach_slug)
+        try:
+            reach = models.Reach.objects.get(slug=reach_slug)
+        except models.Reach.DoesNotExist:
+            raise ValueError("Reach with slug=%r not found" % reach_slug)
 
         #The Meuse has both North and South (Z) kilometers with the same
         #kilometer identifier.
