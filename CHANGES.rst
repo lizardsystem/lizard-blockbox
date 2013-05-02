@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.8 (unreleased)
+0.8 (2013-05-02)
 ----------------
 
 - Better error logging in xls import.
