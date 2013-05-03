@@ -226,7 +226,8 @@ MeasuresMapView = Backbone.View.extend
                 @calculated = data
                 setFlotSeries(data)
                 if updateRivers
-                    @rivers.destroy()
+                    if @rivers
+                        @rivers.destroy()
                     @rivers = JSONRiverLayer('Rivers',data['water_levels'])
                 $('#loadingModal').modal('hide')
         else

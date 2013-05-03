@@ -285,7 +285,9 @@
           this.calculated = data;
           setFlotSeries(data);
           if (updateRivers) {
-            this.rivers.destroy();
+            if (this.rivers) {
+              this.rivers.destroy();
+            }
             this.rivers = JSONRiverLayer('Rivers', data['water_levels']);
           }
           return $('#loadingModal').modal('hide');
