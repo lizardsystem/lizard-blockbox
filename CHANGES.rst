@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.9 (unreleased)
+0.9 (2013-05-03)
 ----------------
 
 - Improved vertices selection. Vertices are now filtered on whether there are
