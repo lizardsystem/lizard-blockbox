@@ -5,7 +5,13 @@ Changelog of lizard-blockbox
 0.9 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Improved vertices selection. Vertices are now filtered on whether there are
+  vertexvalues to be found for the selected year. For 2050, many vertices
+  don't have values.
+
+- Prevented js errors when no vertices could be found.
+
+- Using compressor to ensure the blockbox.js is always refreshed.
 
 
 0.8 (2013-05-02)
