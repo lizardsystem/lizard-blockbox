@@ -1,4 +1,4 @@
-{% extends "lizard_map/wms.html" %}{% load i18n %}
+{% extends "lizard_map/wms.html" %}{% load i18n compress %}
 
 {% block javascript %}
    {{ block.super }}
@@ -19,12 +19,14 @@
     </script>
 {% endblock %}
 
-{% block map-javascript %}
-    {{ block.super }}
+{% block bottom-extras %}
+  {% compress js %}
     <script type="text/javascript"
-        src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
+            src="{{ STATIC_URL }}lizard_blockbox/blockbox.js">
     </script>
-{% endblock %}
+  {% endcompress %}
+  {# Using compressor to ensure the .js is always refreshed when needed #}
+{% endblock bottom-extras %}
 
 {% block css %}
   {{ block.super }}
