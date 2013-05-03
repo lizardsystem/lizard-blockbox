@@ -519,7 +519,6 @@ def _water_levels(request):
     water_levels = cache.get(cache_key)
     if not water_levels:
         logger.info("Cache miss for _water_levels")
-
         measures = models.Measure.objects.filter(
             short_name__in=selected_measures)
         riversegments = namedreach2riversegments(selected_river)
@@ -547,15 +546,23 @@ def calculated_measures_json(request):
     return response
 
 
+def _available_vertices(request):
+    selected_river = _selected_river(request)
+    selected_year = _selected_year(request)
+    vertices = models.Vertex.objects.filter(named_reaches__name=selected_river
+                                            ).order_by('header', 'name')
+    vertices = [vertex for vertex in vertices
+                if models.VertexValue.objects.filter(
+            vertex=vertex, year=selected_year).count()]
+    return vertices
+
+
 @never_cache
 def vertex_json(request):
-    selected_river = _selected_river(request)
-    vertexes = models.Vertex.objects.filter(named_reaches__name=selected_river)
-    values = vertexes.values_list('header', 'id', 'name'
-                                  ).order_by('header', 'name')
+    vertices = _available_vertices(request)
     to_json = defaultdict(list)
-    for i in values:
-        to_json[i[0]].append(i[1:])
+    for vertex in vertices:
+        to_json[vertex.header].append([vertex.id, vertex.name])
     response = HttpResponse(mimetype='application/json')
     json.dump(to_json, response)
     return response
@@ -601,8 +608,7 @@ def _selected_vertex(request):
     """Return the selected vertex."""
 
     selected_river = _selected_river(request)
-    available_vertices = models.Vertex.objects.filter(
-        named_reaches__name=selected_river).order_by('header', 'name')
+    available_vertices = _available_vertices(request)
     available_vertices_ids = [i.id for i in available_vertices]
 
     if (not 'vertex' in request.session or
