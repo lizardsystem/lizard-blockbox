@@ -80,7 +80,12 @@ class Command(BaseCommand):
         return dict(enumerate(vertices, 2))
 
     def import_row(self, vertices, row):
+        # Skip unused slug 'ST' (Steurgat)
+        if row[1].strip() == 'ST':
+            return
+
         reach = models.Reach.objects.get(slug=row[1].strip())
+
         riversegment, _ = models.RiverSegment.objects.get_or_create(
             location=row[0], reach=reach)
 

@@ -79,6 +79,10 @@ class Command(BaseCommand):
         (location, _, _, difference, reach_slug, difference_250) =\
             row_values
 
+        # Skip unused slug 'ST' (Steurgat)
+        if reach_slug == 'ST':
+            return
+
         try:
             reach = models.Reach.objects.get(slug=reach_slug)
         except models.Reach.DoesNotExist:

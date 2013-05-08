@@ -5,7 +5,7 @@ Changelog of lizard-blockbox
 0.10 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Skip importing unused reach slug 'ST' (Steurgat)
 
 
 0.9 (2013-05-03)
