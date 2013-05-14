@@ -63,6 +63,7 @@ class Command(BaseCommand):
         short_name = sheet.name
         if isinstance(short_name, float):
             short_name = int(short_name)
+        short_name = unicode(short_name).strip()
         measure, created = models.Measure.objects.get_or_create(
             short_name=short_name)
 

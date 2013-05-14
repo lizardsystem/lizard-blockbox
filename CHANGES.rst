@@ -5,7 +5,9 @@ Changelog of lizard-blockbox
 0.11 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fix issue #34, table with measurements was empty in case an
+  unexpected character in a measure's short_name caused reverse() to
+  throw an exception.
 
 
 0.10 (2013-05-08)

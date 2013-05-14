@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.core.urlresolvers import NoReverseMatch
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
 from django.template import Context
@@ -283,10 +284,17 @@ class BlockboxView(MapView):
             measure['name'] = unicode(measure_obj)
             measure['short_name'] = measure_obj.short_name
             if measure_obj.short_name in available_factsheets:
-                measure['pdf_link'] = reverse(
-                    'measure_factsheet',
-                    kwargs={'measure': measure_obj.short_name})
+                try:
+                    # This reverse() can fail due to unexpected
+                    # characters in short_name, in that case we don't
+                    # show a PDF link
+                    measure['pdf_link'] = reverse(
+                        'measure_factsheet',
+                        kwargs={'measure': measure_obj.short_name})
+                except NoReverseMatch:
+                    measure['pdf_link'] = None
             result.append(measure)
+
         return result
 
     @property
