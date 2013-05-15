@@ -12,6 +12,9 @@ Changelog of lizard-blockbox
 - Fix issue #35, remove word 'mogelijke' from strategies in the
   template.
 
+- Fix issue #37. We skipped importing the rest of the vertex sheet after
+  seeing an empty column...
+
 
 0.10 (2013-05-08)
 -----------------

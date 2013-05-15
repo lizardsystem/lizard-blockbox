@@ -79,3 +79,23 @@ class TestImportRow(TestCase):
 
         self.assertEquals(vertex_value.value, 5)
 
+    def test_saves_column_after_empty_column(self):
+        vertex1 = factories.VertexFactory.create()
+        vertex2 = factories.VertexFactory.create()
+        vertex1.year = "2050"
+        vertex2.year = "2050"
+
+        vertices = {2: vertex1, 3: vertex1, 4: vertex2}
+
+        reach = factories.ReachFactory.create(slug="MA")
+        riversegment = factories.RiverSegmentFactory(
+            location=1, reach=reach)
+
+        COMMAND.import_row(vertices, [1.0, 'MA', 1.0, '', 2.0])
+
+        value1 = models.VertexValue.objects.get(
+            riversegment=riversegment, vertex=vertex1, year="2050")
+        value2 = models.VertexValue.objects.get(
+            riversegment=riversegment, vertex=vertex2, year="2050")
+        self.assertEquals(value1.value, 1.0)
+        self.assertEquals(value2.value, 2.0)

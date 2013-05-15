@@ -92,7 +92,8 @@ class Command(BaseCommand):
         for col_nr, vertex in vertices.iteritems():
             value = row[col_nr]
             if not value:
-                return
+                continue  # Skip this column, but there may still be
+                          # data in later columns
             models.VertexValue.objects.get_or_create(
                 riversegment=riversegment,
                 vertex=vertex,
