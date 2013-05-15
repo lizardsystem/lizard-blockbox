@@ -9,6 +9,9 @@ Changelog of lizard-blockbox
   unexpected character in a measure's short_name caused reverse() to
   throw an exception.
 
+- Fix issue #35, remove word 'mogelijke' from strategies in the
+  template.
+
 
 0.10 (2013-05-08)
 -----------------
