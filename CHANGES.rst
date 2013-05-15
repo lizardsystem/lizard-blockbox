@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.11 (unreleased)
+0.11 (2013-05-15)
 -----------------
 
 - Fix issue #34, table with measurements was empty in case an
