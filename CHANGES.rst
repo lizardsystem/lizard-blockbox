@@ -8,6 +8,7 @@ Changelog of lizard-blockbox
 - It seems that not saving the session after setting things in it
   caused the PDF to be generated incorrectly.
 
+- New text in possible strategies (i) hover text.
 
 0.11 (2013-05-15)
 -----------------
