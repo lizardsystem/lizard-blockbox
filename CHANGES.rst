@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.12 (unreleased)
+0.12 (2013-05-16)
 -----------------
 
 - It seems that not saving the session after setting things in it
