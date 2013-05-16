@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.12 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- It seems that not saving the session after setting things in it
+  caused the PDF to be generated incorrectly.
 
 
 0.11 (2013-05-15)

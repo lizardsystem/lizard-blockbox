@@ -364,6 +364,7 @@ class PlainGraphMapView(BlockboxView):
         session['river'] = self.request.GET.get('river')
         session['map_location'] = dict((i, self.request.GET.get(i))
             for i in ('top', 'bottom', 'left', 'right'))
+        session.save()
         return super(PlainGraphMapView, self).get_context_data(**kwargs)
 
 
