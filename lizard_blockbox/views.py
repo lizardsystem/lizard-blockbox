@@ -176,6 +176,16 @@ def generate_csv(request):
     # Get the segments in the trajectory in with the selected river is.
     river = _selected_river(request)
     # Just get the first reach since reaches can only be in one trajectory.
+
+    # NOTE: There is an existing agreement, probably needs to be
+    # changed, that says that a CSV export always contains exactly one
+    # entire Trajectory, as defined in the trajectory Excel sheets. In
+    # the case of rivers that overlap (different branches), it is
+    # possible that a trajectory is chosen that is the wrong branch. A
+    # good solution for this is unknown at this point.
+
+    # This is the reason why the CSV comment in issue #38 is not a bug.
+
     reach = models.NamedReach.objects.get(name=river
                                           ).subsetreach_set.all()[0].reach
     reaches = reach.trajectory_set.get().reach.all()
