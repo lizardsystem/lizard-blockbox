@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.13 (unreleased)
+0.13 (2013-05-23)
 -----------------
 
 - Removed the UI control for the protection level, the protection
