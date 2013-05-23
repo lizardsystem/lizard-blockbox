@@ -5,8 +5,11 @@ Changelog of lizard-blockbox
 0.13 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Removed the UI control for the protection level, the protection
+  level now depends on the chosen vertex. If the vertex has "1:250" in
+  its name, that protection level is used, otherwise 1:1250.
 
+- Only show the 1:250 strategy if selected river is "Onbedijkte Maas".
 
 0.12 (2013-05-16)
 -----------------

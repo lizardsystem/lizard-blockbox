@@ -162,7 +162,7 @@ def generate_csv(request):
     writer.writerow([])
     selected_vertex = _selected_vertex(request)
     selected_year = _selected_year(request)
-    selected_protection_level = _selected_protection_level(request)
+    selected_protection_level = _selected_protection_level(selected_vertex)
     writer.writerow(['Strategie:', selected_vertex.name])
     writer.writerow(['Geselecteerd zichtjaar:', selected_year])
     writer.writerow(['Geselecteerd beschermingsniveau:',
@@ -530,7 +530,7 @@ def _water_levels(request):
     selected_measures = _selected_measures(request)
     selected_vertex = _selected_vertex(request)
     selected_year = _selected_year(request)
-    selected_protection_level = _selected_protection_level(request)
+    selected_protection_level = _selected_protection_level(selected_vertex)
     cache_key = (str(selected_river) + str(selected_vertex.id) +
                  selected_year + selected_protection_level +
                  ''.join(selected_measures))
@@ -541,9 +541,11 @@ def _water_levels(request):
         measures = models.Measure.objects.filter(
             short_name__in=selected_measures)
         riversegments = namedreach2riversegments(selected_river)
-        segment_levels = [_segment_level(segment, measures, selected_vertex,
-                                         selected_year, selected_protection_level)
-                        for segment in riversegments]
+        segment_levels = [
+            _segment_level(
+                segment, measures, selected_vertex,
+                selected_year, selected_protection_level)
+            for segment in riversegments]
         water_levels = [segment for segment in segment_levels if segment]
         cache.set(cache_key, water_levels, 5 * 60)
     return water_levels
@@ -570,6 +572,13 @@ def _available_vertices(request):
     selected_year = _selected_year(request)
     vertices = models.Vertex.objects.filter(named_reaches__name=selected_river
                                             ).order_by('header', 'name')
+
+    # Rule: we only show vertices with "1:250" in the name if the
+    # selected river is "Onbedijkte Maas", because that is the only
+    # river for which there is 1:250 data over its entire reach.
+    if selected_river != "Onbedijkte Maas":
+        vertices = vertices.exclude(name__contains="1:250")
+
     vertices = [vertex for vertex in vertices
                 if models.VertexValue.objects.filter(
             vertex=vertex, year=selected_year).count()]
@@ -616,17 +625,19 @@ def select_protection_level(request):
     return HttpResponse()
 
 
-def _selected_protection_level(request):
-    if not 'protection_level' in request.session:
-        request.session['protection_level'] = _available_protection_levels(
-            request)[0]
-    return request.session['protection_level']
+def _selected_protection_level(vertex):
+    # There is a special vertex for the 1:250 strategy on the Maas, it
+    # should use the 1:250 protection level values, 1:1250 is used
+    # everywhere else.
+    if vertex and vertex.name and "1:250" in vertex.name:
+        return "250"
+    else:
+        return "1250"
 
 
 def _selected_vertex(request):
     """Return the selected vertex."""
 
-    selected_river = _selected_river(request)
     available_vertices = _available_vertices(request)
     available_vertices_ids = [i.id for i in available_vertices]
 
