@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.14 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fix bug with sorting measurement list if there are no measurements
+  of type "Onbekend".
 
 
 0.13 (2013-05-23)

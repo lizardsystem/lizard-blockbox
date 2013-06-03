@@ -792,9 +792,14 @@ def _list_measures_json(request):
             measure['measure_type'] = 'Onbekend'
     all_types = list(
         set(measure['measure_type'] for measure in measures))
-    all_types[all_types.index('Onbekend')] = 'XOnbekend'
-    all_types.sort(reverse=True)
-    all_types[all_types.index('XOnbekend')] = 'Onbekend'
+
+    if 'Onbekend' in all_types:
+        all_types[all_types.index('Onbekend')] = 'ZZZZOnbekend'
+        all_types.sort(reverse=True)
+        all_types[all_types.index('ZZZZOnbekend')] = 'Onbekend'
+    else:
+        all_types.sort(reverse=True)
+
     single_characters = []
     for measure_type in all_types:
         if measure_type is 'Onbekend':
