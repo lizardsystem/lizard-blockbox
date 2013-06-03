@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.14 (unreleased)
+0.14 (2013-06-03)
 -----------------
 
 - Fix bug with sorting measurement list if there are no measurements
