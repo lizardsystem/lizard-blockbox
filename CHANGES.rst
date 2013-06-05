@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.15 (unreleased)
+0.15 (2013-06-05)
 -----------------
 
 - Do not serve factsheets with a '+' in their name over
