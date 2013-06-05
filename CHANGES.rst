@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.15 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Do not serve factsheets with a '+' in their name over
+  X-Accel-Redirect, because Nginx always 404s on them.
 
 
 0.14 (2013-06-03)

@@ -26,6 +26,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from django.views.generic.base import RedirectView
+from django.views.static import serve
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
@@ -479,6 +480,17 @@ def fetch_factsheet(request, measure):
     if not measure in _available_factsheets():
         # There is no factsheet for this measure
         raise Http404
+
+    if '+' in measure:
+        # Nginx fails to serve files with a '+' in their name. Encoding
+        # the '+' doesn't work, because there is an Nginx issue that says
+        # it doesn't decode X-Accel-Redirect paths.
+        # In short, we just do these ourselves...
+        # XXX
+        filepath = os.path.join(
+            settings.BUILDOUT_DIR, 'deltaportaal', 'data', 'factsheets',
+            '{measure}.pdf'.format(measure=measure))
+        return serve(request, filepath, '/')
 
     response = HttpResponse()
     response['X-Accel-Redirect'] = '/factsheets/%s.pdf' % measure
