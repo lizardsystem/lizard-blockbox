@@ -1,0 +1,15 @@
+div#last-imports {
+    margin: 10px;
+}
+
+div#content {
+    overflow-y: scroll;
+}
+
+table#last-commands-table {
+    font-size: 80%;
+}
+
+table#last-commands-table tr td pre {
+    font-size: 80%;
+}

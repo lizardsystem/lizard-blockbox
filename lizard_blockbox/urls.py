@@ -1,4 +1,5 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
+from django.conf.urls.defaults import include
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
 
@@ -6,7 +7,7 @@ from lizard_ui.urls import debugmode_urlpatterns
 from lizard_blockbox.views import BlockboxView, PlainGraphMapView
 from lizard_blockbox.views import SelectedMeasuresView
 from lizard_blockbox.views import BookmarkedMeasuresView
-
+from lizard_blockbox import views
 
 urlpatterns = patterns(
     '',
@@ -59,5 +60,15 @@ urlpatterns = patterns(
     url(r'^select_protection_level/$',
         'lizard_blockbox.views.select_protection_level',
         name='lizard_blockbox_select_protection_level'),
+
+    # Automatic imports
+    url(r'^import/$',
+        views.AutomaticImportPage.as_view(),
+        name="lizard_blockbox.automatic_import"),
+    url(r'^import/(?P<command>\w+)/$',
+        views.AutomaticImportPage.as_view(),
+        name="lizard_blockbox.automatic_import_command"),
+    url(r'^allimport/',
+        include('lizard_management_command_runner.urls'))
 )
 urlpatterns += debugmode_urlpatterns()

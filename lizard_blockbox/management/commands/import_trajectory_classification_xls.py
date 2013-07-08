@@ -18,9 +18,11 @@ class Command(BaseCommand):
             print "Pass excel files as arguments."
             sys.exit(1)
 
+        self.stdout.write("Import trajectindeling...\n")
         map(self.parse, args)
 
     def parse(self, excel):
+        self.stdout.write("Parsing '{excel}'\n".format(excel=excel))
         wb = xlrd.open_workbook(excel)
         map(self.parse_sheet, wb.sheets())
 

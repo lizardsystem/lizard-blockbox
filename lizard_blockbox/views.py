@@ -34,6 +34,9 @@ from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
 from xhtml2pdf import pisa
 
+from lizard_management_command_runner.models import ManagementCommand
+from lizard_management_command_runner import tasks
+
 from lizard_blockbox import models
 from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
 from lizard_blockbox.utils import UnicodeWriter
@@ -831,3 +834,21 @@ def _list_measures_json(request):
         measure['show'] = measure['short_name'] in measures_selected_river
 
     return list(measures)
+
+
+class AutomaticImportPage(BlockboxView):
+    template_name = "lizard_blockbox/automatic_import.html"
+
+    def post(self, request, command):
+        """Posting to this URL starts the background task."""
+        try:
+            management_command = ManagementCommand.objects.get(command=command)
+        except ManagementCommand.DoesNotExist:
+            return
+
+        # Management command checks the user's rights
+        tasks.run_management_command.delay(
+            request.user,
+            management_command)
+
+        return HttpResponse()

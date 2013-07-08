@@ -1,0 +1,57 @@
+{% extends "lizard_blockbox/blockbox.html" %}
+
+{% block javascript %}
+<script src="{{ STATIC_URL }}lizard_ui/csrf.js"></script>
+<script type="text/javascript"
+  src="{{ STATIC_URL }}lizard_blockbox/automatic_import.js">
+</script>
+{% endblock %}
+
+{% block bottom-extras %}
+{% endblock bottom-extras %}
+
+{% block css %}
+  {{ block.super }}
+  <link rel="stylesheet"
+    href="{{ STATIC_URL }}lizard_blockbox/automatic_import.css"
+    type="text/css"
+    media="screen, projection" />
+{% endblock css %}
+
+{% block sidebar %}
+<h2>Automatische import</h2>
+<button id="start-import-button" data-url="{% url lizard_blockbox.automatic_import_command command="run_import" %}" class="btn btn-primary">Ophalen data</button>
+<button id="start-processing-button" data-url="{% url lizard_blockbox.automatic_import_command command="load_blockbox_data" %}" class="btn btn-primary">Verwerken data</button>
+{% endblock sidebar %}
+
+{% block content %}
+<div id="last-imports" >
+<h2>Laatste commando's</h2>
+<table class="table table-bordered" id="last-commands-table" data-update-url="{% url latest_runs_view %}">
+  <thead>
+    <th width="50">Command</th>
+    <th width="50">Start</th>
+    <th width="50">User</th>
+    <th width="50">Klaar?</th>
+    <th width="50">Success</th>
+    <th>Output</th>
+  </thead>
+</table>
+</div>
+{% endblock %}
+
+
+{% comment %}
+  {% for run in view.command.latest_runs %}
+  <tr>
+    <td>{{ run.start_time }}</td>
+    <td>{% if run.finished %}{% if run.success %}<i class="icon-ok-sign"></i> Ja{% else %}<i class="icon-minus-sign"></i> Nee{% endif %}{% endif %}</td>
+    <td>{{ run.started_by }}</td>
+    <td>{% if run.finished %}
+    <a class="toggle-visibility" data-span-id="output-run-{{ run.id }}" href="">toon output</a>
+    <span id="output-run-{{ run.id }}" data-visible="0" style="display: none;"><pre>{{ run.captured_output }}</pre></span>
+    {% else %}(bezig)
+    {% endif %}</td>
+  </tr>
+  {% endfor %}
+{% endcomment %}

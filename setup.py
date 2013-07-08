@@ -11,6 +11,8 @@ long_description = '\n\n'.join([
 
 install_requires = [
     'Django',
+    'django-celery',
+    'django-kombu',
     'django-extensions',
     'django-nose',
     'lizard-ui >= 4.0b4',
@@ -23,6 +25,7 @@ install_requires = [
     'html5lib',
     'pyPdf',
     'factory_boy',
+    'lizard-management-command-runner',
     ],
 
 tests_require = [
