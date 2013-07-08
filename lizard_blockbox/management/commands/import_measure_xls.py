@@ -28,6 +28,7 @@ class Command(BaseCommand):
         flush = options['flush']
         if flush:
             # Delete all objects from models.
+            self.stdout.write("Flushing measures.\n")
             for model in ('RiverSegment', 'Measure',
                           'WaterLevelDifference',
                           'Reach', 'NamedReach', 'SubsetReach',
@@ -44,6 +45,8 @@ class Command(BaseCommand):
         map(self.parse, args)
 
     def parse(self, excel):
+        self.stdout.write("Parsing measures from '{excel}'.\n"
+                          .format(excel=excel))
 
         def exception_parse(sheet):
             try:
@@ -71,9 +74,9 @@ class Command(BaseCommand):
             # Measure exists.
             return
         for row_nr in xrange(1, sheet.nrows):
-            self.parse_row(measure, sheet.row_values(row_nr))
+            self.parse_row(measure, sheet.row_values(row_nr), row_nr)
 
-    def parse_row(self, measure, row_values):
+    def parse_row(self, measure, row_values, rownr):
         # Row has either 5 or 6 values; make sure it has 6
         row_values = (tuple(row_values) + (None,))[:6]
 
@@ -107,9 +110,17 @@ class Command(BaseCommand):
             riversegment = models.RiverSegment.objects.get(
                 location=location, reach=reach)
         except models.RiverSegment.DoesNotExist:
-            print 'This location does not exist: %i %s' % (
-                location, reach_slug)
+            #print 'This location does not exist: %i %s' % (
+            #    location, reach_slug)
             return
+
+        try:
+            difference = float(difference)
+        except ValueError:
+            raise ValueError(
+                ("On line {rownr}, level difference '{difference}' is not "
+                 "a floating point number.")
+                .format(rownr=rownr, difference=difference))
 
         models.WaterLevelDifference.objects.create(
             riversegment=riversegment,
@@ -118,7 +129,15 @@ class Command(BaseCommand):
             level_difference=difference,
             )
 
-        if difference_250 is not None:
+        if difference_250:
+            try:
+                difference_250 = float(difference_250)
+            except ValueError:
+                raise ValueError(
+                    ("On line {rownr}, level difference '{difference}' is not "
+                     "a floating point number.")
+                    .format(rownr=rownr, difference=difference_250))
+
             models.WaterLevelDifference.objects.create(
                 riversegment=riversegment,
                 measure=measure,

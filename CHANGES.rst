@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.16 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Add a page for automatic imports, based on
+  lizard-management-command-runner.
 
 
 0.15 (2013-06-05)
