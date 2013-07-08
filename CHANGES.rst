@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.16 (unreleased)
+0.16 (2013-07-08)
 -----------------
 
 - Add a page for automatic imports, based on
