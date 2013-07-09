@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.19 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Remove bug where we checked if the file we were going to generate
+  existed...
 
 
 0.18 (2013-07-09)

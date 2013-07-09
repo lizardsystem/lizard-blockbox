@@ -90,8 +90,7 @@ mkdir {jsondir}
         json_file = os.path.join(
             JSON_DIR,
             os.path.basename(shape).replace('shp', 'json'))
-        if not os.path.exists(json_file):
-            continue
+
         output += run_commands_in(DATA_DIR, """
 ogr2ogr -f GeoJSON -s_srs EPSG:28992 -t_srs EPSG:900913 -simplify 0.05 {jsonfile} {shape}
 """.format(jsonfile=json_file, shape=shape))
