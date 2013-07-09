@@ -25,7 +25,7 @@ def stripped_commands(commands):
             yield command
 
 
-def run_commands_in(data_dir, commands, shell=False):
+def run_commands_in(data_dir, commands, shell=False, no_extra_output=False):
     """Cd to data_dir, run the commands, return all output as one
     concatenated string, combing stdin and stderr. If a command fails,
     CommandError is raised, and the other commands won't run.
@@ -38,7 +38,8 @@ def run_commands_in(data_dir, commands, shell=False):
     output = ''
     try:
         for command in stripped_commands(commands):
-            output += "Running {command}.\n".format(command=command)
+            if not no_extra_output:
+                output += "Running {command}.\n".format(command=command)
             if not shell:
                 command = command.split()
             output += subprocess.check_output(
@@ -79,7 +80,7 @@ mkdir {jsondir}
 """.format(jsondir=JSON_DIR)
 
     shapes = [shape for shape in run_commands_in(
-            DATA_DIR, SHAPE_COMMAND).split("\n")
+            DATA_DIR, SHAPE_COMMAND, no_extra_output=True).split("\n")
               if shape]
     run_commands_in(
         DATA_DIR, RM_COMMANDS)
@@ -89,7 +90,8 @@ mkdir {jsondir}
         json_file = os.path.join(
             JSON_DIR,
             os.path.basename(shape).replace('shp', 'json'))
-
+        if not os.path.exists(json_file):
+            continue
         output += run_commands_in(DATA_DIR, """
 ogr2ogr -f GeoJSON -s_srs EPSG:28992 -t_srs EPSG:900913 -simplify 0.05 {jsonfile} {shape}
 """.format(jsonfile=json_file, shape=shape))

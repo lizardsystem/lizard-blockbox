@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.18 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fix bug where run_import command got confused by its own helpful
+  extra output.
 
 
 0.17 (2013-07-08)
