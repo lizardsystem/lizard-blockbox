@@ -93,7 +93,7 @@ var automatic_import = (function () {
     };
 })();
 
-$("#start-import-button").click(function () {
+$("button.start-import-button").click(function () {
     var url = $(this).attr("data-url");
     $.post(url, function () {
         automatic_import.request_updates(5);

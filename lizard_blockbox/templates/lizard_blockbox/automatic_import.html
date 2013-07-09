@@ -20,8 +20,8 @@
 
 {% block sidebar %}
 <h2>Automatische import</h2>
-<button id="start-import-button" data-url="{% url lizard_blockbox.automatic_import_command command="run_import" %}" class="btn btn-primary">Ophalen data</button>
-<button id="start-import-button" data-url="{% url lizard_blockbox.automatic_import_command command="load_blockbox_data" %}" class="btn btn-primary">Verwerken data</button>
+<button class="start-import-button" data-url="{% url lizard_blockbox.automatic_import_command command="run_import" %}" class="btn btn-primary">Ophalen data</button>
+<button class="start-import-button" data-url="{% url lizard_blockbox.automatic_import_command command="load_blockbox_data" %}" class="btn btn-primary">Verwerken data</button>
 {% endblock sidebar %}
 
 {% block content %}
