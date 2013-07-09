@@ -92,8 +92,11 @@ mkdir {jsondir}
             os.path.basename(shape).replace('shp', 'json'))
 
         output += run_commands_in(DATA_DIR, """
-ogr2ogr -f GeoJSON -s_srs EPSG:28992 -t_srs EPSG:900913 -simplify 0.05 {jsonfile} {shape}
+ogr2ogr -f GeoJSON -s_srs EPSG:28992 -t_srs EPSG:900913 {jsonfile} {shape}
 """.format(jsonfile=json_file, shape=shape))
+#         output += run_commands_in(DATA_DIR, """
+# ogr2ogr -f GeoJSON -s_srs EPSG:28992 -t_srs EPSG:900913 -simplify 0.05 {jsonfile} {shape}
+# """.format(jsonfile=json_file, shape=shape))
 
     stdout.write(output)
     stdout.write("Parsed blockbox geojson...\n")
