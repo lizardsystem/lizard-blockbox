@@ -3,11 +3,8 @@ import logging
 import sys
 
 from django.core.management.base import BaseCommand
-from django.db import transaction
-import xlrd
 
-from lizard_blockbox import models
-
+from lizard_blockbox import import_helpers
 
 logger = logging.getLogger(__name__)
 
@@ -27,14 +24,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         flush = options['flush']
         if flush:
-            # Delete all objects from models.
-            self.stdout.write("Flushing measures.\n")
-            for model in ('RiverSegment', 'Measure',
-                          'WaterLevelDifference',
-                          'Reach', 'NamedReach', 'SubsetReach',
-                          'CityLocation', 'Vertex', 'VertexValue',
-                          'Trajectory'):
-                getattr(models, model).objects.all().delete()
+            import_helpers.flush_database(self.stdout)
 
         if len(args) == 0:
             if not flush:
@@ -42,105 +32,5 @@ class Command(BaseCommand):
                 sys.exit(1)
             sys.exit(0)
 
-        map(self.parse, args)
-
-    def parse(self, excel):
-        self.stdout.write("Parsing measures from '{excel}'.\n"
-                          .format(excel=excel))
-
-        def exception_parse(sheet):
-            try:
-                self.parse_sheet(sheet)
-            except Exception:
-                # Bare except due to a possible multitude in errors in the
-                # provided data
-                logger.exception("Error in file %s in sheet %s",
-                                 excel, sheet.name)
-                sys.exit(2)
-
-        wb = xlrd.open_workbook(excel)
-        map(exception_parse, wb.sheets())
-
-    @transaction.commit_on_success
-    def parse_sheet(self, sheet):
-        short_name = sheet.name
-        if isinstance(short_name, float):
-            short_name = int(short_name)
-        short_name = unicode(short_name).strip()
-        measure, created = models.Measure.objects.get_or_create(
-            short_name=short_name)
-
-        if not created:
-            # Measure exists.
-            return
-        for row_nr in xrange(1, sheet.nrows):
-            self.parse_row(measure, sheet.row_values(row_nr), row_nr)
-
-    def parse_row(self, measure, row_values, rownr):
-        # Row has either 5 or 6 values; make sure it has 6
-        row_values = (tuple(row_values) + (None,))[:6]
-
-        (location, _, _, difference, reach_slug, difference_250) =\
-            row_values
-
-        # Skip unused slug 'ST' (Steurgat)
-        if reach_slug == 'ST':
-            return
-
-        try:
-            reach = models.Reach.objects.get(slug=reach_slug)
-        except models.Reach.DoesNotExist:
-            raise ValueError("Reach with slug=%r not found" % reach_slug)
-
-        #The Meuse has both North and South (Z) kilometers with the same
-        #kilometer identifier.
-        #XXX: ToDo 68_N > 68, 69_N > 68.5, 68_Z -> 69, 69_Z -> 69.5
-        if isinstance(location, basestring):
-            if not location.endswith('_N'):
-                # Take only the North reaches for Now
-                return
-            else:
-                location = float(location.strip('_N'))
-
-        # We only use the values at integer kilometer marks
-        if not location.is_integer():
-            return
-
-        try:
-            riversegment = models.RiverSegment.objects.get(
-                location=location, reach=reach)
-        except models.RiverSegment.DoesNotExist:
-            #print 'This location does not exist: %i %s' % (
-            #    location, reach_slug)
-            return
-
-        try:
-            difference = float(difference)
-        except ValueError:
-            raise ValueError(
-                ("On line {rownr}, level difference '{difference}' is not "
-                 "a floating point number.")
-                .format(rownr=rownr, difference=difference))
-
-        models.WaterLevelDifference.objects.create(
-            riversegment=riversegment,
-            measure=measure,
-            protection_level="1250",
-            level_difference=difference,
-            )
-
-        if difference_250:
-            try:
-                difference_250 = float(difference_250)
-            except ValueError:
-                raise ValueError(
-                    ("On line {rownr}, level difference '{difference}' is not "
-                     "a floating point number.")
-                    .format(rownr=rownr, difference=difference_250))
-
-            models.WaterLevelDifference.objects.create(
-                riversegment=riversegment,
-                measure=measure,
-                protection_level="250",
-                level_difference=difference_250,
-                )
+        for excelpath in args:
+            import_helpers.import_measure_xls(excelpath, self.stdout)

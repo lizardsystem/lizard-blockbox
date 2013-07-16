@@ -1,7 +1,7 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.rst.
 # -*- coding: utf-8 -*-
 
-"""Tests for the import_vertex_xls command. """
+"""Tests for the import_measure_xls command"""
 
 # Python 3 is coming
 from __future__ import unicode_literals
@@ -9,26 +9,68 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
 
+import sys
+
 from django.test import TestCase
 
-from lizard_blockbox import models
 from lizard_blockbox.tests import factories
-from lizard_blockbox.management.commands import import_vertex_xls
+from lizard_blockbox import models
 
-COMMAND = import_vertex_xls.Command()
+from lizard_blockbox import import_helpers
+
+
+class TestImportMeasureXls(TestCase):
+    def test_row_with_five_values_saves_correct_difference(self):
+        measure = factories.MeasureFactory.create()
+        reach = factories.ReachFactory.create(slug="reach_slug")
+        factories.RiverSegmentFactory.create(location=1.0, reach=reach)
+
+        row = [1.0, 55.0, None, -1, "reach_slug"]
+
+        import_helpers.import_measure_row(
+            measure, row, rownr=0, stdout=sys.stdout)
+
+        self.assertEquals(
+            models.WaterLevelDifference.objects.all().count(),
+            1)
+        diff = models.WaterLevelDifference.objects.all()[0]
+        self.assertEquals(diff.protection_level, "1250")
+        self.assertEquals(diff.level_difference, -1)
+
+    def test_row_with_six_values_saves_correct_difference(self):
+        measure = factories.MeasureFactory.create()
+        reach = factories.ReachFactory.create(slug="reach_slug")
+        factories.RiverSegmentFactory.create(location=1.0, reach=reach)
+
+        row = [1.0, 55.0, None, -3, "reach_slug", -4]
+
+        import_helpers.import_measure_row(
+            measure, row, rownr=0, stdout=sys.stdout)
+
+        self.assertEquals(
+            models.WaterLevelDifference.objects.all().count(),
+            2)
+
+        diff_1250 = models.WaterLevelDifference.objects.filter(
+            protection_level="1250")[0]
+        self.assertEquals(diff_1250.level_difference, -3)
+
+        diff_250 = models.WaterLevelDifference.objects.filter(
+            protection_level="250")[0]
+        self.assertEquals(diff_250.level_difference, -4)
 
 
 class TestBuildVertexDict(TestCase):
     def test_build_vertex_dict_creates_vertices(self):
         row_values = ["Some name", "Some other name"]
 
-        COMMAND.build_vertex_dict(row_values)
+        import_helpers.build_vertex_dict(row_values)
 
         self.assertEquals(models.Vertex.objects.count(), 2)
 
     def test_header_no_columns_works_correctly(self):
         row_values = ["Some name"]
-        vertices = COMMAND.build_vertex_dict(row_values)
+        vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
         self.assertEquals(vertex.header, '')
         self.assertEquals(vertex.name, 'Some name')
@@ -36,7 +78,7 @@ class TestBuildVertexDict(TestCase):
 
     def test_header_only_year_works_correctly(self):
         row_values = ["2050: Some name"]
-        vertices = COMMAND.build_vertex_dict(row_values)
+        vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
         self.assertEquals(vertex.header, '')
         self.assertEquals(vertex.name, 'Some name')
@@ -44,7 +86,7 @@ class TestBuildVertexDict(TestCase):
 
     def test_header_only_header_works_correctly(self):
         row_values = ["Whee: Some name"]
-        vertices = COMMAND.build_vertex_dict(row_values)
+        vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
         self.assertEquals(vertex.header, 'Whee')
         self.assertEquals(vertex.name, 'Some name')
@@ -52,14 +94,14 @@ class TestBuildVertexDict(TestCase):
 
     def test_header_year_and_header_works_correctly(self):
         row_values = ["2050: Whee: Some name"]
-        vertices = COMMAND.build_vertex_dict(row_values)
+        vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
         self.assertEquals(vertex.header, 'Whee')
         self.assertEquals(vertex.name, 'Some name')
         self.assertEquals(vertex.year, '2050')
 
 
-class TestImportRow(TestCase):
+class TestImportVertexXls(TestCase):
     def test_saves_year_correctly(self):
         vertex = factories.VertexFactory.create()
         vertex.year = "2050"
@@ -70,7 +112,7 @@ class TestImportRow(TestCase):
         riversegment = factories.RiverSegmentFactory(
             location=1, reach=reach)
 
-        COMMAND.import_row(vertices, [1.0, "MA", 5])
+        import_helpers.import_vertex_row(vertices, [1.0, "MA", 5])
 
         vertex_value = models.VertexValue.objects.get(
             riversegment=riversegment,
@@ -91,7 +133,7 @@ class TestImportRow(TestCase):
         riversegment = factories.RiverSegmentFactory(
             location=1, reach=reach)
 
-        COMMAND.import_row(vertices, [1.0, 'MA', 1.0, '', 2.0])
+        import_helpers.import_vertex_row(vertices, [1.0, 'MA', 1.0, '', 2.0])
 
         value1 = models.VertexValue.objects.get(
             riversegment=riversegment, vertex=vertex1, year="2050")
