@@ -27,7 +27,7 @@ class TestCommand(TestCase):
 
         command = import_measure_xls.Command()
 
-        command.parse_row(measure, row)
+        command.parse_row(measure, row, rownr=0)
 
         self.assertEquals(
             models.WaterLevelDifference.objects.all().count(),
@@ -45,7 +45,7 @@ class TestCommand(TestCase):
 
         command = import_measure_xls.Command()
 
-        command.parse_row(measure, row)
+        command.parse_row(measure, row, rownr=0)
 
         self.assertEquals(
             models.WaterLevelDifference.objects.all().count(),
