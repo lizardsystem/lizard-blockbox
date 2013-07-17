@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.19 (unreleased)
+0.19 (2013-07-17)
 -----------------
 
 - Remove bug where we checked if the file we were going to generate
