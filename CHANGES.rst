@@ -6,7 +6,9 @@ Changelog of lizard-blockbox
 -----------------
 
 - Remove bug where we checked if the file we were going to generate
-  existed...
+  existed.
+
+- Add link to the automatic import page from BlockboxView
 
 
 0.18 (2013-07-09)
