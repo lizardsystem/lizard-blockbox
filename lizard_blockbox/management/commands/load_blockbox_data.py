@@ -15,6 +15,8 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         """Import the data for lizard_blockbox from the source."""
 
+        import_helpers.flush_database(self.stdout)
+
         import_helpers.parse_trajectory_classification_excelfile(
             os.path.join(
                 DATA_DIR,
