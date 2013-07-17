@@ -849,6 +849,7 @@ def _list_measures_json(request):
 
 class AutomaticImportPage(BlockboxView):
     template_name = "lizard_blockbox/automatic_import.html"
+    page_title = "Automatische import Blokkendoos"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.has_perm(
@@ -870,3 +871,13 @@ class AutomaticImportPage(BlockboxView):
             management_command)
 
         return HttpResponse()
+
+    @property
+    def content_actions(self):
+        return []
+
+    @property
+    def breadcrumbs(self):
+        result = super(AutomaticImportPage, self).breadcrumbs
+        result.append(Action(name=self.page_title))
+        return result
