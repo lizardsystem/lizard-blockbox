@@ -15,6 +15,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.contrib.sites.models import Site
 from django.core.cache import cache
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.core.urlresolvers import NoReverseMatch
 from django.db.models import Sum
@@ -232,6 +233,16 @@ class BlockboxView(MapView):
                              'to-map-text': to_map_text},
             klass='toggle_map_and_table')
         actions.insert(0, switch_map_and_table)
+
+        if self.request.user.has_perm(
+            'lizard_management_command_runner.execute_managementcommand'):
+            actions.insert(0, Action(
+                    name=_("Import data"),
+                    description=_(
+                        "Page for automatically importing the blockbox data"),
+                    icon='icon-download-alt',
+                    url=reverse('lizard_blockbox.automatic_import')))
+
         return actions
 
     def reaches(self):
@@ -838,6 +849,14 @@ def _list_measures_json(request):
 
 class AutomaticImportPage(BlockboxView):
     template_name = "lizard_blockbox/automatic_import.html"
+    page_title = "Automatische import Blokkendoos"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm(
+            'lizard_management_command_runner.execute_managementcommand'):
+            raise PermissionDenied()
+        return super(
+            AutomaticImportPage, self).dispatch(request, *args, **kwargs)
 
     def post(self, request, command):
         """Posting to this URL starts the background task."""
@@ -852,3 +871,13 @@ class AutomaticImportPage(BlockboxView):
             management_command)
 
         return HttpResponse()
+
+    @property
+    def content_actions(self):
+        return []
+
+    @property
+    def breadcrumbs(self):
+        result = super(AutomaticImportPage, self).breadcrumbs
+        result.append(Action(name=self.page_title))
+        return result

@@ -1,11 +1,8 @@
 import sys
 
-import xlrd
-
 from django.core.management.base import BaseCommand
-from django.db import transaction
 
-from lizard_blockbox import models
+from lizard_blockbox import import_helpers
 
 
 class Command(BaseCommand):
@@ -18,16 +15,5 @@ class Command(BaseCommand):
             print "Pass excel files as arguments."
             sys.exit(1)
 
-        map(self.parse, args)
-
-    def parse(self, excel):
-        wb = xlrd.open_workbook(excel)
-        map(self.parse_sheet, wb.sheets())
-
-    @transaction.commit_on_success
-    def parse_sheet(self, sheet):
-        for row_nr in xrange(1, sheet.nrows):
-            km, city, reach_slug = sheet.row_values(row_nr)[:3]
-            reach = models.Reach.objects.get(slug=reach_slug)
-            models.CityLocation.objects.create(
-                km=int(km), city=city, reach=reach)
+        for excelpath in args:
+            import_helpers.import_city_names(excelpath, self.stdout)
