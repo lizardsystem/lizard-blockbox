@@ -42,12 +42,26 @@ var automatic_import = (function () {
             var ids_to_keep = {}; // Track imports we are still showing
 
             $.each(data, function (i, commandrun) {
+                // commandrun is an object with attributes:
+                // runid, command, time, finished, success, user, output
                 ids_to_keep[commandrun.runid] = true;
 
-                // import is an object with attributes:
-                // runid, command, time, finished, success, user, output
+                var output_visible = "0";
+                var output_display = "none";
+                var output_text = "toon output";
+
+                // If this run's tr element already exists, we remove it and
+                // replace it by a new one, but keeping the state of the old one
+                // (mostly whether output is already open).
                 var $tr = $("table#last-commands-table > tbody > tr#" + commandrun.runid);
-                $tr.remove();
+                if ($tr.length > 0) {
+                    var $span = $tr.find("td > span#output-run-"+commandrun.runid);
+                    output_visible = $span.attr("data-visible");
+                    output_display = $span.css("display");
+                    var $a = $tr.find("td > a.toggle-visibility");
+                    output_text = $a.contents();
+                    $tr.remove();
+                }
 
                 var $to_append_to = $("table#last-commands-table");
 
@@ -62,11 +76,11 @@ var automatic_import = (function () {
                            ($("<a>")
                             .attr("data-span-id", "output-run-"+commandrun.runid)
                             .attr("class", "toggle-visibility")
-                            .attr("href", "").append("toon output")))
+                            .attr("href", "").append(output_text)))
                                .append($("<span>")
                                        .attr("id", "output-run-"+commandrun.runid)
-                                       .attr("data-visible", "0")
-                                       .css("display", "none")
+                                       .attr("data-visible", output_visible)
+                                       .css("display", output_display)
                                        .append($("<pre>")
                                                .append(commandrun.output))))
                       );
