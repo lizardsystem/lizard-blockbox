@@ -23,6 +23,34 @@ class CommandError(Exception):
         return "Error: " + self.output
 
 
+class ExcelException(Exception):
+    def __init__(self, path=None, sheet=None, rownr=None, error=None):
+        self.path = path
+        self.sheet = sheet
+        self.rownr = rownr
+        self.error = error
+
+    def add_details(self, path=None, sheet=None, rownr=None, error=None):
+        """Return a new ExcelException instance with attributes taken
+        from the arguments to add_details and this instance."""
+        path = path if path is not None else self.path
+        sheet = sheet if sheet is not None else self.sheet
+        rownr = rownr if rownr is not None else self.rownr
+        error = error if error is not None else self.error
+
+        return ExcelException(path=path, sheet=sheet, rownr=rownr, error=error)
+
+    def __unicode__(self):
+        return (
+            u"Fout in '{filename}', sheet '{sheet}', regel {rownr}: {error}"
+            .format(
+                filename=(os.path.basename(self.path) if self.path is not None
+                          else u"<onbekend>"),
+                sheet=self.sheet or u"<onbekend>",
+                rownr=self.rownr if self.rownr is not None else u"?",
+                error=self.error or "Onbekende fout"))
+
+
 def stripped_commands(commands):
     """Yield stripped lines, skipping empty lines."""
     for command in commands.split("\n"):
@@ -57,6 +85,37 @@ def run_commands_in(data_dir, commands, shell=False, no_extra_output=False):
     except subprocess.CalledProcessError as e:
         output += e.output
         raise CommandError(output=output)
+
+
+def map_over_sheets(excelpath, function, stdout, *args, **kwargs):
+    """Call function on all sheets of an Excel file. Catch exceptions
+    and mention the filename and sheet in the re-raised exception.
+
+    Open the Excel file in excelpath, and call function for each of
+    its sheets. Wrap each call in a transaction that only commits if
+    no exceptions were raised. First argument to the function is the
+    sheet, then stdout, then all extra arguments to this function are
+    passed as well.
+
+    If an exception happens in one sheet, the rest of the sheets are
+    not processed (no exceptions are caught).
+
+    Returns a list of function results."""
+
+    stdout.write("Parsing '{excel}'\n".format(excel=excelpath))
+    wb = xlrd.open_workbook(excelpath)
+
+    @transaction.commit_on_success
+    def call_function(sheet):
+        try:
+            return function(sheet, stdout, *args, **kwargs)
+        except ExcelException as e:
+            raise e.add_details(path=excelpath, sheet=sheet.name)
+        except Exception as e:
+            raise ExcelException(
+                path=excelpath, sheet=sheet.name, error=unicode(e))
+
+    return [call_function(sheet) for sheet in wb.sheets()]
 
 
 # Fetch blockbox data command
@@ -177,14 +236,11 @@ def copy_json_to_blockbox(stdout):
 # Parse trajectory classification command
 
 def parse_trajectory_classification_excelfile(excelpath, stdout):
-    stdout.write("Parsing '{excel}'\n".format(excel=excelpath))
-    wb = xlrd.open_workbook(excelpath)
-    for sheet in wb.sheets():
-        parse_trajectory_classification_sheet(sheet)
+    map_over_sheets(
+        excelpath, parse_trajectory_classification_sheet, stdout)
 
 
-@transaction.commit_on_success
-def parse_trajectory_classification_sheet(sheet):
+def parse_trajectory_classification_sheet(sheet, stdout):
     for row_nr in xrange(1, sheet.nrows):
         name, reach_slug, km_from, km_to = sheet.row_values(row_nr)
         km_from, km_to = int(km_from), int(km_to)
@@ -201,13 +257,10 @@ def parse_trajectory_classification_sheet(sheet):
 # Import city names command
 
 def import_city_names(excelpath, stdout):
-    wb = xlrd.open_workbook(excelpath)
-    for sheet in wb.sheets():
-        import_city_names_sheet(sheet)
+    map_over_sheets(excelpath, import_city_names_sheet, stdout)
 
 
-@transaction.commit_on_success
-def import_city_names_sheet(sheet):
+def import_city_names_sheet(sheet, stdout):
     for row_nr in xrange(1, sheet.nrows):
         km, city, reach_slug = sheet.row_values(row_nr)[:3]
         reach = models.Reach.objects.get(slug=reach_slug)
@@ -218,12 +271,9 @@ def import_city_names_sheet(sheet):
 # Import vertex xls command
 
 def import_vertex_xls(excelpath, stdout):
-    wb = xlrd.open_workbook(excelpath)
-    for sheet in wb.sheets():
-        import_vertex_sheet(sheet, stdout)
+    map_over_sheets(excelpath, import_vertex_sheet, stdout)
 
 
-@transaction.commit_on_success
 def import_vertex_sheet(sheet, stdout):
     # The first row (0) of the sheet contains irrelevant comments;
     # the first two columns are always location and reach. So
@@ -317,15 +367,9 @@ def flush_database(stdout):
 
 
 def import_measure_xls(excelpath, stdout):
-    stdout.write("Parsing measures from '{excel}'.\n"
-                 .format(excel=excelpath))
-
-    wb = xlrd.open_workbook(excelpath)
-    for sheet in wb.sheets():
-        import_measure_sheet(sheet, stdout)
+    map_over_sheets(excelpath, import_measure_sheet, stdout)
 
 
-@transaction.commit_on_success
 def import_measure_sheet(sheet, stdout):
     short_name = sheet.name
     if isinstance(short_name, float):
@@ -338,7 +382,10 @@ def import_measure_sheet(sheet, stdout):
         # Measure exists.
         return
     for row_nr in xrange(1, sheet.nrows):
-        import_measure_row(measure, sheet.row_values(row_nr), row_nr, stdout)
+        import_measure_row(
+            measure, sheet.row_values(row_nr),
+            row_nr + 1,  # Row number for error messages starts at 1, not 0
+            stdout)
 
 
 def import_measure_row(measure, row_values, rownr, stdout):
@@ -355,7 +402,9 @@ def import_measure_row(measure, row_values, rownr, stdout):
     try:
         reach = models.Reach.objects.get(slug=reach_slug)
     except models.Reach.DoesNotExist:
-        raise ValueError("Reach with slug=%r not found" % reach_slug)
+        raise ExcelException(
+            rownr=rownr,
+            error="Riviertak {slug} onbekend.".format(slug=reach_slug))
 
     # The Meuse has both North and South (Z) kilometers with the same
     # kilometer identifier.
@@ -382,10 +431,11 @@ def import_measure_row(measure, row_values, rownr, stdout):
     try:
         difference = float(difference)
     except ValueError:
-        raise ValueError(
-            ("On line {rownr}, level difference '{difference}' is not "
-             "a floating point number.")
-            .format(rownr=rownr, difference=difference))
+        raise ExcelException(
+            error=("Level difference '{difference}' is not "
+                   "a floating point number."
+                   .format(difference=difference)),
+            rownr=rownr)
 
     models.WaterLevelDifference.objects.create(
         riversegment=riversegment,
@@ -397,10 +447,11 @@ def import_measure_row(measure, row_values, rownr, stdout):
         try:
             difference_250 = float(difference_250)
         except ValueError:
-            raise ValueError(
-                ("On line {rownr}, level difference '{difference}' is not "
-                 "a floating point number.")
-                .format(rownr=rownr, difference=difference_250))
+            raise ExcelException(
+                error=("Level difference '{difference}' is not "
+                       "a floating point number."
+                       .format(difference=difference_250)),
+                rownr=rownr)
 
         models.WaterLevelDifference.objects.create(
             riversegment=riversegment,
@@ -412,12 +463,9 @@ def import_measure_row(measure, row_values, rownr, stdout):
 # Import measure table xls
 
 def import_measure_table_xls(excelpath, stdout):
-    wb = xlrd.open_workbook(excelpath)
-    for sheet in wb.sheets():
-        import_measure_table_sheet(sheet, stdout)
+    map_over_sheets(excelpath, import_measure_table_sheet, stdout)
 
 
-@transaction.commit_on_success
 def import_measure_table_sheet(sheet, stdout):
     col_names = (
         'name', 'short_name', 'measure_type', 'km_from', 'km_to',
@@ -453,13 +501,9 @@ def import_measure_table_sheet(sheet, stdout):
 # Import excluding measures command
 
 def import_excluding_measures_xls(excelpath, stdout):
-    wb = xlrd.open_workbook(excelpath)
-
-    for sheet in wb.sheets():
-        import_excluding_measures_sheet(sheet, stdout)
+    map_over_sheets(excelpath, import_excluding_measures_sheet, stdout)
 
 
-@transaction.commit_on_success
 def import_excluding_measures_sheet(sheet, stdout):
     for row_nr in xrange(1, sheet.nrows):
         measure, excluding = sheet.row_values(row_nr)
@@ -480,10 +524,7 @@ def import_excluding_measures_sheet(sheet, stdout):
 # Import trajectory names command
 
 def import_trajectory_names_xls(excelpath, stdout):
-    wb = xlrd.open_workbook(excelpath)
-
-    for sheet in wb.sheets():
-        import_trajectory_names_sheet(sheet, stdout)
+    map_over_sheets(excelpath, import_trajectory_names_sheet, stdout)
 
 
 def import_trajectory_names_sheet(sheet, stdout):

@@ -37,9 +37,10 @@ class Command(BaseCommand):
 
         maatregeldir = os.path.join(DATA_DIR, 'excelsheets/maatregelen')
         for maatregelxls in os.listdir(maatregeldir):
-            import_helpers.import_measure_xls(
-                os.path.join(maatregeldir, maatregelxls),
-                self.stdout)
+            if maatregelxls.lower().endswith(".xls"):
+                import_helpers.import_measure_xls(
+                    os.path.join(maatregeldir, maatregelxls),
+                    self.stdout)
 
         import_helpers.import_measure_table_xls(
             os.path.join(

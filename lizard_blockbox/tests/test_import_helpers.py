@@ -9,7 +9,9 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
 
+import mock
 import sys
+from StringIO import StringIO
 
 from django.test import TestCase
 
@@ -141,3 +143,38 @@ class TestImportVertexXls(TestCase):
             riversegment=riversegment, vertex=vertex2, year="2050")
         self.assertEquals(value1.value, 1.0)
         self.assertEquals(value2.value, 2.0)
+
+
+class TestMapOverSheets(TestCase):
+    def test_reraises_with_excelpath_sheetname(self):
+        path = "/some/excelpath"
+        mocked_sheet = mock.MagicMock()
+        mocked_sheet.name = "sheetname"
+        sheets = [mocked_sheet]
+
+        workbook = mock.MagicMock()
+        workbook.sheets.return_value = sheets
+
+        fake_stdout = StringIO()
+
+        def called_function(sheet, stdout):
+            self.assertTrue(sheet is mocked_sheet)
+            self.assertTrue(stdout is fake_stdout)
+            raise import_helpers.ExcelException(
+                error="some error")
+
+        with mock.patch(
+            'xlrd.open_workbook', return_value=workbook) as patched_open:
+            try:
+                import_helpers.map_over_sheets(
+                    path, called_function, fake_stdout)
+
+                # We shouldn't get here, so this fails if we do
+                self.assertRaises(Exception, lambda: None)
+            except import_helpers.ExcelException as ee:
+                self.assertEquals(ee.path, path)
+                self.assertEquals(ee.sheet, "sheetname")
+                self.assertEquals(ee.rownr, None)
+                self.assertEquals(ee.error, "some error")
+
+            patched_open.assert_called_with(path)
