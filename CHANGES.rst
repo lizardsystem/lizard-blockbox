@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.20 (unreleased)
+0.20 (2013-07-24)
 -----------------
 
 - Add simplify functionality on shape.
