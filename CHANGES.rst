@@ -5,7 +5,7 @@ Changelog of lizard-blockbox
 0.21 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fix unexpected indent.
 
 
 0.20 (2013-07-24)
