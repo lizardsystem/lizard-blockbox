@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.20.2 (unreleased)
+0.20.2 (2013-07-31)
 -------------------
 
 - A higher delay on screenshotter 100 ms wasn't enough.
