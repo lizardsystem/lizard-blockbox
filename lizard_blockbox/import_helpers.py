@@ -133,8 +133,18 @@ wget -nv -nH -r -N ftp://{ftp_credentials}@ftp.deltares.nl
     stdout.write("Fetched blockbox data...\n")
 
 
-# Parse shapes blockbox command
+def set_permissions_pdf(stdout):
+    DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal/data')
+    PDF_DIR = os.path.join(DATA_DIR, 'factsheets')
 
+    SET_PERMISSIONS_COMMAND = """
+chmod a+r -R .
+"""
+    stdout.write(run_commands_in(PDF_DIR, SET_PERMISSIONS_COMMAND))
+    stdout.write("Factsheet permissions fixed...\n")
+
+
+# Parse shapes blockbox command
 def parse_shapes_blockbox(stdout):
     DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal/data')
     JSON_DIR = 'geojson'

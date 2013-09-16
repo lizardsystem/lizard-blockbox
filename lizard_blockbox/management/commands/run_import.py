@@ -10,6 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         """Run subcommands"""
         import_helpers.fetch_blockbox_data(self.stdout)
+        import_helpers.set_permissions_pdf(self.stdout)
         import_helpers.parse_shapes_blockbox(self.stdout)
         import_helpers.parse_kilometers_json(self.stdout)
         import_helpers.merge_measures_blockbox(self.stdout)

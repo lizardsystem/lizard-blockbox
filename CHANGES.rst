@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.20.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Set permissions to read all on factsheets.
+  This way NGINX can serve the factsheets directly.
 
 
 0.20.2 (2013-07-31)
