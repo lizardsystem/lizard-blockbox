@@ -13,5 +13,23 @@ class EmptyStringFloatField(models.FloatField):
             return None
         return super(EmptyStringFloatField, self).get_prep_value(value)
 
+
+class EmptyStringUnknownFloatField(models.FloatField):
+    empty_strings_allowed = True
+    description = _(
+        "Floating point number: converts empty strging and the "
+        "string 'Onbekend' to None")
+
+    def get_prep_value(self, value):
+        if (isinstance(value, basestring) and
+            value.strip().lower() in ('', 'onbekend')):
+            return None
+
+        return super(EmptyStringUnknownFloatField, self).get_prep_value(value)
+
 # Add introspection rules for EmptyStringFloatField
 add_introspection_rules([], ['lizard_blockbox.fields.EmptyStringFloatField'])
+# Add introspection rules for EmptyStringUnknownFloatField
+add_introspection_rules(
+    [],
+    ['lizard_blockbox.fields.EmptyStringUnknownFloatField'])
