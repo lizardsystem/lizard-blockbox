@@ -480,7 +480,8 @@ def import_measure_table_sheet(sheet, stdout):
     col_names = (
         'name', 'short_name', 'measure_type', 'km_from', 'km_to',
         'reach', 'riverpart', 'mhw_profit_cm', 'mhw_profit_m2',
-        'investment_costs', 'life_costs', 'total_costs', 'investment_m2')
+        'minimal_investment_costs', 'investment_costs',
+        'maximal_investment_costs')
 
     col_index = dict(zip(col_names, xrange(len(col_names))))
 
