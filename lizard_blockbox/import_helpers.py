@@ -40,6 +40,9 @@ class ExcelException(Exception):
 
         return ExcelException(path=path, sheet=sheet, rownr=rownr, error=error)
 
+    def __str__(self):
+        return unicode(self).encode('utf8')
+
     def __unicode__(self):
         return (
             u"Fout in '{filename}', sheet '{sheet}', regel {rownr}: {error}"
