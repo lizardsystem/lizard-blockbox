@@ -171,8 +171,16 @@
             <h2>Cumulatief</h2>
             <table border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                    <td>Totale kosten</td>
-                    <td>{{ total_cost }} miljoen euro</td>
+                    <td>Minimale investeringskosten</td>
+                    <td>{{ total_cost.minimal }} miljoen euro</td>
+                </tr>
+                <tr>
+                    <td>Maximale investeringskosten</td>
+                    <td>{{ total_cost.maximal }} miljoen euro</td>
+                </tr>
+                <tr>
+                    <td>Middenwaarde investeringskosten</td>
+                    <td>{{ total_cost.expected }} miljoen euro</td>
                 </tr>
             </table>
         </div>

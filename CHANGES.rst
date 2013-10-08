@@ -5,7 +5,10 @@ Changelog of lizard-blockbox
 0.22 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Investment costs are now split into minimum, middle and maximum
+  costs. Changed the Measure model, rendering of the table, the
+  running calculated value in the left sidebar, the CSV file and the
+  PDF report.
 
 
 0.21 (2013-09-16)
