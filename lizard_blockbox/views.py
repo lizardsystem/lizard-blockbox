@@ -159,6 +159,11 @@ def generate_csv(request):
                      'Maximale investeringskosten (ME)'])
     measures = models.Measure.objects.filter(
         short_name__in=_selected_measures(request))
+
+    summed_minimal_investment_costs = 0.0
+    summed_maximal_investment_costs = 0.0
+    summed_investment_costs = 0.0
+
     for measure in measures:
         # mhw_profit_cm must be a number not None
         mhw_profit_cm = measure.mhw_profit_cm or 0
@@ -171,7 +176,19 @@ def generate_csv(request):
                          measure.investment_costs,
                          measure.maximal_investment_costs])
 
-    writer.writerow([])
+        summed_minimal_investment_costs += (
+            measure.minimal_investment_costs or 0)
+        summed_maximal_investment_costs += (
+            measure.maximal_investment_costs or 0)
+        summed_investment_costs += (
+            measure.investment_costs or 0)
+
+    writer.writerow([''] * 9 + ['Totaal:'] * 3)
+    writer.writerow([''] * 9 + [
+            summed_minimal_investment_costs,
+            summed_investment_costs,
+            summed_maximal_investment_costs])
+
     selected_vertex = _selected_vertex(request)
     selected_year = _selected_year(request)
     selected_protection_level = _selected_protection_level(selected_vertex)
