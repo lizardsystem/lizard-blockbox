@@ -10,6 +10,8 @@ Changelog of lizard-blockbox
   running calculated value in the left sidebar, the CSV file and the
   PDF report.
 
+- Make sure that the costs are shown with max 1 decimal.
+
 
 0.21 (2013-09-16)
 -----------------

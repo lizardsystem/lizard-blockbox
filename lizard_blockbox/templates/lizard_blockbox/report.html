@@ -172,15 +172,15 @@
             <table border="0" cellspacing="0" cellpadding="0">
                 <tr>
                     <td>Minimale investeringskosten</td>
-                    <td>{{ total_cost.minimal }} miljoen euro</td>
+                    <td>{{ total_cost.minimal|floatformat }} miljoen euro</td>
                 </tr>
                 <tr>
                     <td>Maximale investeringskosten</td>
-                    <td>{{ total_cost.maximal }} miljoen euro</td>
+                    <td>{{ total_cost.maximal|floatformat }} miljoen euro</td>
                 </tr>
                 <tr>
                     <td>Middenwaarde investeringskosten</td>
-                    <td>{{ total_cost.expected }} miljoen euro</td>
+                    <td>{{ total_cost.expected|floatformat }} miljoen euro</td>
                 </tr>
             </table>
         </div>
