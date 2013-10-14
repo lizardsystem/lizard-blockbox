@@ -175,8 +175,9 @@ class Measure(models.Model):
                 continue
 
             value = getattr(self, field.name)
-            if isinstance(value, float) and 'costs' in field.name:
-                value = round(value, 2)
+            if isinstance(value, float) and (
+                'costs' in field.name or 'winst' in field.name):
+                value = round(value, 1)
 
             result.append({'label': field.verbose_name,
                            'name': field.name,

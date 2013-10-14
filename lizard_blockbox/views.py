@@ -185,9 +185,9 @@ def generate_csv(request):
 
     writer.writerow([''] * 9 + ['Totaal:'] * 3)
     writer.writerow([''] * 9 + [
-            "{:.1}".format(summed_minimal_investment_costs),
-            "{:.1}".format(summed_investment_costs),
-            "{:.1}".format(summed_maximal_investment_costs)])
+            "{:.1f}".format(summed_minimal_investment_costs),
+            "{:.1f}".format(summed_investment_costs),
+            "{:.1f}".format(summed_maximal_investment_costs)])
 
     selected_vertex = _selected_vertex(request)
     selected_year = _selected_year(request)
