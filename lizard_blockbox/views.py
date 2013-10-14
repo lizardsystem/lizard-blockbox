@@ -166,15 +166,16 @@ def generate_csv(request):
 
     for measure in measures:
         # mhw_profit_cm must be a number not None
-        mhw_profit_cm = measure.mhw_profit_cm or 0
+        mhw_profit_cm = measure.mhw_profit_cm or 0.0
 
         writer.writerow([measure.name, measure.short_name,
                          measure.measure_type, measure.km_from, measure.km_to,
                          measure.reach, measure.riverpart,
-                         mhw_profit_cm / 100, measure.mhw_profit_m2,
-                         measure.minimal_investment_costs,
-                         measure.investment_costs,
-                         measure.maximal_investment_costs])
+                         "{:.1f}".format(mhw_profit_cm / 100),
+                         "{:.1f}".format(measure.mhw_profit_m2),
+                         "{:.1f}".format(measure.minimal_investment_costs),
+                         "{:.1f}".format(measure.investment_costs),
+                         "{:.1f}".format(measure.maximal_investment_costs)])
 
         summed_minimal_investment_costs += (
             measure.minimal_investment_costs or 0)
