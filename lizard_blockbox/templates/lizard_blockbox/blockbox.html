@@ -105,9 +105,13 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
     Klik op een maatregel om hem te deselecteren.
   </p>
 
-  <p id="investmentcosts">
-    Totale investeringskosten: {{ view.investment_costs }} mln
-  </p>
+  <ul class="unstyled" id="investmentcosts">
+    <li><small><strong>Totale investeringskosten</strong></small></li>
+    <li><small>Minimaal: {{ view.investment_costs.minimum|floatformat }} mln</small></li>
+    <li><small>Maximaal:  {{ view.investment_costs.maximum|floatformat }} mln</small></li>
+    <li><small>Middenwaarde:  {{ view.investment_costs.expected|floatformat }} mln</small></li>
+  </ul>
+
   <ul id="selected-measures-list" class="without-bullets">
     {% for reach in view.measures_per_reach %}
       <h4>{{ reach.name }}</h4>

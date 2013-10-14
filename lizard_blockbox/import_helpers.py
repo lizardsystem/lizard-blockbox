@@ -40,6 +40,9 @@ class ExcelException(Exception):
 
         return ExcelException(path=path, sheet=sheet, rownr=rownr, error=error)
 
+    def __str__(self):
+        return unicode(self).encode('utf8')
+
     def __unicode__(self):
         return (
             u"Fout in '{filename}', sheet '{sheet}', regel {rownr}: {error}"
@@ -477,7 +480,8 @@ def import_measure_table_sheet(sheet, stdout):
     col_names = (
         'name', 'short_name', 'measure_type', 'km_from', 'km_to',
         'reach', 'riverpart', 'mhw_profit_cm', 'mhw_profit_m2',
-        'investment_costs', 'life_costs', 'total_costs', 'investment_m2')
+        'minimal_investment_costs', 'investment_costs',
+        'maximal_investment_costs')
 
     col_index = dict(zip(col_names, xrange(len(col_names))))
 

@@ -79,13 +79,15 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     if measures.count() != 0:
         measures_header = [field['label'] for field in measures[0].pretty()
                            if field['label'] != 'Riviertak']
-    total_cost = 0.0
+    total_cost = {
+        'minimal': 0.0,
+        'maximal': 0.0,
+        'expected': 0.0
+        }
+
     reaches = defaultdict(list)
 
     for measure in measures:
-        # total_cost = total_cost + measure.total_costs()
-        if measure.total_costs:
-            total_cost += measure.total_costs
         if measure.reach:
             try:
                 trajectory = measure.reach.trajectory_set.get()
@@ -98,6 +100,10 @@ def generate_report(request, template='lizard_blockbox/report.html'):
             reach_name = 'unknown'
         measure_p = [i for i in measure.pretty() if i['label'] != 'Riviertak']
         reaches[reach_name].append(measure_p)
+
+        total_cost['minimal'] += measure.minimal_investment_costs or 0.0
+        total_cost['maximal'] += measure.maximal_investment_costs or 0.0
+        total_cost['expected'] += measure.investment_costs or 0.0
     result = []
     for name, measures in reaches.items():
         reach = {'name': name,
@@ -148,23 +154,42 @@ def generate_csv(request):
 
     writer.writerow(['Titel', 'Code', 'Type', 'Km van', 'Km tot', 'Riviertak',
                      'Rivierdeel', 'MHW winst m', 'MHW winst m2',
-                     'Kosten investering', 'Levensduur kosten (ME)',
-                     'Projectkosten gehele lifecyle (ME)',
-                     'Investering per m2'])
+                     'Minimale investeringskosten (ME)',
+                     'Investeringskosten (ME)',
+                     'Maximale investeringskosten (ME)'])
     measures = models.Measure.objects.filter(
         short_name__in=_selected_measures(request))
+
+    summed_minimal_investment_costs = 0.0
+    summed_maximal_investment_costs = 0.0
+    summed_investment_costs = 0.0
+
     for measure in measures:
         # mhw_profit_cm must be a number not None
-        mhw_profit_cm = measure.mhw_profit_cm or 0
+        mhw_profit_cm = measure.mhw_profit_cm or 0.0
 
         writer.writerow([measure.name, measure.short_name,
                          measure.measure_type, measure.km_from, measure.km_to,
                          measure.reach, measure.riverpart,
-                         mhw_profit_cm / 100, measure.mhw_profit_m2,
-                         measure.investment_costs, measure.life_costs,
-                         measure.total_costs, measure.investment_m2])
+                         "{:.1f}".format(mhw_profit_cm / 100),
+                         "{:.1f}".format(measure.mhw_profit_m2),
+                         "{:.1f}".format(measure.minimal_investment_costs),
+                         "{:.1f}".format(measure.investment_costs),
+                         "{:.1f}".format(measure.maximal_investment_costs)])
 
-    writer.writerow([])
+        summed_minimal_investment_costs += (
+            measure.minimal_investment_costs or 0)
+        summed_maximal_investment_costs += (
+            measure.maximal_investment_costs or 0)
+        summed_investment_costs += (
+            measure.investment_costs or 0)
+
+    writer.writerow([''] * 9 + ['Totaal:'] * 3)
+    writer.writerow([''] * 9 + [
+            "{:.1f}".format(summed_minimal_investment_costs),
+            "{:.1f}".format(summed_investment_costs),
+            "{:.1f}".format(summed_maximal_investment_costs)])
+
     selected_vertex = _selected_vertex(request)
     selected_year = _selected_year(request)
     selected_protection_level = _selected_protection_level(selected_vertex)
@@ -723,14 +748,27 @@ def _unselectable_measures(request):
 
 
 def _investment_costs(request):
-    investment_costs = 0.0
+    investment_costs = {
+        'minimum': 0.0,
+        'expected': 0.0,
+        'maximum': 0.0
+        }
+
     measures = models.Measure.objects.filter(
         short_name__in=_selected_measures(request))
 
     for measure in measures:
-        if measure.investment_costs:
-            investment_costs += measure.investment_costs
-    return round(investment_costs, 2)
+        investment_costs['minimum'] += (
+            measure.minimal_investment_costs or 0)
+        investment_costs['expected'] += (
+            measure.investment_costs or 0)
+        investment_costs['maximum'] += (
+            measure.maximal_investment_costs or 0)
+
+    for c in investment_costs:
+        investment_costs[c] = round(investment_costs[c], 2)
+
+    return investment_costs
 
 
 @never_cache

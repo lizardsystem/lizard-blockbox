@@ -4,6 +4,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from lizard_blockbox.fields import EmptyStringFloatField
+from lizard_blockbox.fields import EmptyStringUnknownFloatField
 
 
 class Reach(models.Model):
@@ -149,15 +150,12 @@ class Measure(models.Model):
         'MHW winst cm', blank=True, null=True)
     mhw_profit_m2 = EmptyStringFloatField(
         'MHW winst m2', blank=True, null=True)
-    investment_costs = EmptyStringFloatField(
-        'Kosten investering', blank=True, null=True)
-    life_costs = EmptyStringFloatField(
-        'Levensduur kosten (ME)', blank=True, null=True)
-    total_costs = EmptyStringFloatField(
-        'Projectkosten gehele lifecyle (ME)', blank=True, null=True)
-    investment_m2 = models.CharField(
-        'Investering/m2',
-        max_length=100, blank=True, null=True)
+    minimal_investment_costs = EmptyStringUnknownFloatField(
+        'Minimale investeringskosten (ME)', blank=True, null=True)
+    investment_costs = EmptyStringUnknownFloatField(
+        'Investeringskosten (ME)', blank=True, null=True)
+    maximal_investment_costs = EmptyStringUnknownFloatField(
+        'Maximale investeringskosten (ME)', blank=True, null=True)
 
     exclude = models.ManyToManyField(
         'self',
@@ -177,8 +175,9 @@ class Measure(models.Model):
                 continue
 
             value = getattr(self, field.name)
-            if isinstance(value, float) and 'costs' in field.name:
-                value = round(value, 2)
+            if isinstance(value, float) and (
+                'costs' in field.name) or ('profit' in field.name):
+                value = round(value, 1)
 
             result.append({'label': field.verbose_name,
                            'name': field.name,
