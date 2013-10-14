@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.22 (unreleased)
+0.22 (2013-10-14)
 -----------------
 
 - Investment costs are now split into minimum, middle and maximum
