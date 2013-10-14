@@ -25,6 +25,7 @@ install_requires = [
     'html5lib',
     'pyPdf',
     'factory_boy',
+    'pyproj',
     'lizard-management-command-runner',
     ],
 
