@@ -158,7 +158,7 @@
                       {% for field in measure %}
 	  				 	<td {% if not forloop.last %} class="measures-right"
 							{% endif %}>
-						  {% field.value|default_if_none:"Onbekend" %}
+						  {{ field.value|default_if_none:"Onbekend" }}
 						</td>
 		  	          {% endfor %}
 					</tr>
