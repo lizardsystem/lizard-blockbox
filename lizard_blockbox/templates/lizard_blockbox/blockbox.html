@@ -185,7 +185,7 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
               </a>
             </td>
             {% for field in measure.fields %}
-              <td>{% firstof field.value "Onbekend" %}</td>
+              <td>{% field.value|default_if_none:"Onbekend" %}</td>
             {% endfor %}
 	    <td>
 	      {% if measure.pdf_link %}
