@@ -5,7 +5,9 @@ Changelog of lizard-blockbox
 0.23 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fix bug where the CSV export would always show '0' for unknown values,
+  and the PDF export would always show "Onbekend" for zero values. Both
+  should now show '0' for zero and 'Onbekend' for unknown.
 
 
 0.22 (2013-10-14)

@@ -164,6 +164,11 @@ def generate_csv(request):
     summed_maximal_investment_costs = 0.0
     summed_investment_costs = 0.0
 
+    def floatf(f):
+        if f is None:
+            return "Onbekend"
+        return "{:.1f}".format(f)
+
     for measure in measures:
         # mhw_profit_cm must be a number not None
         mhw_profit_cm = measure.mhw_profit_cm or 0.0
@@ -171,11 +176,11 @@ def generate_csv(request):
         writer.writerow([measure.name, measure.short_name,
                          measure.measure_type, measure.km_from, measure.km_to,
                          measure.reach, measure.riverpart,
-                         "{:.1f}".format(mhw_profit_cm / 100),
-                         "{:.1f}".format(measure.mhw_profit_m2),
-                         "{:.1f}".format(measure.minimal_investment_costs),
-                         "{:.1f}".format(measure.investment_costs),
-                         "{:.1f}".format(measure.maximal_investment_costs)])
+                         floatf(mhw_profit_cm / 100),
+                         floatf(measure.mhw_profit_m2),
+                         floatf(measure.minimal_investment_costs),
+                         floatf(measure.investment_costs),
+                         floatf(measure.maximal_investment_costs)])
 
         summed_minimal_investment_costs += (
             measure.minimal_investment_costs or 0)
@@ -186,9 +191,9 @@ def generate_csv(request):
 
     writer.writerow([''] * 9 + ['Totaal:'] * 3)
     writer.writerow([''] * 9 + [
-            "{:.1f}".format(summed_minimal_investment_costs),
-            "{:.1f}".format(summed_investment_costs),
-            "{:.1f}".format(summed_maximal_investment_costs)])
+            floatf(summed_minimal_investment_costs),
+            floatf(summed_investment_costs),
+            floatf(summed_maximal_investment_costs)])
 
     selected_vertex = _selected_vertex(request)
     selected_year = _selected_year(request)
