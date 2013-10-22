@@ -9,6 +9,11 @@ Changelog of lizard-blockbox
   and the PDF export would always show "Onbekend" for zero values. Both
   should now show '0' for zero and 'Onbekend' for unknown.
 
+- The 'selected measures' page also still showed the old costs,
+  leading to an internal server error. This page is only used by
+  Javascript, to get at the 'special url' also shown on it, so the
+  cost was just removed.
+
 
 0.22 (2013-10-14)
 -----------------

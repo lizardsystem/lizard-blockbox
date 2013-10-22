@@ -446,22 +446,6 @@ class SelectedMeasuresView(UiView):
         """Return set of selected measures from session."""
         return _selected_measures(self.request)
 
-    def total_cost(self):
-        total_cost = 0.0
-        reaches = defaultdict(list)
-        measures = models.Measure.objects.filter(
-            short_name__in=self.selected_names())
-
-        for measure in measures:
-            if measure.total_costs:
-                total_cost = total_cost + measure.total_costs
-            if measure.reach:
-                reach_name = measure.reach.slug
-            else:
-                reach_name = 'unknown'
-            reaches[reach_name].append(measure)
-        return total_cost
-
     def measures_per_reach(self):
         """Return selected measures, sorted per reach."""
         reaches = defaultdict(list)
