@@ -16,6 +16,13 @@ Changelog of lizard-blockbox
 
 - The graph in the PDF report now reflects the selected year
 
+- For the CSV export there is a long standing requirement to show
+  entire trajectories, and not just the selected river. We used to
+  pick a trajectory from the hoofdtrajecten list, which don't always
+  overlap 100% with the rivers and led to confusion. Now we take the
+  river and expand it, if possible, at the front and end using the
+  hoofdtrajecten (see NamedReach.expanded_reaches()).
+
 
 0.22 (2013-10-14)
 -----------------

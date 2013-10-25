@@ -544,7 +544,9 @@ def import_trajectory_names_sheet(sheet, stdout):
         reaches = reach_slugs.split(', ')
 
         tr, _ = models.Trajectory.objects.get_or_create(name=name)
-        for reach_name in reaches:
+        for number, reach_name in enumerate(reaches):
             reach = models.Reach.objects.get(slug=reach_name.strip())
+            reach.number = number
+            reach.save()
             tr.reach.add(reach)
             tr.save()

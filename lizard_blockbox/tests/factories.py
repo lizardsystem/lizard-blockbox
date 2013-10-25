@@ -23,6 +23,12 @@ class ReachFactory(factory.Factory):
     slug = "SL"
 
 
+class TrajectoryFactory(factory.Factory):
+    FACTORY_FOR = models.Trajectory
+
+    name = "trajectorynaam"
+
+
 class RiverSegmentFactory(factory.Factory):
     FACTORY_FOR = models.RiverSegment
 

@@ -17,10 +17,15 @@ class Reach(models.Model):
         blank=False,
         help_text=u"Slug.")
 
+    # The number is needed to reconstruct the order in which the reaches
+    # occur in the hoofdtrajecten.xls file
+    number = models.IntegerField(null=True, blank=True)
+
     def __unicode__(self):
         return self.slug
 
     class Meta:
+        ordering = ('number',)
         verbose_name = _('reach')
         verbose_name_plural = _('reaches')
 
@@ -80,6 +85,35 @@ class NamedReach(models.Model):
                 return ["250", "1250"]
 
         return ["1250"]
+
+    def expanded_reaches(self):
+        """Return a list of reaches created by taking the reaches of
+        this namedreach, expanded so it is a trajectory. We take the
+        first reach, see if it is in some Trajectory, and if there are
+        reaches before it in that trajectory, we prepend them. Then we
+        do the same for the end reach."""
+        reaches = [
+            subsetreach.reach
+            for subsetreach in
+            self.subsetreach_set.all().order_by('km_from')]
+
+        if not reaches:
+            return []
+
+        # Prefix
+        # Each reach is in 1 trajectory
+        trajectory = reaches[0].trajectory_set.get()
+        trajectory_reaches = list(trajectory.reach.all())  # Ordered by number
+        location = trajectory_reaches.index(reaches[0])
+        reaches = trajectory_reaches[:location] + reaches
+
+        # Postfix
+        trajectory = reaches[-1].trajectory_set.get()
+        trajectory_reaches = list(trajectory.reach.all())  # Ordered by number
+        location = trajectory_reaches.index(reaches[-1])
+        reaches = reaches + trajectory_reaches[location + 1:]
+
+        return reaches
 
 
 class SubsetReach(models.Model):
