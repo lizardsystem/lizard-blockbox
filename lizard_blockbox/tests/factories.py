@@ -57,10 +57,9 @@ class MeasureFactory(factory.Factory):
     riverpart = None
     mhw_profit_cm = None
     mhw_profit_m2 = None
+    minimal_investment_costs = None
     investment_costs = None
-    life_costs = None
-    total_costs = None
-    investment_m2 = None
+    maximal_investment_costs = None
 
 
 class WaterLevelDifferenceFactory(factory.Factory):
