@@ -118,6 +118,7 @@ def generate_report(request, template='lizard_blockbox/report.html'):
                         ('top', 'bottom', 'left', 'right'))
     querystring['vertex'] = session['vertex']
     querystring['river'] = session['river']
+    querystring['selected_year'] = _selected_year(request)
     querystring['measures'] = ';'.join(session[SELECTED_MEASURES_KEY])
     querystring = urllib.urlencode(querystring)
     path = reverse('lizard_blockbox.plain_graph_map')
@@ -416,6 +417,8 @@ class PlainGraphMapView(BlockboxView):
         measures = set(self.request.GET.get('measures').split(';'))
         session[SELECTED_MEASURES_KEY] = measures
         session['vertex'] = self.request.GET.get('vertex')
+        session[YEAR_SESSION_KEY] = self.request.GET.get(
+            'selected_year', '2100')
         session['river'] = self.request.GET.get('river')
         session['map_location'] = dict((i, self.request.GET.get(i))
             for i in ('top', 'bottom', 'left', 'right'))

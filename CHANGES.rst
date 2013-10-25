@@ -14,6 +14,8 @@ Changelog of lizard-blockbox
   Javascript, to get at the 'special url' also shown on it, so the
   cost was just removed.
 
+- The graph in the PDF report now reflects the selected year
+
 
 0.22 (2013-10-14)
 -----------------
