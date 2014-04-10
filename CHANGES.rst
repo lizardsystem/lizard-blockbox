@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.23 (unreleased)
+0.23 (2014-04-10)
 -----------------
 
 - Fix bug where the CSV export would always show '0' for unknown values,
