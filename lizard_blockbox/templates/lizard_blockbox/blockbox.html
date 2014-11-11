@@ -30,6 +30,7 @@
 
 {% block css %}
   {{ block.super }}
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet"
         href="{{ STATIC_URL }}lizard_blockbox/lizard_blockbox.css"
         type="text/css"
@@ -131,12 +132,18 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
 
   <h3>Downloads</h3>
   <p class="muted">
-    Genereer een <a target="_blank" id="report-pdf" href="{% url lizard_blockbox.generate_report %}">PDF rapportage</a>
-    met de geselecteerde maatregelen.
+    Genereer een rapport met de geselecteerde maatregelen:
   </p>
   <p>
-    <a id="report-pdf" href="{% url lizard_blockbox.generate_report %}"><img src="{{ STATIC_URL }}lizard_blockbox/pdf_icon.png"/></a>
-    <a href="{% url lizard_blockbox.generate_csv %}"><img src="{{ STATIC_URL }}lizard_blockbox/csv_icon.png"/></a>
+    <a href="{% url lizard_blockbox.generate_report %}" title="PDF-bestand" style="margin-right: 20px;" target="_blank"><i class="fa fa-file-pdf-o fa-3x"></i></a>
+    <a href="{% url lizard_blockbox.generate_csv %}" title="CSV-bestand"><i class="fa fa-file-excel-o fa-3x"></i></a>
+  </p>
+  <hr>
+  <p class="muted">
+    Download tabel met uitsluitingen:
+  </p>
+  <p>
+    <a href="#" title="PDF-bestand"><i class="fa fa-file-pdf-o fa-3x"></i></a>
   </p>
 {% endblock %}
 
