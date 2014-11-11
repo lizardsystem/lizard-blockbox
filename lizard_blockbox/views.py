@@ -267,6 +267,22 @@ class BlockboxView(MapView):
 
         return actions
 
+    @property
+    def site_actions(self):
+        actions = super(BlockboxView, self).site_actions
+        index = len(getattr(settings, 'UI_SITE_ACTIONS', [])) - 1
+        url = settings.STATIC_URL + 'lizard_blockbox/manual.pdf'
+        action = Action(
+            name=_('How does the "block box" work?'),
+            description=_('''A short manual may be found
+                <a href="{}" target="_blank">here</a>
+                (in Dutch).'''.format(url)),
+            icon='icon-info-sign',
+            klass='has_clickover_south'
+        )
+        actions.insert(index, action)
+        return actions
+
     def reaches(self):
         reaches = models.NamedReach.objects.all().values('name')
         selected_river = _selected_river(self.request)
