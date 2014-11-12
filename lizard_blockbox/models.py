@@ -195,6 +195,10 @@ class Measure(models.Model):
         'self',
         blank=True, null=True)
 
+    include = models.ManyToManyField(
+        'self',
+        blank=True, null=True)
+
     def __unicode__(self):
         name = self.name or self.short_name
         return u'%s' % name

@@ -732,6 +732,17 @@ def _selected_measures(request):
     return request.session[SELECTED_MEASURES_KEY]
 
 
+def _included_measures(request):
+    """Docstring
+
+    """
+
+    return set(models.Measure.objects.filter(
+        short_name__in=_selected_measures(request),
+        include__isnull=False
+    ).values_list('include__short_name', flat=True))
+
+
 def _unselectable_measures(request):
     """Return measure IDs that are not selectable.
 
@@ -870,11 +881,13 @@ def _list_measures_json(request):
         else:
             single_characters.append(measure_type[0].lower())
     selected_measures = _selected_measures(request)
+    included_measures = _included_measures(request)
     unselectable_measures = _unselectable_measures(request)
     selected_river = _selected_river(request)
     measures_selected_river = namedreach2measures(selected_river)
     for measure in measures:
         measure['selected'] = measure['short_name'] in selected_measures
+        measure['included'] = measure['short_name'] in included_measures
         measure['selectable'] = (
             measure['short_name'] not in unselectable_measures)
         measure['type_index'] = all_types.index(measure['measure_type'])
