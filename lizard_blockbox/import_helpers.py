@@ -518,7 +518,7 @@ def import_excluding_measures_xls(excelpath, stdout):
 
 def import_excluding_measures_sheet(sheet, stdout):
     for row_nr in xrange(1, sheet.nrows):
-        measure, excluding = sheet.row_values(row_nr)
+        measure, excluding = sheet.row_values(row_nr)[-2:]
         excludes = [i.strip() for i in unicode(excluding).split(';')]
         try:
             measure = models.Measure.objects.get(short_name=measure)
@@ -530,6 +530,30 @@ def import_excluding_measures_sheet(sheet, stdout):
             except models.Measure.DoesNotExist:
                 continue
             measure.exclude.add(instance)
+            measure.save()
+
+
+# Import including measures command
+
+def import_including_measures_xls(excelpath, stdout):
+    map_over_sheets(excelpath, import_including_measures_sheet, stdout)
+
+
+def import_including_measures_sheet(sheet, stdout):
+    for row_nr in xrange(1, sheet.nrows):
+        measure, including = sheet.row_values(row_nr)[-2:]
+        includes = [i.strip() for i in unicode(including).split(';')]
+        try:
+            measure = models.Measure.objects.get(short_name=measure)
+        except models.Measure.DoesNotExist:
+            continue
+        for include in includes:
+            try:
+                instance = models.Measure.objects.get(short_name=include)
+            except models.Measure.DoesNotExist:
+                continue
+            measure.include.add(instance)  # Part of measure package,
+            measure.exclude.add(instance)  # so is also excluded.
             measure.save()
 
 

@@ -533,7 +533,8 @@ setMeasureGraph = (control_data, cities_data) ->
 
     measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selectable and not num.selected and num.show)
     selected_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when num.selected and num.show)
-    non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable and num.show)
+    non_selectable_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable and num.show and not num.included)
+    included_measures = ([num.km_from, num.type_index, num.name, num.short_name, num.measure_type] for num in control_data when not num.selectable and num.show and num.included)
     cities = ([city[0], 8, city[1]] for city in cities_data)
 
     label_mapping = {}
@@ -611,6 +612,17 @@ setMeasureGraph = (control_data, cities_data) ->
         points:
             show: true
             symbol: "cross"
+            radius: 4
+        lines:
+            show: false
+        color: GRAY
+    ,
+        # Keep this one last (it will be hided from the legend via css).
+        label: "Impliciet-geselecteerde maatregelen"
+        data: included_measures
+        points:
+            show: true
+            symbol: "diamond"
             radius: 4
         lines:
             show: false
