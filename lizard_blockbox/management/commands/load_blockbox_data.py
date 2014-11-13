@@ -57,6 +57,13 @@ class Command(BaseCommand):
                 'Maatregelen die elkaar uitsluiten.xls'),
             self.stdout)
 
+        import_helpers.import_including_measures_xls(
+            os.path.join(
+                DATA_DIR,
+                'excelsheets/elkaar uitsluitende maatregelen',
+                'pakketten.xls'),
+            self.stdout)
+
         import_helpers.import_trajectory_names_xls(
             os.path.join(
                 DATA_DIR,
