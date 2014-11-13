@@ -247,12 +247,13 @@ showPopup = (feature) ->
 #######################################################
 
 $('a#generate_shorturl_button').click ->
-    $.ajax(
-      url: "/blokkendoos/geselecteerd"
-    ).done (data) ->
-      short_url = $(data).find('#special_url')[0].href
-      $('#shorturl').val(short_url)
-      $('#shorturl').select()
+    river_id = $('.chzn-select.river').next().find('.result-selected')[0].id
+    strategy_id = $('.chzn-select.strategy').val()
+    year = $('.post-year.active').data('year')
+    queryString = '?riverid=' + river_id + '&strategyid=' + strategy_id + '&year=' + year
+    history.replaceState({q:queryString}, "queryString", queryString);
+    $('#shorturl').val(location.href)
+    $('#shorturl').select()
 
 
 #######################################################

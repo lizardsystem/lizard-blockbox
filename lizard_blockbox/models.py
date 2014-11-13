@@ -191,6 +191,13 @@ class Measure(models.Model):
     maximal_investment_costs = EmptyStringUnknownFloatField(
         'Maximale investeringskosten (ME)', blank=True, null=True)
 
+    efficiency = models.CharField(
+        'Kosteneffectiviteit (m2 MHW verruiming/M euro)', max_length=255, blank=True, null=True)
+    natuur = models.CharField(
+        'Natuur (ha)', max_length=255, blank=True, null=True)
+    grondverzet = models.CharField(
+        'Grondverzet m3', max_length=255, blank=True, null=True)
+
     exclude = models.ManyToManyField(
         'self',
         blank=True, null=True)
