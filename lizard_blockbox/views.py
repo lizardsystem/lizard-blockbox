@@ -183,9 +183,9 @@ def generate_csv(request):
                          floatf(measure.minimal_investment_costs),
                          floatf(measure.investment_costs),
                          floatf(measure.maximal_investment_costs),
-                         floatf(measure.efficiency),
-                         floatf(measure.natuur),
-                         floatf(measure.grondverzet)])
+                         measure.efficiency,
+                         measure.natuur,
+                         measure.grondverzet])
 
         summed_minimal_investment_costs += (
             measure.minimal_investment_costs or 0)
