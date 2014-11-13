@@ -8,26 +8,32 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding field 'Measure.efficiency'
+        db.add_column('lizard_blockbox_measure', 'efficiency',
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
+                      keep_default=False)
 
-        # Changing field 'Measure.efficiency'
-        db.alter_column('lizard_blockbox_measure', 'efficiency', self.gf('django.db.models.fields.CharField')(max_length=255, null=True))
+        # Adding field 'Measure.natuur'
+        db.add_column('lizard_blockbox_measure', 'natuur',
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
+                      keep_default=False)
 
-        # Changing field 'Measure.natuur'
-        db.alter_column('lizard_blockbox_measure', 'natuur', self.gf('django.db.models.fields.CharField')(max_length=255, null=True))
+        # Adding field 'Measure.grondverzet'
+        db.add_column('lizard_blockbox_measure', 'grondverzet',
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
+                      keep_default=False)
 
-        # Changing field 'Measure.grondverzet'
-        db.alter_column('lizard_blockbox_measure', 'grondverzet', self.gf('django.db.models.fields.CharField')(max_length=255, null=True))
 
     def backwards(self, orm):
+        # Deleting field 'Measure.efficiency'
+        db.delete_column('lizard_blockbox_measure', 'efficiency')
 
-        # Changing field 'Measure.efficiency'
-        db.alter_column('lizard_blockbox_measure', 'efficiency', self.gf('lizard_blockbox.fields.EmptyStringFloatField')(null=True))
+        # Deleting field 'Measure.natuur'
+        db.delete_column('lizard_blockbox_measure', 'natuur')
 
-        # Changing field 'Measure.natuur'
-        db.alter_column('lizard_blockbox_measure', 'natuur', self.gf('lizard_blockbox.fields.EmptyStringFloatField')(null=True))
+        # Deleting field 'Measure.grondverzet'
+        db.delete_column('lizard_blockbox_measure', 'grondverzet')
 
-        # Changing field 'Measure.grondverzet'
-        db.alter_column('lizard_blockbox_measure', 'grondverzet', self.gf('lizard_blockbox.fields.EmptyStringFloatField')(null=True))
 
     models = {
         'lizard_blockbox.citylocation': {
