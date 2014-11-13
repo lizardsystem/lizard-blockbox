@@ -157,7 +157,8 @@ def generate_csv(request):
                      'Rivierdeel', 'MHW winst m', 'MHW winst m2',
                      'Minimale investeringskosten (ME)',
                      'Investeringskosten (ME)',
-                     'Maximale investeringskosten (ME)'])
+                     'Maximale investeringskosten (ME)',
+                     'Efficiency', 'Natuur', 'Grondverzet'])
     measures = models.Measure.objects.filter(
         short_name__in=_selected_measures(request))
 
@@ -181,7 +182,10 @@ def generate_csv(request):
                          floatf(measure.mhw_profit_m2),
                          floatf(measure.minimal_investment_costs),
                          floatf(measure.investment_costs),
-                         floatf(measure.maximal_investment_costs)])
+                         floatf(measure.maximal_investment_costs),
+                         measure.efficiency,
+                         measure.natuur,
+                         measure.grondverzet])
 
         summed_minimal_investment_costs += (
             measure.minimal_investment_costs or 0)
@@ -266,6 +270,16 @@ class BlockboxView(MapView):
                     url=reverse('lizard_blockbox.automatic_import')))
 
         return actions
+
+
+    @property
+    def get_params(self):
+        return {
+            'strategy_id': self.request.GET.get("strategyid", ""),
+            'river_id': self.request.GET.get("riverid", ""),
+            'year': self.request.GET.get("year", ""),
+        }
+
 
     @property
     def site_actions(self):
@@ -455,6 +469,9 @@ class SelectedMeasuresView(UiView):
     def selected_names(self):
         """Return set of selected measures from session."""
         return _selected_measures(self.request)
+
+    def selected_year(self):
+        return _selected_year()
 
     def measures_per_reach(self):
         """Return selected measures, sorted per reach."""
@@ -726,7 +743,6 @@ def _selected_year(request):
 
 def _selected_measures(request):
     """Return selected measures."""
-
     if not SELECTED_MEASURES_KEY in request.session:
         request.session[SELECTED_MEASURES_KEY] = set()
     return request.session[SELECTED_MEASURES_KEY]

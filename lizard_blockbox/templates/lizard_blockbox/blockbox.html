@@ -40,16 +40,18 @@
         media="screen, projection" />
   <style type="text/css">
     .ui-dialog .ui-dialog-titlebar { padding: 0.7em 1em; position: relative;  }
+  }
   </style>
 {% endblock css %}
 
 {% block sidebar %}
   <h2>Rivierselectie</h2>
+  <!-- <pre>{{ view.get_params }}</pre> -->
   <span>Selecteer een rivier:</span>
   <form id="blockbox-river"
 	data-select-river-url="{% url lizard_blockbox_select_river %}">
     <select data-placeholder="Kies een rivier"
-	    class="chzn-select"
+	    class="chzn-select river"
 	    tabindex="2"
 	    style="width:250px;">
       {% for reach in view.reaches %}
@@ -80,7 +82,7 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
 	  data-select-vertex-url="{% url lizard_blockbox_select_vertex %}"
 	  data-update-vertex-url="{% url lizard_blockbox_vertex_list %}">
       <select data-placeholder="Kies een hoekpunt"
-	      class="chzn-select"
+	      class="chzn-select strategy"
 	      tabindex="2"
 	      style="width:250px;">
       </select>
@@ -242,7 +244,7 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
          href="{% url lizard_blockbox_select_year %}">2100</a>
     </div>
 
-    <div class="btn-group"
+    <div class="btn-group scenario"
          title="Selecteren uit Deltascenario’s Rust, Druk, Stoom of Warm (indien informatie beschikbaar)."
          style="top:5px;">
       <span class="btn" disabled="true" href="#">Rust</span>
