@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.25 (unreleased)
+0.25 (2014-11-18)
 -----------------
 
 - Fix UncompressableFileError.
