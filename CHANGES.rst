@@ -5,7 +5,9 @@ Changelog of lizard-blockbox
 0.24 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- The most recent version of measure xls files can now be imported by
+  specifying a directory. Files are expected to be in the format:
+  {name}_v{number}.xls
 
 
 0.23 (2014-04-10)
