@@ -30,7 +30,6 @@
 
 {% block css %}
   {{ block.super }}
-  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet"
         href="{{ STATIC_URL }}lizard_blockbox/lizard_blockbox.css"
         type="text/css"
@@ -44,6 +43,16 @@
     #measures_legend tr:last-child { display: none; }
   </style>
 {% endblock css %}
+
+{% block head-extras %}
+  {{ block.super }}
+  {% comment "UncompressableFileError" %}
+  Don't put this Bootstrap CDN link in block css or you'll end up with this error when Debug=False:
+  UncompressableFileError: '//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'
+  isn't accessible via COMPRESS_URL ('/static_media/') and can't be compressed
+  {% endcomment %}
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+{% endblock head-extras %}
 
 {% block sidebar %}
   <h2>Rivierselectie</h2>
