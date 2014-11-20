@@ -323,16 +323,14 @@
   };
 
   $('a#generate_shorturl_button').click(function() {
-    var queryString, river_id, strategy_id, year;
-    river_id = $('.chzn-select.river').next().find('.result-selected')[0].id;
-    strategy_id = $('.chzn-select.strategy').val();
-    year = $('.post-year.active').data('year');
-    queryString = '?riverid=' + river_id + '&strategyid=' + strategy_id + '&year=' + year;
-    history.replaceState({
-      q: queryString
-    }, "queryString", queryString);
-    $('#shorturl').val(location.href);
-    return $('#shorturl').select();
+    return $.ajax({
+      url: "/blokkendoos/geselecteerd"
+    }).done(function(data) {
+      var short_url;
+      short_url = $(data).find('#special_url')[0].href;
+      $('#shorturl').val(short_url);
+      return $('#shorturl').select();
+    });
   });
 
   $('a#report-pdf').click(function() {
