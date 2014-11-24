@@ -111,3 +111,6 @@ th.tablesorter-headerSortDown {
   color: #999999;
   margin-left: -28px;
 }
+.btn.active {
+  background-color: #bddfed;
+}
