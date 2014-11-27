@@ -274,16 +274,6 @@ class BlockboxView(MapView):
 
         return actions
 
-
-    @property
-    def get_params(self):
-        return {
-            'strategy_id': self.request.GET.get("strategyid", ""),
-            'river_id': self.request.GET.get("riverid", ""),
-            'year': self.request.GET.get("year", ""),
-        }
-
-
     @property
     def site_actions(self):
         actions = super(BlockboxView, self).site_actions
