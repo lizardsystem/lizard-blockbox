@@ -117,8 +117,20 @@ updateVertex = ->
             options =  ["<option value='#{field[0]}'>#{field[1]}</option>" for field in values]
             options_html = options.join ""
             "<optgroup label='#{header}'>#{options_html}</optgroup>"
+
         html=groups.join ""
         $('#blockbox-vertex select').html html
+
+        for header, values of data
+            for field in values
+                if field[2] == "selected"
+                    value = field[0]
+                    break
+            break if value?
+
+        if value?
+            $('#blockbox-vertex .chzn-select').val(value)
+
         $('#blockbox-vertex .chzn-select').trigger "liszt:updated"
         )
 

@@ -122,7 +122,7 @@
 
   updateVertex = function() {
     return $.getJSON($('#blockbox-vertex').data('update-vertex-url') + '?' + new Date().getTime(), function(data) {
-      var field, groups, header, html, options, options_html, values;
+      var field, groups, header, html, options, options_html, value, values, _i, _len;
       groups = (function() {
         var _results;
         _results = [];
@@ -146,6 +146,22 @@
       })();
       html = groups.join("");
       $('#blockbox-vertex select').html(html);
+      for (header in data) {
+        values = data[header];
+        for (_i = 0, _len = values.length; _i < _len; _i++) {
+          field = values[_i];
+          if (field[2] === "selected") {
+            value = field[0];
+            break;
+          }
+        }
+        if (value != null) {
+          break;
+        }
+      }
+      if (value != null) {
+        $('#blockbox-vertex .chzn-select').val(value);
+      }
       return $('#blockbox-vertex .chzn-select').trigger("liszt:updated");
     });
   };
