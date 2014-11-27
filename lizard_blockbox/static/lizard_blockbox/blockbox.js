@@ -122,7 +122,7 @@
 
   updateVertex = function() {
     return $.getJSON($('#blockbox-vertex').data('update-vertex-url') + '?' + new Date().getTime(), function(data) {
-      var field, groups, header, html, options, options_html, values;
+      var field, groups, header, html, options, options_html, value, values, _i, _len;
       groups = (function() {
         var _results;
         _results = [];
@@ -146,6 +146,22 @@
       })();
       html = groups.join("");
       $('#blockbox-vertex select').html(html);
+      for (header in data) {
+        values = data[header];
+        for (_i = 0, _len = values.length; _i < _len; _i++) {
+          field = values[_i];
+          if (field[2] === "selected") {
+            value = field[0];
+            break;
+          }
+        }
+        if (value != null) {
+          break;
+        }
+      }
+      if (value != null) {
+        $('#blockbox-vertex .chzn-select').val(value);
+      }
       return $('#blockbox-vertex .chzn-select').trigger("liszt:updated");
     });
   };
@@ -323,16 +339,14 @@
   };
 
   $('a#generate_shorturl_button').click(function() {
-    var queryString, river_id, strategy_id, year;
-    river_id = $('.chzn-select.river').next().find('.result-selected')[0].id;
-    strategy_id = $('.chzn-select.strategy').val();
-    year = $('.post-year.active').data('year');
-    queryString = '?riverid=' + river_id + '&strategyid=' + strategy_id + '&year=' + year;
-    history.replaceState({
-      q: queryString
-    }, "queryString", queryString);
-    $('#shorturl').val(location.href);
-    return $('#shorturl').select();
+    return $.ajax({
+      url: "/blokkendoos/geselecteerd"
+    }).done(function(data) {
+      var short_url;
+      short_url = $(data).find('#special_url')[0].href;
+      $('#shorturl').val(short_url);
+      return $('#shorturl').select();
+    });
   });
 
   $('a#report-pdf').click(function() {

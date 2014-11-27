@@ -44,6 +44,9 @@ from lizard_blockbox.utils import UnicodeWriter
 
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
+SELECTED_RIVER = 'river'
+SELECTED_VERTEX = 'vertex'
+SELECTED_YEAR = 'blockbox_year'
 VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
 YEAR_SESSION_KEY = 'blockbox_year'
 logger = logging.getLogger(__name__)
@@ -271,16 +274,6 @@ class BlockboxView(MapView):
 
         return actions
 
-
-    @property
-    def get_params(self):
-        return {
-            'strategy_id': self.request.GET.get("strategyid", ""),
-            'river_id': self.request.GET.get("riverid", ""),
-            'year': self.request.GET.get("year", ""),
-        }
-
-
     @property
     def site_actions(self):
         actions = super(BlockboxView, self).site_actions
@@ -437,7 +430,7 @@ class PlainGraphMapView(BlockboxView):
         session = self.request.session
         measures = set(self.request.GET.get('measures').split(';'))
         session[SELECTED_MEASURES_KEY] = measures
-        session['vertex'] = self.request.GET.get('vertex')
+        session['vertex'] = int(self.request.GET.get('vertex'))
         session[YEAR_SESSION_KEY] = self.request.GET.get(
             'selected_year', '2100')
         session['river'] = self.request.GET.get('river')
@@ -471,7 +464,7 @@ class SelectedMeasuresView(UiView):
         return _selected_measures(self.request)
 
     def selected_year(self):
-        return _selected_year()
+        return _selected_year(self.request)
 
     def measures_per_reach(self):
         """Return selected measures, sorted per reach."""
@@ -498,10 +491,15 @@ class SelectedMeasuresView(UiView):
     @property
     def to_bookmark_url(self):
         """Return URL with the selected measures stored in the URL."""
-        short_names = sorted(list(self.selected_names()))
-        selected = ';'.join(short_names)
-        url = reverse('lizard_blockbox.bookmarked_measures',
-                      kwargs={'selected': selected})
+        params = {}
+        params['m'] = sorted(m for m in self.selected_names())
+        params['r'] = _selected_river(self.request)
+        params['y'] = self.selected_year()
+        params['v'] = _selected_vertex(self.request).pk
+        url = "{}?{}".format(
+            reverse('lizard_blockbox.bookmarked_measures'),
+            urllib.urlencode(params, doseq=True)
+        )
         return url
 
     @property
@@ -515,11 +513,27 @@ class BookmarkedMeasuresView(RedirectView):
     """Show info on the measures as selected by the URL."""
     permanent = False
 
-    def get_redirect_url(self, **kwargs):
-        semicolon_separated = self.kwargs['selected']
-        short_names = set(semicolon_separated.split(';'))
+    def get_redirect_url(self):
+
         # put them on the session
-        self.request.session[SELECTED_MEASURES_KEY] = short_names
+
+        short_names = self.request.GET.getlist('m')
+        self.request.session[SELECTED_MEASURES_KEY] = set(short_names)
+
+        river = self.request.GET.get('r', None)
+        if river and river in models.NamedReach.objects.values_list(
+                'name', flat=True):
+            self.request.session[SELECTED_RIVER] = river
+
+        vertex = self.request.GET.get('v', None)
+        if vertex and vertex.isdigit() and models.Vertex.objects.filter(
+                pk=int(vertex)).exists():
+            self.request.session[SELECTED_VERTEX] = int(vertex)
+
+        year = self.request.GET.get('y', None)
+        if year in ('2050', '2100'):
+            self.request.session[SELECTED_YEAR] = year
+
         return reverse('lizard_blockbox.home')
 
 
@@ -646,18 +660,24 @@ def _available_vertices(request):
     if selected_river != "Onbedijkte Maas":
         vertices = vertices.exclude(name__contains="1:250")
 
-    vertices = [vertex for vertex in vertices
-                if models.VertexValue.objects.filter(
-            vertex=vertex, year=selected_year).count()]
+    vertices = [
+        vertex for vertex in vertices
+        if models.VertexValue.objects.filter(
+            vertex=vertex, year=selected_year).exists()
+    ]
     return vertices
 
 
 @never_cache
 def vertex_json(request):
+    selected = request.session.get('vertex', None)
     vertices = _available_vertices(request)
     to_json = defaultdict(list)
     for vertex in vertices:
-        to_json[vertex.header].append([vertex.id, vertex.name])
+        if vertex.id == selected:
+            to_json[vertex.header].append([vertex.id, vertex.name, "selected"])
+        else:
+            to_json[vertex.header].append([vertex.id, vertex.name])
     response = HttpResponse(mimetype='application/json')
     json.dump(to_json, response)
     return response
@@ -668,7 +688,7 @@ def vertex_json(request):
 @permission_required(VIEW_PERM)
 def select_vertex(request):
     """Select the vertex."""
-    request.session['vertex'] = request.POST['vertex']
+    request.session['vertex'] = int(request.POST['vertex'])
     return HttpResponse()
 
 
@@ -706,14 +726,16 @@ def _selected_vertex(request):
     """Return the selected vertex."""
 
     available_vertices = _available_vertices(request)
-    available_vertices_ids = [i.id for i in available_vertices]
+    available_vertices_ids = [i.pk for i in available_vertices]
 
-    if (not 'vertex' in request.session or
-        int(request.session['vertex']) not in available_vertices_ids):
+    if (
+        not 'vertex' in request.session or
+        int(request.session['vertex']) not in available_vertices_ids
+    ):
         vertex = available_vertices[0]
-        request.session['vertex'] = vertex.id
+        request.session['vertex'] = vertex.pk
         return vertex
-    return models.Vertex.objects.get(id=request.session['vertex'])
+    return models.Vertex.objects.get(pk=int(request.session['vertex']))
 
 
 def _selected_river(request):

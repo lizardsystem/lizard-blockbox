@@ -56,11 +56,11 @@
 
 {% block sidebar %}
   <h2>Rivierselectie</h2>
-  <!-- <pre>{{ view.get_params }}</pre> -->
-  <span>Selecteer een rivier:</span>
   <form id="blockbox-river"
 	data-select-river-url="{% url lizard_blockbox_select_river %}">
+	<label for="select-river">Selecteer een rivier:</label>
     <select data-placeholder="Kies een rivier"
+	    id="select-river"
 	    class="chzn-select river"
 	    tabindex="2"
 	    style="width:250px;">
@@ -72,11 +72,10 @@
       {% endfor %}
     </select>
   </form>
-  <span>Selecteer een strategie DPRD/DPIJ:</span>
   <div>
-    <a class="has_popover"
+    <a class="has_clickover_south"
        id="blockbox-strategy-info"
-       title="Blokkendoos strategiën"
+       title="Blokkendoos strategieën"
        data-content="<strong>Kansrijke strategieën DPRD:</strong><br/>
 - Optimaliseren huidige strategie: kleinere faalkans EPK<br/>
 - RvR++ Groot: grote groene rivier door Land van Heusden en Altena + kleinere faalkans Europoortkering<br/>
@@ -87,11 +86,12 @@
 - Winterpeil + 0,20 m (t.o.v. huidig winterpeil IJsselmeer)<br/>
 - Winterpeil + 0,50 m (t.o.v. huidig winterpeil IJsselmeer)"
 href="#"><i class="icon-info-sign icon-grey"></i></a>
-
     <form id="blockbox-vertex"
 	  data-select-vertex-url="{% url lizard_blockbox_select_vertex %}"
 	  data-update-vertex-url="{% url lizard_blockbox_vertex_list %}">
+	  <label for="select-strategy">Selecteer een strategie DPRD/DPIJ:</label>
       <select data-placeholder="Kies een hoekpunt"
+          id="select-strategy"
 	      class="chzn-select strategy"
 	      tabindex="2"
 	      style="width:250px;">
@@ -100,22 +100,16 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
   </div>
 
   <h3>Bookmark</h3>
-  <p class="muted">
-    Gebruik deze URL om de huidige set maatregelen te bookmarken.
-  </p>
-  <a class="btn has_popover" data-content="Klik hier om de bookmark URL te genereren. Deze kunt u vervolgens knippen-en-plakken in bijvoorbeeld een e-mail, of u kunt de pagina in uw browser-favorieten zetten." data-original-title="Bookmark" id="generate_shorturl_button" href="#"><i class="icon-share"></i></a>
+  <label for="shorturl">Genereer een bookmark URL: <a href="#" class="has_clickover_east" style="float: right;" title="Bookmark" data-content="Klik op de button om een bookmark URL te genereren. Deze kunt u vervolgens knippen-en-plakken in bijvoorbeeld een e-mail, of u kunt de pagina in uw browser-favorieten zetten."><i class="icon-info-sign icon-grey"></i></a></label>
+  <a class="btn" id="generate_shorturl_button" href="#"><i class="icon-star-empty"></i></a>
   <input name="shorturl" type="text" id="shorturl" style="margin-top:10px;width:200px;" />
 
 
   <h3>Geselecteerde maatregelen</h3>
-  <p class="muted">
+    <p>
     <a href='#' id="blockbox-deselect-all-measures"
-       data-deselect-url="{% url lizard_blockbox.bookmarked_measures '' %}">
-      Deselecteer alle maatregelen</a>
-  </p>
-  <p class="muted">
-    Klik op een maatregel om hem te deselecteren.
-  </p>
+       data-deselect-url="{% url lizard_blockbox.bookmarked_measures %}">
+      Deselecteer alle maatregelen</a> of klik op een maatregel om deze te deselecteren.</p>
 
   <ul class="unstyled" id="investmentcosts">
     <li><small><strong>Totale investeringskosten</strong></small></li>
@@ -142,7 +136,7 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
   </ul>
 
   <h3>Downloads</h3>
-  <p class="muted">
+  <p>
     Genereer een rapport met de geselecteerde maatregelen in het gewenste formaat:
   </p>
   <p>
@@ -150,7 +144,7 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
     <a href="{% url lizard_blockbox.generate_csv %}" title="CSV-bestand"><i class="fa fa-file-excel-o fa-3x"></i></a>
   </p>
   <hr>
-  <p class="muted">
+  <p>
     Download de tabel met uitsluitingen:
   </p>
   <p>

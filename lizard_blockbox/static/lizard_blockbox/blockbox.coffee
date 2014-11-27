@@ -117,8 +117,20 @@ updateVertex = ->
             options =  ["<option value='#{field[0]}'>#{field[1]}</option>" for field in values]
             options_html = options.join ""
             "<optgroup label='#{header}'>#{options_html}</optgroup>"
+
         html=groups.join ""
         $('#blockbox-vertex select').html html
+
+        for header, values of data
+            for field in values
+                if field[2] == "selected"
+                    value = field[0]
+                    break
+            break if value?
+
+        if value?
+            $('#blockbox-vertex .chzn-select').val(value)
+
         $('#blockbox-vertex .chzn-select').trigger "liszt:updated"
         )
 
@@ -247,13 +259,12 @@ showPopup = (feature) ->
 #######################################################
 
 $('a#generate_shorturl_button').click ->
-    river_id = $('.chzn-select.river').next().find('.result-selected')[0].id
-    strategy_id = $('.chzn-select.strategy').val()
-    year = $('.post-year.active').data('year')
-    queryString = '?riverid=' + river_id + '&strategyid=' + strategy_id + '&year=' + year
-    history.replaceState({q:queryString}, "queryString", queryString);
-    $('#shorturl').val(location.href)
-    $('#shorturl').select()
+    $.ajax(
+      url: "/blokkendoos/geselecteerd"
+    ).done (data) ->
+      short_url = $(data).find('#special_url')[0].href
+      $('#shorturl').val(short_url)
+      $('#shorturl').select()
 
 
 #######################################################
