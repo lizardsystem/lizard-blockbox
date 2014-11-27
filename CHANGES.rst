@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.26 (unreleased)
+0.26 (2014-11-27)
 -----------------
 
 - Besides measures, the following selections can now be bookmarked too:
