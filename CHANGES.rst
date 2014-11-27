@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 0.26 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Besides measures, the following selections can now be bookmarked too:
+  river, strategy, and year.
 
 
 0.25 (2014-11-18)
