@@ -40,8 +40,9 @@ from lizard_management_command_runner.models import ManagementCommand
 from lizard_management_command_runner import tasks
 
 from lizard_blockbox import models
-from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
+from lizard_blockbox.management.commands.import_measure_xls import latest_xls
 from lizard_blockbox.utils import UnicodeWriter
+from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
 
 
 SELECTED_MEASURES_KEY = 'selected_measures_key'
@@ -983,3 +984,11 @@ class AutomaticImportPage(BlockboxView):
         result = super(AutomaticImportPage, self).breadcrumbs
         result.append(Action(name=self.page_title))
         return result
+
+    @property
+    def measure_versions(self):
+        d = os.path.join(
+            settings.BUILDOUT_DIR, 'deltaportaal', 'data', 'excelsheets',
+            'maatregelen')
+        versions = sorted([os.path.basename(f) for f in latest_xls(d)])
+        return versions

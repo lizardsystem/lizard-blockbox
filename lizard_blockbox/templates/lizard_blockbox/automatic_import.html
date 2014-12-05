@@ -20,8 +20,20 @@
 
 {% block sidebar %}
 <h2>Automatische import</h2>
+<p>
 <button data-url="{% url lizard_blockbox.automatic_import_command command="run_import" %}" class="start-import-button btn btn-primary">Ophalen data</button>
 <button data-url="{% url lizard_blockbox.automatic_import_command command="load_blockbox_data" %}" class="start-import-button btn btn-primary">Verwerken data</button>
+</p>
+<h2>Versies</h2>
+<h3>Maatregelen</h3>
+<p>Laatste versies aanwezig:</p>
+{% if view.measure_versions %}
+<ul>
+  {% for version in view.measure_versions %}
+  <li>{{ version }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
 {% endblock sidebar %}
 
 {% block content %}
