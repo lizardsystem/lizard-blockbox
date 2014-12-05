@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-15 04:29-0500\n"
+"POT-Creation-Date: 2014-12-05 02:36-0600\n"
 "PO-Revision-Date: 2012-10-15 11:29+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,34 +21,58 @@ msgstr ""
 msgid "Floating point number: converts empty string to None"
 msgstr ""
 
-#: models.py:23 models.py:125 views.py:156
+#: fields.py:20
+msgid ""
+"Floating point number: converts empty strging and the string 'Onbekend' to "
+"None"
+msgstr ""
+
+#: models.py:29 models.py:180 views.py:215
 msgid "reach"
 msgstr "Riviertak"
 
-#: models.py:24
+#: models.py:30
 msgid "reaches"
 msgstr "Riviertakken"
 
-#: views.py:156
+#: views.py:215
 msgid "reach kilometer"
 msgstr "Rivierkilometer"
 
-#: views.py:157
+#: views.py:216
 msgid "remaining water level rise in m"
 msgstr "Resterende waterstandsstijging in m"
 
-#: views.py:190
+#: views.py:253
 msgid "Show table"
 msgstr "Toon tabel"
 
-#: views.py:191
+#: views.py:254
 msgid "Show map"
 msgstr "Toon kaart"
 
-#: views.py:194
+#: views.py:257
 msgid "Switch between a graph+map view and a graph+table view."
 msgstr "Schakel tussen de grafiek+kaart en de grafiek+tabel layout"
 
-#: templates/lizard_blockbox/selected_measures.html:78
-msgid "m"
-msgstr "m"
+#: views.py:269
+msgid "Import data"
+msgstr ""
+
+#: views.py:271
+msgid "Page for automatically importing the blockbox data"
+msgstr ""
+
+#: views.py:283
+msgid "How does the \"block box\" work?"
+msgstr "Hoe werkt de blokkendoos?"
+
+#: views.py:284
+msgid ""
+"A short manual may be found\n"
+"                <a href=\"{}\" target=\"_blank\">here</a>\n"
+"                (in Dutch)."
+msgstr ""
+
+#~ msgid "m"
+#~ msgstr "m"
