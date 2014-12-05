@@ -6,6 +6,7 @@ from hashlib import md5
 import StringIO
 import csv
 import logging
+import mimetypes
 import operator
 import os
 import urllib
@@ -50,6 +51,19 @@ SELECTED_YEAR = 'blockbox_year'
 VIEW_PERM = 'lizard_blockbox.can_view_blockbox'
 YEAR_SESSION_KEY = 'blockbox_year'
 logger = logging.getLogger(__name__)
+
+
+def download_data(request, *args, **kwargs):
+    f = os.path.join(
+        settings.BUILDOUT_DIR, 'deltaportaal', 'data', *kwargs['file']
+    )
+    with open(f, "rb") as ff:
+        result = StringIO.StringIO(ff.read())
+    mime_type_guess = mimetypes.guess_type(f)
+    response = HttpResponse(mimetype=mime_type_guess[0])
+    response['Content-Disposition'] = 'filename=%s' % os.path.basename(f)
+    response.write(result.getvalue())
+    return response
 
 
 def render_to_pdf(template_src, context_dict):
