@@ -65,7 +65,7 @@ msgstr ""
 
 #: views.py:283
 msgid "How does the \"block box\" work?"
-msgstr "Hoe werkt de blokkendoos?"
+msgstr "Hoe werkt de Blokkendoos?"
 
 #: views.py:284
 msgid ""
