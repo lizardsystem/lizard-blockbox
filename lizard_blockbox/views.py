@@ -283,7 +283,7 @@ class BlockboxView(MapView):
             name=_('How does the "block box" work?'),
             description=_('''A short manual may be found
                 <a href="{}" target="_blank">here</a>
-                (in Dutch).'''.format(url)),
+                (in Dutch).''').format(url),
             icon='icon-info-sign',
             klass='has_clickover_south'
         )
