@@ -36,6 +36,7 @@ from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
 from xhtml2pdf import pisa
 
+from lizard_management_command_runner.models import CommandRun
 from lizard_management_command_runner.models import ManagementCommand
 from lizard_management_command_runner import tasks
 
@@ -432,6 +433,18 @@ class BlockboxView(MapView):
                   selected_measures_map_legend]
         result += super(BlockboxView, self).legends
         return result
+
+    def version(self):
+        "Return date of last successfull load_blockbox_data run."
+        try:
+            obj = CommandRun.objects.filter(
+                management_command__command="load_blockbox_data",
+                finished=True,
+                success=True
+            ).order_by("-start_time")[0]
+            return obj.start_time
+        except IndexError:
+            pass
 
 
 class PlainGraphMapView(BlockboxView):

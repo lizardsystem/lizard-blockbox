@@ -151,6 +151,9 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
     {# TODO: our customer will provide us with the proper document to download #}
     <a href="{% url lizard_blockbox.excluding_measures %}" title="XLS-bestand"><i class="fa fa-file-excel-o fa-3x"></i></a>
   </p>
+
+  <h3>Versie</h3>
+  <p>{{ view.version|date:"d-m-Y" }}</p>
 {% endblock %}
 
 {% block content %}
