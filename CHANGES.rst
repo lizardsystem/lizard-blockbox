@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.29 (unreleased)
+0.29 (2014-12-16)
 -----------------
 
 - Nothing changed yet.
