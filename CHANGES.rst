@@ -5,25 +5,13 @@ Changelog of lizard-blockbox
 0.30 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Added support for new years (apart from 2050/2100). The new
+  2025/2050/2075/2100 years have IDs like ``n025`` till ``n100`` to
+  distinguish them from previous ones.
 
-
-0.29 (2014-12-16)
------------------
-
-- Nothing changed yet.
-
-
-0.28 (2014-12-09)
------------------
-
-- Nothing changed yet.
-
-
-0.27 (2014-12-05)
------------------
-
-- Nothing changed yet.
+  Because the interface expects it, only years can be selected that actually
+  have "VertexValues" for that year for the selected river. As a happy side
+  effect, years and rivers always match.
 
 
 0.26 (2014-11-27)
