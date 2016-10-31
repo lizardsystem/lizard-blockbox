@@ -255,6 +255,17 @@ def generate_csv(request):
     return response
 
 
+def _available_years(request):
+    """Return available years with data for the selected river
+
+    This prevents problems with _selected_vertex() that NEEDS a result.
+    """
+    selected_river = _selected_river(request)
+    return models.VertexValue.objects.filter(
+        vertex__named_reaches__name=selected_river).values_list(
+            'year', flat=True).distinct()
+
+
 class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
     template_name = 'lizard_blockbox/blockbox.html'
@@ -317,6 +328,25 @@ class BlockboxView(MapView):
     @property
     def selected_year(self):
         return _selected_year(self.request)
+
+    @property
+    def year_choices(self):
+        available_years = _available_years(self.request)
+        result = {'old': [],
+                  'new': []}
+        for key, visible_value in models.VertexValue.CHOICES:
+            if key.startswith('2'):
+                old_or_new = 'old'
+            else:
+                old_or_new = 'new'
+            result[old_or_new].append(
+                {'key': key,
+                 'visible_value': visible_value,
+                 'selected': (key == self.selected_year),
+                 'enabled': (key in available_years),
+                 })
+
+        return result
 
     def measures_per_reach(self):
         """Return selected measures, sorted per reach."""
@@ -695,6 +725,7 @@ def _available_vertices(request):
         if models.VertexValue.objects.filter(
             vertex=vertex, year=selected_year).exists()
     ]
+    # ^^^^ TODO: fix query?
     return vertices
 
 
@@ -900,7 +931,7 @@ def select_river(request):
 def select_year(request):
     """Select a year (for the vertices)."""
     year = request.POST['year']
-    assert year in ['2050', '2100']
+    assert year in models.VertexValue.YEARS
     request.session[YEAR_SESSION_KEY] = year
     return HttpResponse()
 

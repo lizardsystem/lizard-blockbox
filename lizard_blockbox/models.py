@@ -287,14 +287,24 @@ class Vertex(models.Model):
 
 class VertexValue(models.Model):
     """Vertex Value for a specific location."""
-    YEARS = frozenset(["2050", "2100"])
+    CHOICES = [
+        # Old
+        ('2015', '2015'),  # Unused, but needed for the UI
+        ('2050', '2050'),
+        ('2100', '2100'),
+        # New (2016)
+        ('n025', '2025'),
+        ('n050', '2050'),
+        ('n075', '2075'),
+        ('n100', '2100'),
+    ]
+
+    YEARS = [choice[0] for choice in CHOICES]
 
     vertex = models.ForeignKey(Vertex)
     riversegment = models.ForeignKey(RiverSegment)
     year = models.CharField(
         max_length=4,
-        choices=(
-            ('2050', '2050'),
-            ('2100', '2100')),
+        choices=CHOICES,
         default='2100')
     value = models.FloatField()
