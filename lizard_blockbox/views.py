@@ -17,13 +17,14 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
 from django.core.urlresolvers import NoReverseMatch
+from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
 from django.template import Context
 from django.template.loader import get_template
 from django.utils import simplejson as json
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
@@ -274,7 +275,7 @@ class BlockboxView(MapView):
     # We don't want empty popups, so disable it.
     javascript_click_handler = ''
 
-    @property
+    @cached_property
     def content_actions(self):
         actions = super(BlockboxView, self).content_actions
         to_table_text = _('Show table')
@@ -301,7 +302,7 @@ class BlockboxView(MapView):
 
         return actions
 
-    @property
+    @cached_property
     def site_actions(self):
         actions = super(BlockboxView, self).site_actions
         index = len(getattr(settings, 'UI_SITE_ACTIONS', [])) - 1
@@ -325,11 +326,11 @@ class BlockboxView(MapView):
                 reach['selected'] = True
         return reaches
 
-    @property
+    @cached_property
     def selected_year(self):
         return _selected_year(self.request)
 
-    @property
+    @cached_property
     def year_choices(self):
         available_years = _available_years(self.request)
         result = {'old': [],
@@ -413,7 +414,7 @@ class BlockboxView(MapView):
 
         return result
 
-    @property
+    @cached_property
     def legends(self):
         result_graph_legend = FlotLegend(
             name="Effecten grafiek",
@@ -546,7 +547,7 @@ class SelectedMeasuresView(UiView):
         result.sort(key=lambda x: x['amount'], reverse=True)
         return result
 
-    @property
+    @cached_property
     def to_bookmark_url(self):
         """Return URL with the selected measures stored in the URL."""
         params = {}
@@ -560,7 +561,7 @@ class SelectedMeasuresView(UiView):
         )
         return url
 
-    @property
+    @cached_property
     def breadcrumbs(self):
         result = super(SelectedMeasuresView, self).breadcrumbs
         result.append(Action(name=self.page_title))
@@ -1021,17 +1022,17 @@ class AutomaticImportPage(BlockboxView):
 
         return HttpResponse()
 
-    @property
+    @cached_property
     def content_actions(self):
         return []
 
-    @property
+    @cached_property
     def breadcrumbs(self):
         result = super(AutomaticImportPage, self).breadcrumbs
         result.append(Action(name=self.page_title))
         return result
 
-    @property
+    @cached_property
     def measure_versions(self):
         d = os.path.join(
             settings.BUILDOUT_DIR, 'deltaportaal', 'data', 'excelsheets',
