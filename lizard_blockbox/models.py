@@ -298,14 +298,8 @@ class VertexValue(models.Model):
         ('n075', '2075'),
         ('n100', '2100'),
     ]
-    SHORE_CHOICES = [
-        ('BOTH', 'beide oevers'),
-        ('LO', 'linkeroever'),
-        ('RO', 'rechteroever'),
-    ]
 
     YEARS = [choice[0] for choice in CHOICES]
-    SHORES = [shore_choice[0] for shore_choice in SHORE_CHOICES]
 
     vertex = models.ForeignKey(Vertex)
     riversegment = models.ForeignKey(RiverSegment)
@@ -313,8 +307,4 @@ class VertexValue(models.Model):
         max_length=4,
         choices=CHOICES,
         default='2100')
-    shore = models.CharField(
-        max_length=4,
-        choices=SHORE_CHOICES,
-        default='BOTH')
     value = models.FloatField()

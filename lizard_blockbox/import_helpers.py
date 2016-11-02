@@ -307,7 +307,6 @@ def build_vertex_dict(row_values):
         vertex = vertex.strip()
         header = ''
         year = "2100"  # Let's use a default in case we don't find a year
-        shore = models.VertexValue.SHORES[0]  # Default
 
         # The first part of the vertex should be the year
         if ':' in vertex:
@@ -316,14 +315,6 @@ def build_vertex_dict(row_values):
             if first_part in models.VertexValue.YEARS:
                 year = first_part
                 vertex = ':'.join(parts[1:]).strip()
-
-        # if year.startswith('n'):
-        #     # New kind of year, so we expect an LO/RO marker.
-        #     parts = vertex.split(':')
-        #     first_part = parts[0].strip()
-        #     if first_part in models.VertexValue.SHORES:
-        #         shore = first_part
-        #         vertex = ':'.join(parts[1:]).strip()
 
         # Process the rest, which may contain a header
         if ':' in vertex:
@@ -339,7 +330,6 @@ def build_vertex_dict(row_values):
         # The two following variables are not saved on the Vertex model! But
         # this is a convenient place to keep the variable around for below.
         instance.year = year
-        instance.shore = shore
         logger.debug("Added vertex %s (header %s) for year %s",
                      instance.name, instance.header, year)
         vertices.append(instance)
@@ -365,7 +355,6 @@ def import_vertex_row(vertices, row):
         models.VertexValue.objects.get_or_create(
             riversegment=riversegment,
             vertex=vertex,
-            shore=vertex.shore,  # Set the shore we saved above.
             year=vertex.year,  # Set the year we saved above,
             defaults={'value': value})
 
