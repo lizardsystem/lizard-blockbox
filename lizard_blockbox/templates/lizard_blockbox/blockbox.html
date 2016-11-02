@@ -253,8 +253,8 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
         {% if choice.enabled %}
           <a data-year="{{ choice.key }}"
              title="Oude klimaatopgave voor de zichtjaren 2050 en 2100."
-             class="post-year btn {% if choice.selected %}active{% endif %}"
-             href="{% url lizard_blockbox_select_year %}">
+             class="btn {% if choice.selected %}active{% endif %}"
+             href="{% url lizard_blockbox_select_year %}?year={{ choice.key }}">
             {{ choice.visible_value }}
           </a>
         {% else %}
@@ -271,8 +271,8 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
         {% if choice.enabled %}
           <a data-year="{{ choice.key }}"
              title="Gecombineerde norm plus klimaatopgave"
-             class="post-year btn {% if choice.selected %}active{% endif %}"
-             href="{% url lizard_blockbox_select_year %}">
+             class="btn {% if choice.selected %}active{% endif %}"
+             href="{% url lizard_blockbox_select_year %}?year={{ choice.key }}">
             {{ choice.visible_value }}
           </a>
         {% else %}

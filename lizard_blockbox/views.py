@@ -381,12 +381,14 @@ def _selected_protection_level(vertex):
         return "1250"
 
 
+# Note: removed @require_POST and added a brute-force redirect until we can
+# update the coffeescript/backbone.
 @never_cache
-@require_POST
 @permission_required(VIEW_PERM)
 def select_year(request):
     """Select a year (for the vertices)."""
-    year = request.POST['year']
+    # year = request.POST['year']
+    year = request.GET['year']
     available_years = _available_years(request)
     if not year in available_years:
         year = available_years[0]
