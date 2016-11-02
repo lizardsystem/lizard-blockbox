@@ -246,41 +246,45 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
 {% block orthogonal-actions %}
   <div class="btn-toolbar">
     <div class="btn-group"
-         title="Oude klimaatopgave voor de zichtjaren 2050 en 2100."
          style="top:5px;"
          data-toggle="buttons-radio">
+
       {% for choice in view.year_choices.old %}
         {% if choice.enabled %}
-          <a data-year="2050"
+          <a data-year="{{ choice.key }}"
+             title="Oude klimaatopgave voor de zichtjaren 2050 en 2100."
              class="post-year btn {% if choice.selected %}active{% endif %}"
              href="{% url lizard_blockbox_select_year %}">
             {{ choice.visible_value }}
           </a>
         {% else %}
-          <span class="btn" disabled="true" href="#">
+          <span class="btn"
+                title="Oude klimaatopgave voor de zichtjaren 2050 en 2100."
+                disabled="true"
+                href="#">
             {{ choice.visible_value }}
           </span>
         {% endif %}
       {% endfor %}
-    </div>
 
-    <div class="btn-group"
-         title="Gecombineerde norm plus klimaatopgave"
-         style="top:5px;"
-         data-toggle="buttons-radio">
       {% for choice in view.year_choices.new %}
         {% if choice.enabled %}
-          <a data-year="2050"
+          <a data-year="{{ choice.key }}"
+             title="Gecombineerde norm plus klimaatopgave"
              class="post-year btn {% if choice.selected %}active{% endif %}"
              href="{% url lizard_blockbox_select_year %}">
             {{ choice.visible_value }}
           </a>
         {% else %}
-          <span class="btn" disabled="true" href="#">
+          <span class="btn"
+                title="Gecombineerde norm plus klimaatopgave"
+                disabled="true"
+                href="#">
             {{ choice.visible_value }}
           </span>
         {% endif %}
       {% endfor %}
+
     </div>
 
   </div>

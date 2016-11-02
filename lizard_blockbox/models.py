@@ -289,9 +289,9 @@ class VertexValue(models.Model):
     """Vertex Value for a specific location."""
     CHOICES = [
         # Old
-        ('2015', '2015'),  # Unused, but needed for the UI
-        ('2050', '2050'),
-        ('2100', '2100'),
+        ('2015', '2015 (oud)'),  # Unused, but needed for the UI
+        ('2050', '2050 (oud)'),
+        ('2100', '2100 (oud)'),
         # New (2016)
         ('n025', '2025'),
         ('n050', '2050'),

@@ -260,11 +260,15 @@ def _available_years(request):
     """Return available years with data for the selected river
 
     This prevents problems with _selected_vertex() that NEEDS a result.
+
     """
     selected_river = _selected_river(request)
-    return models.VertexValue.objects.filter(
+    years = models.VertexValue.objects.filter(
         vertex__named_reaches__name=selected_river).values_list(
             'year', flat=True).distinct()
+    logger.debug("The following years are available: %s",
+                 ', '.join(years))
+    return years
 
 
 class BlockboxView(MapView):
@@ -750,7 +754,9 @@ def vertex_json(request):
 @permission_required(VIEW_PERM)
 def select_vertex(request):
     """Select the vertex."""
-    request.session['vertex'] = int(request.POST['vertex'])
+    vertex_id = int(request.POST['vertex'])
+    request.session['vertex'] = vertex_id
+    logger.debug("selected vertex ID %s", vertex_id)
     return HttpResponse()
 
 
@@ -769,8 +775,10 @@ def select_protection_level(request):
     available = _available_protection_levels(request)
     chosen = request.POST['level']
     if not chosen in available:
+        logger.debug("Chosen protection level (%s) not available")
         chosen = available[0]
     request.session['protection_level'] = chosen
+    logger.debug("Selected protection level %s", chosen)
     return HttpResponse()
 
 
@@ -919,10 +927,25 @@ def toggle_measure(request):
 @permission_required(VIEW_PERM)
 def select_river(request):
     """Select a river."""
-    request.session['river'] = request.POST['river_name']
-    del request.session['vertex']
-    request.session['protection_level'] = _available_protection_levels(
-        request)[0]
+    river_name = request.POST['river_name']
+    request.session['river'] = river_name
+    # Reset vertex as it might not match the river
+    if 'vertex' in request.session:
+        del request.session['vertex']
+    # Rest year as it might not match the river
+    available_years = _available_years(request)
+    available_new_years = [year for year in available_years
+                           if year.startswith('n')]
+    if available_new_years:
+        request.session[YEAR_SESSION_KEY] = available_new_years[0]
+    else:
+        request.session[YEAR_SESSION_KEY] = available_years[0]
+
+    protection_level = _available_protection_levels(request)[0]
+    request.session['protection_level'] = protection_level
+    logger.debug(
+        "Selected river %s; deselected vertex; set protection level to %s",
+        river_name, protection_level)
     return HttpResponse()
 
 
@@ -934,6 +957,7 @@ def select_year(request):
     year = request.POST['year']
     assert year in models.VertexValue.YEARS
     request.session[YEAR_SESSION_KEY] = year
+    logger.debug("Selected year %s", year)
     return HttpResponse()
 
 

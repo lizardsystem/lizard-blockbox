@@ -1,6 +1,7 @@
 """Helper functions used by the data import management commands."""
 
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -12,6 +13,9 @@ from django.conf import settings
 
 from lizard_blockbox import models
 from lizard_blockbox import utils
+
+
+logger = logging.getLogger(__name__)
 
 
 class CommandError(Exception):
@@ -313,13 +317,13 @@ def build_vertex_dict(row_values):
                 year = first_part
                 vertex = ':'.join(parts[1:]).strip()
 
-        if year.startswith('n'):
-            # New kind of year, so we expect an LO/RO marker.
-            parts = vertex.split(':')
-            first_part = parts[0].strip()
-            if first_part in models.VertexValue.SHORES:
-                shore = first_part
-                vertex = ':'.join(parts[1:]).strip()
+        # if year.startswith('n'):
+        #     # New kind of year, so we expect an LO/RO marker.
+        #     parts = vertex.split(':')
+        #     first_part = parts[0].strip()
+        #     if first_part in models.VertexValue.SHORES:
+        #         shore = first_part
+        #         vertex = ':'.join(parts[1:]).strip()
 
         # Process the rest, which may contain a header
         if ':' in vertex:
@@ -336,7 +340,8 @@ def build_vertex_dict(row_values):
         # this is a convenient place to keep the variable around for below.
         instance.year = year
         instance.shore = shore
-
+        logger.debug("Added vertex %s (header %s) for year %s",
+                     instance.name, instance.header, year)
         vertices.append(instance)
 
     return dict(enumerate(vertices, 2))
