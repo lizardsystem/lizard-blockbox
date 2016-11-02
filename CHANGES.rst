@@ -9,9 +9,8 @@ Changelog of lizard-blockbox
   2025/2050/2075/2100 years have IDs like ``n025`` till ``n100`` to
   distinguish them from previous ones.
 
-  Because the interface expects it, only years can be selected that actually
-  have "VertexValues" for that year for the selected river. As a happy side
-  effect, years and rivers always match.
+  A year selection refreshes the entire page. The rivers that are selectable
+  are the ones with data for those years.
 
 
 0.26 (2014-11-27)
