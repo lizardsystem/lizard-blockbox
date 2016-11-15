@@ -33,7 +33,7 @@ class Command(BaseCommand):
             os.path.join(
                 DATA_DIR,
               'excelsheets/waterstandsopgave/'
-              'Verzamelsheet Wateropgave DPR_16_Blokkendoos_geenFiguren.xls'),
+              'Verzamelsheet Wateropgave DPR_17_Blokkendoos_geenFiguren.xls'),
             self.stdout)
         import_helpers.link_vertices_with_namedreaches()
 
