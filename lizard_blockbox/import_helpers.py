@@ -349,9 +349,12 @@ def import_vertex_row(vertices, row):
 
     for col_nr, vertex in vertices.iteritems():
         value = row[col_nr]
+        # TOOD: ^^^^ 0 is fine
         if not value:
-            continue  # Skip this column, but there may still be data
-                      # in later columns
+            if value != 0:
+                # Skip this column, but there may still be data
+                # in later columns. Values of 0 are fine, though.
+                continue
         models.VertexValue.objects.get_or_create(
             riversegment=riversegment,
             vertex=vertex,
