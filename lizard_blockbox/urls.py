@@ -62,9 +62,9 @@ urlpatterns = patterns(
     url(r'^api/protection_level/list/$',
         'lizard_blockbox.views.protection_level_json',
         name='lizard_blockbox_protection_level_list'),
-    url(r'^select_protection_level/$',
-        'lizard_blockbox.views.select_protection_level',
-        name='lizard_blockbox_select_protection_level'),
+    # url(r'^select_protection_level/$',
+    #     'lizard_blockbox.views.select_protection_level',
+    #     name='lizard_blockbox_select_protection_level'),
 
     # Automatic imports
     url(r'^import/$',

@@ -1,6 +1,7 @@
 """Helper functions used by the data import management commands."""
 
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -12,6 +13,9 @@ from django.conf import settings
 
 from lizard_blockbox import models
 from lizard_blockbox import utils
+
+
+logger = logging.getLogger(__name__)
 
 
 class CommandError(Exception):
@@ -124,6 +128,7 @@ def map_over_sheets(excelpath, function, stdout, *args, **kwargs):
 # Fetch blockbox data command
 
 def fetch_blockbox_data(stdout):
+    raise RuntimeError("FTP credentials are incorrect, this won't work")
     DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal/data')
 
     # Note: stored user:password combination in deltaportaal's settings
@@ -322,10 +327,11 @@ def build_vertex_dict(row_values):
         instance, _ = models.Vertex.objects.get_or_create(
             header=header, name=vertex)
 
-        instance.year = year  # Not saved on this model! But this is a
-                              # convenient place to keep the variable
-                              # around for below
-
+        # The two following variables are not saved on the Vertex model! But
+        # this is a convenient place to keep the variable around for below.
+        instance.year = year
+        logger.debug("Added vertex %s (header %s) for year %s",
+                     instance.name, instance.header, year)
         vertices.append(instance)
 
     return dict(enumerate(vertices, 2))
@@ -343,13 +349,16 @@ def import_vertex_row(vertices, row):
 
     for col_nr, vertex in vertices.iteritems():
         value = row[col_nr]
+        # TOOD: ^^^^ 0 is fine
         if not value:
-            continue  # Skip this column, but there may still be data
-                      # in later columns
+            if value != 0:
+                # Skip this column, but there may still be data
+                # in later columns. Values of 0 are fine, though.
+                continue
         models.VertexValue.objects.get_or_create(
             riversegment=riversegment,
             vertex=vertex,
-            year=vertex.year,  # Set the year we saved above
+            year=vertex.year,  # Set the year we saved above,
             defaults={'value': value})
 
 

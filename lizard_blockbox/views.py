@@ -17,13 +17,15 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
 from django.core.urlresolvers import NoReverseMatch
+from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
+from django.shortcuts import redirect
 from django.template import Context
 from django.template.loader import get_template
 from django.utils import simplejson as json
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
@@ -255,6 +257,202 @@ def generate_csv(request):
     return response
 
 
+def _available_years(request):
+    """Return all available years with some data for at least one river
+
+    """
+    years = models.VertexValue.objects.all().values_list(
+            'year', flat=True).distinct()
+    # logger.debug("The following years are available: %s",
+    #              ', '.join(years))
+    return years
+
+
+def _available_rivers(request):
+    """Return all available rivers with data for the selected year
+    """
+    selected_year = _selected_year(request)
+    rivers = models.NamedReach.objects.filter(
+        vertex__vertexvalue__year__exact=selected_year).distinct(
+        ).values_list(
+            'name', flat=True).order_by('name')
+    # logger.debug("Available rivers: %s", ', '.join(rivers))
+    return rivers
+
+
+def _available_vertices(request):
+    selected_river = _selected_river(request)
+    selected_year = _selected_year(request)
+    vertices = models.Vertex.objects.filter(named_reaches__name=selected_river
+                                            ).order_by('header', 'name')
+
+    # Rule: we only show vertices with "1:250" in the name if the
+    # selected river is "Onbedijkte Maas", because that is the only
+    # river for which there is 1:250 data over its entire reach.
+    if selected_river != "Onbedijkte Maas":
+        vertices = vertices.exclude(name__contains="1:250")
+
+    vertices = [
+        vertex for vertex in vertices
+        if models.VertexValue.objects.filter(
+            vertex=vertex, year=selected_year).exists()
+    ]
+    # ^^^^ TODO: fix query?
+    return vertices
+
+
+def _available_protection_levels(request):
+    named_reach = models.NamedReach.objects.get(name=_selected_river(request))
+    return named_reach.protection_levels
+
+
+def _selected_year(request):
+    """Return the selected year
+
+    If the selected year isn't available or set, return the first available
+    one (and write it to the session).
+
+    """
+    available_years = _available_years(request)
+    available_new_years = [year for year in available_years
+                           if year.startswith('n')]
+    if available_new_years:
+        desired_if_new = available_new_years[0]
+    else:
+        desired_if_new = available_years[0]
+    if not YEAR_SESSION_KEY in request.session:
+        logger.debug("Setting selected year to %s", desired_if_new)
+        request.session[YEAR_SESSION_KEY] = desired_if_new
+    if request.session[YEAR_SESSION_KEY] not in available_years:
+        logger.debug("Year %s is not available anymore, setting it to %s",
+                     request.session[YEAR_SESSION_KEY], desired_if_new)
+        request.session[YEAR_SESSION_KEY] = desired_if_new
+
+    return request.session[YEAR_SESSION_KEY]
+
+
+def _selected_river(request):
+    """Return the selected river
+
+    If the selected river isn't available or set, return the first available
+    one (and write it to the session).
+
+    """
+    available_rivers = _available_rivers(request)
+    if not 'river' in request.session:
+        request.session['river'] = available_rivers[0]
+        logger.debug("Set selected river to %s", request.session['river'])
+    if request.session['river'] not in available_rivers:
+        logger.debug(
+            "Selected river %s isn't available anymore, selecting %s",
+            request.session['river'],
+            available_rivers[0])
+        request.session['river'] = available_rivers[0]
+    return request.session['river']
+
+
+def _selected_vertex(request):
+    """Return the selected vertex.
+
+    If the selected vertex isn't available or set, return the first available
+    one (and write it to the session).
+
+    """
+
+    available_vertices = _available_vertices(request)
+    available_vertices_ids = [i.pk for i in available_vertices]
+
+    if (not 'vertex' in request.session or
+        int(request.session['vertex']) not in available_vertices_ids):
+        vertex = available_vertices[0]
+        logger.debug("Setting selected vertex to %s", vertex)
+        request.session['vertex'] = vertex.pk
+        return vertex
+    return models.Vertex.objects.get(pk=int(request.session['vertex']))
+
+
+def _selected_protection_level(vertex):
+    # There is a special vertex for the 1:250 strategy on the Maas, it
+    # should use the 1:250 protection level values, 1:1250 is used
+    # everywhere else.
+    if vertex and vertex.name and "1:250" in vertex.name:
+        return "250"
+    else:
+        return "1250"
+
+
+# Note: removed @require_POST and added a brute-force redirect until we can
+# update the coffeescript/backbone.
+@never_cache
+@permission_required(VIEW_PERM)
+def select_year(request):
+    """Select a year (for the vertices)."""
+    # year = request.POST['year']
+    year = request.GET['year']
+    available_years = _available_years(request)
+    if not year in available_years:
+        year = available_years[0]
+    request.session[YEAR_SESSION_KEY] = year
+    logger.debug("Selected year %s", year)
+
+    # Refresh river and vertex selection: the current selection might not be
+    # valid anymore.
+    _selected_river(request)
+    _selected_vertex(request)
+
+    return redirect('lizard_blockbox.home')
+
+
+@never_cache
+@require_POST
+@permission_required(VIEW_PERM)
+def select_river(request):
+    """Select a river."""
+    available_rivers = _available_rivers(request)
+
+    river_name = request.POST['river_name']
+    if river_name not in available_rivers:
+        logger.debug("River %s is not available, setting %s instead",
+                     river_name, available_rivers[0])
+        river_name = available_rivers[0]
+    request.session['river'] = river_name
+
+    # Refresh vertex selection: the current selection might not be valid
+    # anymore.
+    _selected_vertex(request)
+
+    logger.debug("Selected river %s", river_name)
+    return HttpResponse()
+
+
+@never_cache
+@require_POST
+@permission_required(VIEW_PERM)
+def select_vertex(request):
+    """Select the vertex."""
+    vertex_id = int(request.POST['vertex'])
+    request.session['vertex'] = vertex_id
+    logger.debug("selected vertex ID %s", vertex_id)
+    return HttpResponse()
+
+
+# [Reinout thinks this isn't actually used]
+# @never_cache
+# @require_POST
+# @permission_required(VIEW_PERM)
+# def select_protection_level(request):
+#     """Select 1/250 or 1/1250 protection level.
+#     """
+#     available = _available_protection_levels(request)
+#     chosen = request.POST['level']
+#     if not chosen in available:
+#         logger.debug("Chosen protection level (%s) not available")
+#         chosen = available[0]
+#     request.session['protection_level'] = chosen
+#     logger.debug("Selected protection level %s", chosen)
+#     return HttpResponse()
+
+
 class BlockboxView(MapView):
     """Show reach including pointers to relevant data URLs."""
     template_name = 'lizard_blockbox/blockbox.html'
@@ -263,7 +461,11 @@ class BlockboxView(MapView):
     # We don't want empty popups, so disable it.
     javascript_click_handler = ''
 
-    @property
+    def wms_layers(self):
+        # No more lizard-map
+        return []
+
+    @cached_property
     def content_actions(self):
         actions = super(BlockboxView, self).content_actions
         to_table_text = _('Show table')
@@ -290,7 +492,7 @@ class BlockboxView(MapView):
 
         return actions
 
-    @property
+    @cached_property
     def site_actions(self):
         actions = super(BlockboxView, self).site_actions
         index = len(getattr(settings, 'UI_SITE_ACTIONS', [])) - 1
@@ -307,16 +509,39 @@ class BlockboxView(MapView):
         return actions
 
     def reaches(self):
-        reaches = models.NamedReach.objects.all().values('name')
+        available_rivers = _available_rivers(self.request)
         selected_river = _selected_river(self.request)
-        for reach in reaches:
-            if reach['name'] == selected_river:
-                reach['selected'] = True
-        return reaches
 
-    @property
+        result = []
+        for river in available_rivers:
+            item = {'name': river}
+            if river == selected_river:
+                item['selected'] = True
+            result.append(item)
+        return result
+
+    @cached_property
     def selected_year(self):
         return _selected_year(self.request)
+
+    @cached_property
+    def year_choices(self):
+        available_years = _available_years(self.request)
+        result = {'old': [],
+                  'new': []}
+        for key, visible_value in models.VertexValue.CHOICES:
+            if key.startswith('2'):
+                old_or_new = 'old'
+            else:
+                old_or_new = 'new'
+            result[old_or_new].append(
+                {'key': key,
+                 'visible_value': visible_value,
+                 'selected': (key == self.selected_year),
+                 'enabled': (key in available_years),
+                 })
+
+        return result
 
     def measures_per_reach(self):
         """Return selected measures, sorted per reach."""
@@ -383,7 +608,7 @@ class BlockboxView(MapView):
 
         return result
 
-    @property
+    @cached_property
     def legends(self):
         result_graph_legend = FlotLegend(
             name="Effecten grafiek",
@@ -516,7 +741,7 @@ class SelectedMeasuresView(UiView):
         result.sort(key=lambda x: x['amount'], reverse=True)
         return result
 
-    @property
+    @cached_property
     def to_bookmark_url(self):
         """Return URL with the selected measures stored in the URL."""
         params = {}
@@ -530,7 +755,7 @@ class SelectedMeasuresView(UiView):
         )
         return url
 
-    @property
+    @cached_property
     def breadcrumbs(self):
         result = super(SelectedMeasuresView, self).breadcrumbs
         result.append(Action(name=self.page_title))
@@ -678,26 +903,6 @@ def calculated_measures_json(request):
     return response
 
 
-def _available_vertices(request):
-    selected_river = _selected_river(request)
-    selected_year = _selected_year(request)
-    vertices = models.Vertex.objects.filter(named_reaches__name=selected_river
-                                            ).order_by('header', 'name')
-
-    # Rule: we only show vertices with "1:250" in the name if the
-    # selected river is "Onbedijkte Maas", because that is the only
-    # river for which there is 1:250 data over its entire reach.
-    if selected_river != "Onbedijkte Maas":
-        vertices = vertices.exclude(name__contains="1:250")
-
-    vertices = [
-        vertex for vertex in vertices
-        if models.VertexValue.objects.filter(
-            vertex=vertex, year=selected_year).exists()
-    ]
-    return vertices
-
-
 @never_cache
 def vertex_json(request):
     selected = request.session.get('vertex', None)
@@ -714,83 +919,10 @@ def vertex_json(request):
 
 
 @never_cache
-@require_POST
-@permission_required(VIEW_PERM)
-def select_vertex(request):
-    """Select the vertex."""
-    request.session['vertex'] = int(request.POST['vertex'])
-    return HttpResponse()
-
-
-@never_cache
 def protection_level_json(request):
     response = HttpResponse(mimetype='application/json')
     json.dump(_available_protection_levels(request), response)
     return response
-
-
-@never_cache
-@require_POST
-@permission_required(VIEW_PERM)
-def select_protection_level(request):
-    """Select 1/250 or 1/1250 protection level."""
-    available = _available_protection_levels(request)
-    chosen = request.POST['level']
-    if not chosen in available:
-        chosen = available[0]
-    request.session['protection_level'] = chosen
-    return HttpResponse()
-
-
-def _selected_protection_level(vertex):
-    # There is a special vertex for the 1:250 strategy on the Maas, it
-    # should use the 1:250 protection level values, 1:1250 is used
-    # everywhere else.
-    if vertex and vertex.name and "1:250" in vertex.name:
-        return "250"
-    else:
-        return "1250"
-
-
-def _selected_vertex(request):
-    """Return the selected vertex."""
-
-    available_vertices = _available_vertices(request)
-    available_vertices_ids = [i.pk for i in available_vertices]
-
-    if (
-        not 'vertex' in request.session or
-        int(request.session['vertex']) not in available_vertices_ids
-    ):
-        vertex = available_vertices[0]
-        request.session['vertex'] = vertex.pk
-        return vertex
-    return models.Vertex.objects.get(pk=int(request.session['vertex']))
-
-
-def _selected_river(request):
-    """Return the selected river"""
-    available_reaches = models.NamedReach.objects.values_list(
-        'name', flat=True).distinct().order_by('name')
-    if not 'river' in request.session:
-        request.session['river'] = available_reaches[0]
-    if request.session['river'] not in available_reaches:
-        logger.warn("Selected river %s doesn't exist anymore.",
-                    request.session['river'])
-        request.session['river'] = available_reaches[0]
-    return request.session['river']
-
-
-def _available_protection_levels(request):
-    named_reach = models.NamedReach.objects.get(name=_selected_river(request))
-    return named_reach.protection_levels
-
-
-def _selected_year(request):
-    """Return the selected year"""
-    if not YEAR_SESSION_KEY in request.session:
-        request.session[YEAR_SESSION_KEY] = '2100'
-    return request.session[YEAR_SESSION_KEY]
 
 
 def _selected_measures(request):
@@ -882,29 +1014,6 @@ def toggle_measure(request):
     return HttpResponse(json.dumps(list(selected_measures)))
 
 
-@never_cache
-@require_POST
-@permission_required(VIEW_PERM)
-def select_river(request):
-    """Select a river."""
-    request.session['river'] = request.POST['river_name']
-    del request.session['vertex']
-    request.session['protection_level'] = _available_protection_levels(
-        request)[0]
-    return HttpResponse()
-
-
-@never_cache
-@require_POST
-@permission_required(VIEW_PERM)
-def select_year(request):
-    """Select a year (for the vertices)."""
-    year = request.POST['year']
-    assert year in ['2050', '2100']
-    request.session[YEAR_SESSION_KEY] = year
-    return HttpResponse()
-
-
 def _city_locations_json(request):
     """Return the city locations for the selected river."""
 
@@ -990,17 +1099,17 @@ class AutomaticImportPage(BlockboxView):
 
         return HttpResponse()
 
-    @property
+    @cached_property
     def content_actions(self):
         return []
 
-    @property
+    @cached_property
     def breadcrumbs(self):
         result = super(AutomaticImportPage, self).breadcrumbs
         result.append(Action(name=self.page_title))
         return result
 
-    @property
+    @cached_property
     def measure_versions(self):
         d = os.path.join(
             settings.BUILDOUT_DIR, 'deltaportaal', 'data', 'excelsheets',

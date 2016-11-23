@@ -75,21 +75,21 @@
   <div>
     <a class="has_clickover_south"
        id="blockbox-strategy-info"
-       title="Blokkendoos strategieën"
-       data-content="<strong>Kansrijke strategieën DPRD:</strong><br/>
-- Optimaliseren huidige strategie: kleinere faalkans EPK<br/>
-- RvR++ Groot: grote groene rivier door Land van Heusden en Altena + kleinere faalkans Europoortkering<br/>
-- Alles via Waal/IJssel ontzien: minder via de IJssel, meer via Waal (+400 m3/s t.o.v. REF2100DPR) + kleinere faalkans EPK<br/>
-- Lek extra ontzien/IJssel: minder via Lek, meer via IJssel (+400 m3/s extra t.o.v. REF2100DPR) + kleinere faalkans EPK<br/>
-- Lek extra ontzien/Waal: minder via Lek, meer via Waal (+800 m3/s extra t.o.v. REF2100DPR) + kleinere faalkans EPK<br/><br/>
-<strong>Kansrijke strategieën DPIJ:</strong><br/>
-- Winterpeil + 0,20 m (t.o.v. huidig winterpeil IJsselmeer)<br/>
-- Winterpeil + 0,50 m (t.o.v. huidig winterpeil IJsselmeer)"
+       title="Strategieën en hoogteopgaves"
+       data-content="
+De hier genoemde strategieën zijn de kansrijke strategieën zoals die destijds
+gebruikt zijn door Deltaprogramma Rijnmond-Drechtsteden en Deltaprogramma
+IJsselmeergebied (2013). Voor de nieuw bepaalde hoogteopgave 2025, 2050, 2075
+of 2100 kan hier een keuze gemaakt worden tussen de hoogteopgave voor de
+waterkeringen op de linker oever (LO) of de rechter oever (RO).
+"
 href="#"><i class="icon-info-sign icon-grey"></i></a>
     <form id="blockbox-vertex"
 	  data-select-vertex-url="{% url lizard_blockbox_select_vertex %}"
 	  data-update-vertex-url="{% url lizard_blockbox_vertex_list %}">
-	  <label for="select-strategy">Selecteer een strategie DPRD/DPIJ:</label>
+      <label for="select-strategy">
+        Selecteer een strategie (oud) of een oeverzijde (nieuw):
+      </label>
       <select data-placeholder="Kies een hoekpunt"
           id="select-strategy"
 	      class="chzn-select strategy"
@@ -246,43 +246,67 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
 {% block orthogonal-actions %}
   <div class="btn-toolbar">
     <div class="btn-group"
-         title="Selecteren uit zichtjaren 2050 en 2100."
          style="top:5px;"
          data-toggle="buttons-radio">
-      <span class="btn" disabled="true" href="#">2015</span>
-      <a data-year="2050"
-         class="post-year btn {% if view.selected_year == '2050' %}active{% endif %}"
-         href="{% url lizard_blockbox_select_year %}">2050</a>
-      <a data-year="2100"
-         class="post-year btn {% if view.selected_year == '2100' %}active{% endif %}"
-         href="{% url lizard_blockbox_select_year %}">2100</a>
-    </div>
 
-    <div class="btn-group scenario"
-         title="Selecteren uit Deltascenario’s Rust, Druk, Stoom of Warm (indien informatie beschikbaar)."
-         style="top:5px;">
-      <span class="btn" disabled="true" href="#">Rust</span>
-      <span class="btn" disabled="true" href="#">Druk</span>
-      <span class="btn active" href="#">Stoom</span>
-      <span class="btn active" href="#">Warm</span>
+      {% for choice in view.year_choices.old %}
+        {% if choice.enabled %}
+          <a data-year="{{ choice.key }}"
+             title="Oude klimaatopgave voor de zichtjaren 2050 en 2100."
+             class="btn {% if choice.selected %}active{% endif %}"
+             href="{% url lizard_blockbox_select_year %}?year={{ choice.key }}">
+            {{ choice.visible_value }}
+          </a>
+        {% else %}
+          <span class="btn"
+                title="Oude klimaatopgave voor de zichtjaren 2050 en 2100."
+                disabled="true"
+                href="#">
+            {{ choice.visible_value }}
+          </span>
+        {% endif %}
+      {% endfor %}
+
+      {% for choice in view.year_choices.new %}
+        {% if choice.enabled %}
+          <a data-year="{{ choice.key }}"
+             title="Gecombineerde norm plus klimaatopgave"
+             class="btn {% if choice.selected %}active{% endif %}"
+             href="{% url lizard_blockbox_select_year %}?year={{ choice.key }}">
+            {{ choice.visible_value }}
+          </a>
+        {% else %}
+          <span class="btn"
+                title="Gecombineerde norm plus klimaatopgave"
+                disabled="true"
+                href="#">
+            {{ choice.visible_value }}
+          </span>
+        {% endif %}
+      {% endfor %}
+
+
     </div>
 
   </div>
 
-   <a class="has_popover_north"
-      style="position:absolute;left:720px;top:10px;color:black;text-decoration:none;"
-      data-content="Voor de Blokkendoos Rivieren zijn Stoom en Warm zijn aan
-      elkaar gelijk,<br>
-omdat sociaal economische scenario's geen effect hebben op de waterstanden in de rivier.<br>
-Stoom en Warm gaan in 2100 uit van:<br>
-
-- Zeespiegelstijging: +0,85 m <br>
-- Afvoer Rijn bij Lobith: 18.000 m3/s <br>
-- Afvoer Maas bij Borgharen: 4.600 m3/s<br>
+    <a class="has_popover_north"
+       id="blockbox-years-info"
+       title="Jaarselectie-uitleg"
+       style="position:absolute;left:1000px;top:10px;color:black;text-decoration:none;"
+         data-content="
+De knoppen met het toevoegsel “oud” hebben betrekking op de klimaatopgave
+zoals die destijds gebruikt is door Deltaprogramma Rivieren (2014), gebaseerd
+op het KNMI2006 W+ klimaatscenario. De knoppen met het toevoegsel “nieuw”
+hebben bettrekking op de hoogteopgave die het gevolg is van zowel de nieuwe
+veiligheidsnormen voor de waterkeringen alsmede klimaatverandering. Hierbij is
+eventueel lokaal aanwezige dijkoverhoogte verdisconteerd. De gepresenteerde
+waarden geven een indicatie (bron: RWS WVL, 2016). Deze nieuwe hoogteopgave is
+alleen beschikbaar voor de Maas, Boven-Rijn, Waal, Boven-Merwede, Pannerdens
+Kanaal en IJssel. Voor de andere rivieren is deze op nul gezet.
 "
-     rel="popover"
-     href="#"
-     data-original-title="Deltascenario's">
-     <i class="icon-info-sign"></i>
-  </a>
+       rel="popover"
+       href="#"><i class="icon-info-sign"></i></a>
+
+
 {% endblock orthogonal-actions %}
