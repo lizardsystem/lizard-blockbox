@@ -75,21 +75,21 @@
   <div>
     <a class="has_clickover_south"
        id="blockbox-strategy-info"
-       title="Blokkendoos strategieën"
-       data-content="<strong>Kansrijke strategieën DPRD:</strong><br/>
-- Optimaliseren huidige strategie: kleinere faalkans EPK<br/>
-- RvR++ Groot: grote groene rivier door Land van Heusden en Altena + kleinere faalkans Europoortkering<br/>
-- Alles via Waal/IJssel ontzien: minder via de IJssel, meer via Waal (+400 m3/s t.o.v. REF2100DPR) + kleinere faalkans EPK<br/>
-- Lek extra ontzien/IJssel: minder via Lek, meer via IJssel (+400 m3/s extra t.o.v. REF2100DPR) + kleinere faalkans EPK<br/>
-- Lek extra ontzien/Waal: minder via Lek, meer via Waal (+800 m3/s extra t.o.v. REF2100DPR) + kleinere faalkans EPK<br/><br/>
-<strong>Kansrijke strategieën DPIJ:</strong><br/>
-- Winterpeil + 0,20 m (t.o.v. huidig winterpeil IJsselmeer)<br/>
-- Winterpeil + 0,50 m (t.o.v. huidig winterpeil IJsselmeer)"
+       title="Strategieën en hoogteopgaves"
+       data-content="
+De hier genoemde strategieën zijn de kansrijke strategieën zoals die destijds
+gebruikt zijn door Deltaprogramma Rijnmond-Drechtsteden en Deltaprogramma
+IJsselmeergebied (2013). Voor de nieuw bepaalde hoogteopgave 2025, 2050, 2075
+of 2100 kan hier een keuze gemaakt worden tussen de hoogteopgave voor de
+waterkeringen op de linker oever (LO) of de rechter oever (RO).
+"
 href="#"><i class="icon-info-sign icon-grey"></i></a>
     <form id="blockbox-vertex"
 	  data-select-vertex-url="{% url lizard_blockbox_select_vertex %}"
 	  data-update-vertex-url="{% url lizard_blockbox_vertex_list %}">
-	  <label for="select-strategy">Selecteer een strategie DPRD/DPIJ:</label>
+      <label for="select-strategy">
+        Selecteer een strategie (oud) of een oeverzijde (nieuw):
+      </label>
       <select data-placeholder="Kies een hoekpunt"
           id="select-strategy"
 	      class="chzn-select strategy"
@@ -285,8 +285,28 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
         {% endif %}
       {% endfor %}
 
+
     </div>
 
   </div>
+
+    <a class="has_popover_north"
+       id="blockbox-years-info"
+       title="Jaarselectie-uitleg"
+       style="position:absolute;left:1000px;top:10px;color:black;text-decoration:none;"
+         data-content="
+De knoppen met het toevoegsel “oud” hebben betrekking op de klimaatopgave
+zoals die destijds gebruikt is door Deltaprogramma Rivieren (2014), gebaseerd
+op het KNMI2006 W+ klimaatscenario. De knoppen met het toevoegsel “nieuw”
+hebben bettrekking op de hoogteopgave die het gevolg is van zowel de nieuwe
+veiligheidsnormen voor de waterkeringen alsmede klimaatverandering. Hierbij is
+eventueel lokaal aanwezige dijkoverhoogte verdisconteerd. De gepresenteerde
+waarden geven een indicatie (bron: RWS WVL, 2016). Deze nieuwe hoogteopgave is
+alleen beschikbaar voor de Maas, Boven-Rijn, Waal, Boven-Merwede, Pannerdens
+Kanaal en IJssel. Voor de andere rivieren is deze op nul gezet.
+"
+       rel="popover"
+       href="#"><i class="icon-info-sign"></i></a>
+
 
 {% endblock orthogonal-actions %}

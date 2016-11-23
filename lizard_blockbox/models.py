@@ -293,10 +293,10 @@ class VertexValue(models.Model):
         ('2050', '2050 (oud)'),
         ('2100', '2100 (oud)'),
         # New (2016)
-        ('n025', '2025'),
-        ('n050', '2050'),
-        ('n075', '2075'),
-        ('n100', '2100'),
+        ('n025', '2025 (nieuw)'),
+        ('n050', '2050 (nieuw)'),
+        ('n075', '2075 (nieuw)'),
+        ('n100', '2100 (nieuw)'),
     ]
 
     YEARS = [choice[0] for choice in CHOICES]

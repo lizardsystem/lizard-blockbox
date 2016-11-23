@@ -461,6 +461,10 @@ class BlockboxView(MapView):
     # We don't want empty popups, so disable it.
     javascript_click_handler = ''
 
+    def wms_layers(self):
+        # No more lizard-map
+        return []
+
     @cached_property
     def content_actions(self):
         actions = super(BlockboxView, self).content_actions
