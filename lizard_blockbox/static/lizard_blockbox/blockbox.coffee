@@ -767,7 +767,7 @@ setup_map_legend = ->
 
 
 km_line_layer = ->
-    wms = new OpenLayers.Layer.WMS("5KM layer", "http://test-geoserver1.lizard.net/geoserver/deltaportaal/wms"
+    wms = new OpenLayers.Layer.WMS("5KM layer", "http://geoserver9.lizard.net/geoserver/deltaportaal/wms"
         layers: "deltaportaal:5km_rivieren"
         transparent: true,
         tiled: true,
