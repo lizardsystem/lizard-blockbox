@@ -221,7 +221,7 @@ class Measure(models.Model):
 
             value = getattr(self, field.name)
             if isinstance(value, float) and (
-                'costs' in field.name) or ('profit' in field.name):
+                    ('costs' in field.name) or ('profit' in field.name)):
                 value = round(value, 1)
 
             result.append({'label': field.verbose_name,

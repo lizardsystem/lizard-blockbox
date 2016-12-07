@@ -12,6 +12,11 @@ Changelog of lizard-blockbox
   A year selection refreshes the entire page. The rivers that are selectable
   are the ones with data for those years.
 
+- Fixed bug. An and/or combination was missing parenthesis to group a
+  condition. The bug surfaced because there are now fields with 'profit' in
+  their name that have an empty value. In these cases, the whole measurement
+  table would fail to render.
+
 
 0.26 (2014-11-27)
 -----------------
