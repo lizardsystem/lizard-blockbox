@@ -154,7 +154,7 @@ def generate_report(request, template='lizard_blockbox/report.html'):
                                       'width': 1280,
                                       'height': 800,
                                       'delay': 500})
-    image_url = urlparse.urlunparse(('http', 'screenshotter.lizard.net/', '',
+    image_url = urlparse.urlunparse(('https', 'screenshotter.lizard.net/', '',
                                      '', graph_map_url, ''))
     logger.info(image_url)
 
