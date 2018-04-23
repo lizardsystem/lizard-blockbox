@@ -460,6 +460,7 @@ class BlockboxView(MapView):
     required_permission = VIEW_PERM
     # We don't want empty popups, so disable it.
     javascript_click_handler = ''
+    show_secondary_sidebar_title = False  # Don't show the 'layers' button.
 
     def wms_layers(self):
         # No more lizard-map
