@@ -1,14 +1,6 @@
 {% extends "lizard_map/lizardgis.html" %}
 {% load i18n map compress workspaces %}
 
-{% block map-javascript %}
-  {{ block.super }}
-  {% if view.has_google %}
-    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={{ view.map_variables.googlemaps_api_key }}"></script>
-  {% endif %}
-{% endblock map-javascript %}
-
-
 {% block javascript %}
    {{ block.super }}
     <script type="text/javascript"
@@ -267,24 +259,6 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
     {% for background_map in view.background_maps %}
       {% background_map background_map %}
     {% endfor %}
-    {# Add wms layers from workspace #}
-    {% for wms_layer in view.wms_layers %}
-      {% autoescape off %}
-        <div class="workspace-wms-layer lizard-map-wms-item"
-             data-workspace-wms-id="{{ wms_layer.wms_id }}"
-             data-workspace-wms-name="{{ wms_layer.name }}"
-             data-workspace-wms-url="{{ wms_layer.url }}"
-             {# json uses "" #}
-             data-workspace-wms-params='{{ wms_layer.params }}'
-             data-workspace-wms-options='{{ wms_layer.options }}'
-             data-workspace-wms-index='{{ wms_layer.index }}'
-             data-workspace-wms-cql_filters='{{ wms_layer.cql_filters }}'
-             data-workspace-wms-animatable='{{ wms_layer.is_animatable }}'
-             data-workspace-wms-needs-custom-handler='{{ wms_layer.needs_custom_handler|yesno:"true,false" }}'
-             data-workspace-wms-custom-handler-data='{{ wms_layer.custom_handler_data }}'>
-         </div>
-       {% endautoescape %}
-     {% endfor %}
   </div>
   <div id="map"></div>
 
