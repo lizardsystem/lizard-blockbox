@@ -10,27 +10,21 @@ long_description = '\n\n'.join([
     ])
 
 install_requires = [
-    # 'pisa',
     'Django',
     'django-celery',
     'django-extensions',
     'django-kombu',
-    'django-nose',
-    # 'factory_boy',
-    # 'html5lib',
     'lizard-management-command-runner',
-    'lizard-map',
     'lizard-ui >= 4.0b4',
-    # 'mock',
     'pkginfo',
-    # 'pyPdf',
     'pyproj',
-    # 'reportlab',
     'xhtml2pdf',
     'xlrd',
     ],
 
 tests_require = [
+    'django-nose',
+    'mock',
     ]
 
 setup(name='lizard-blockbox',
