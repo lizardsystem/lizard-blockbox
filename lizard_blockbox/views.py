@@ -34,7 +34,6 @@ from django.views.static import serve
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
-from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
 from xhtml2pdf import pisa
 
@@ -801,10 +800,10 @@ class BookmarkedMeasuresView(RedirectView):
 def fetch_factsheet(request, measure):
     """Return download header for nginx to serve pdf file."""
 
-    # ToDo: Better security model based on views...
-    if not ApplicationIcon.objects.filter(url__startswith='/blokkendoos'):
-        # ToDo: Change to 403 with templates
-        raise Http404
+    # # ToDo: Better security model based on views...
+    # if not ApplicationIcon.objects.filter(url__startswith='/blokkendoos'):
+    #     # ToDo: Change to 403 with templates
+    #     raise Http404
 
     if not measure in _available_factsheets():
         # There is no factsheet for this measure
