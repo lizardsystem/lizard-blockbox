@@ -34,7 +34,6 @@ from django.views.static import serve
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
-from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
 from xhtml2pdf import pisa
 
@@ -461,6 +460,8 @@ class BlockboxView(MapView):
     # We don't want empty popups, so disable it.
     javascript_click_handler = ''
     show_secondary_sidebar_title = False  # Don't show the 'layers' button.
+    rightbar_is_collapsed = False
+    page_title = "Blokkendoos"
 
     def wms_layers(self):
         # No more lizard-map
@@ -672,6 +673,10 @@ class BlockboxView(MapView):
         except IndexError:
             pass
 
+    @cached_property
+    def breadcrumbs(self):
+        return [Action(name=BlockboxView.page_title)]
+
 
 class PlainGraphMapView(BlockboxView):
     required_permission = None
@@ -711,7 +716,7 @@ class SelectedMeasuresView(UiView):
     """Show info on the selected measures."""
     template_name = 'lizard_blockbox/selected_measures.html'
     required_permission = VIEW_PERM
-    page_title = "Geselecteerde blokkendoos maatregelen"
+    page_title = "Geselecteerde maatregelen"
 
     def selected_names(self):
         """Return set of selected measures from session."""
@@ -759,7 +764,7 @@ class SelectedMeasuresView(UiView):
     @cached_property
     def breadcrumbs(self):
         result = super(SelectedMeasuresView, self).breadcrumbs
-        result.append(Action(name=self.page_title))
+        result.append(Action(name=SelectedMeasuresView.page_title))
         return result
 
 
@@ -795,10 +800,10 @@ class BookmarkedMeasuresView(RedirectView):
 def fetch_factsheet(request, measure):
     """Return download header for nginx to serve pdf file."""
 
-    # ToDo: Better security model based on views...
-    if not ApplicationIcon.objects.filter(url__startswith='/blokkendoos'):
-        # ToDo: Change to 403 with templates
-        raise Http404
+    # # ToDo: Better security model based on views...
+    # if not ApplicationIcon.objects.filter(url__startswith='/blokkendoos'):
+    #     # ToDo: Change to 403 with templates
+    #     raise Http404
 
     if not measure in _available_factsheets():
         # There is no factsheet for this measure
@@ -1077,7 +1082,7 @@ def _list_measures_json(request):
 
 class AutomaticImportPage(BlockboxView):
     template_name = "lizard_blockbox/automatic_import.html"
-    page_title = "Automatische import Blokkendoos"
+    page_title = "Automatische import"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.has_perm(
@@ -1107,7 +1112,7 @@ class AutomaticImportPage(BlockboxView):
     @cached_property
     def breadcrumbs(self):
         result = super(AutomaticImportPage, self).breadcrumbs
-        result.append(Action(name=self.page_title))
+        result.append(Action(name=AutomaticImportPage.page_title))
         return result
 
     @cached_property
