@@ -37,3 +37,5 @@ src
 
 # Ignore generated apache config files
 etc/*.apache.conf
+
+.idea

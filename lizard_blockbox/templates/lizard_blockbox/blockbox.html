@@ -1,7 +1,32 @@
-{% extends "lizard_map/wms.html" %}{% load i18n compress %}
+{% extends "lizard_ui/lizardbase.html" %}
+{% load i18n compress %}
+
+{% block map-javascript %}
+  {{ block.super }}
+<script type="text/javascript">
+    var _view_state = {
+        range_type: '2_day',                        // string 'year', 'custom', '2_day' etc.
+        dt_start: moment.utc().subtract('days', 2), // Moment.js date object
+        dt_end: moment.utc()                        // Moment.js date object
+    };
+</script>
+{% endblock map-javascript %}
+
 
 {% block javascript %}
-   {{ block.super }}
+    {{ block.super }}
+    <!-- underscore is used for backbone and NensLayerSwitcher -->
+    <script type="text/javascript"
+            src="{{ STATIC_URL }}backbone/underscore-min.js"></script>
+    <!-- Backbone is used for animations.js -->
+    <script type="text/javascript"
+            src="{{ STATIC_URL }}backbone/backbone-min.js"></script>
+    <script type="text/javascript"
+            src="{{ STATIC_URL }}lizard_map/animations.js"></script>
+    <script type="text/javascript"
+            src="{{ STATIC_URL }}lizard_ui/OpenLayers.Control.NensLayerSwitcher.js"></script>
+    <script type="text/javascript"
+            src="{{ STATIC_URL }}lizard_map/lizard_map.js"></script>
     <script type="text/javascript"
         src="{{ STATIC_URL }}lizard_blockbox/flot/jquery.flot.symbol.js">
     </script>
@@ -30,6 +55,10 @@
 
 {% block css %}
   {{ block.super }}
+  <link type="text/css"
+        href="{{ STATIC_URL }}lizard_map/lizard_map.css"
+        rel="stylesheet"
+        media="screen, projection" />
   <link rel="stylesheet"
         href="{{ STATIC_URL }}lizard_blockbox/lizard_blockbox.css"
         type="text/css"
@@ -226,7 +255,66 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
     </table>
   </div>
 
-  {{ block.super }}
+  {# data attributes wms #}
+  {# All contents of lizard-map-wms must have class lizard-map-wms-item #}
+  <div id="lizard-map-wms"
+       data-javascript-click-handler="{{ view.javascript_click_handler }}"
+       {% if view.javascript_hover_handler %}
+         {% ifnotequal view.javascript_hover_handler 'None' %}
+         data-javascript-hover-handler="{{ view.javascript_hover_handler }}"
+         {% endifnotequal %}
+       {% endif %}
+       {# New style maps #}
+       data-max-extent-left="{{ view.max_extent.left }}"
+       data-max-extent-top="{{ view.max_extent.top }}"
+       data-max-extent-right="{{ view.max_extent.right }}"
+       data-max-extent-bottom="{{ view.max_extent.bottom }}"
+       data-start-extent-left="{{ view.start_extent.left }}"
+       data-start-extent-top="{{ view.start_extent.top }}"
+       data-start-extent-right="{{ view.start_extent.right }}"
+       data-start-extent-bottom="{{ view.start_extent.bottom }}"
+       {# for WMS: EPSG:28992, EPSG:900913 #}
+       data-projection="{{ view.projection }}"
+       {# for WMS: EPSG:28992, EPSG:900913, EPSG:4326 #}
+       data-display-projection="{{ view.display_projection }}"
+       {# URLS for saving, loading map locations #}
+       data-save-location-url="{% url lizard_map.map_location_save %}"
+       data-load-location-url="{% url lizard_map.map_location_load_default %}"
+       {# Selected base layer #}
+       data-selected-base-layer="{{ view.base_layer_name }}"
+       >
+    {# Make a layer for every background map #}
+    {% for background_map in view.background_maps %}
+      {# background map settings for in div lizard-map-wms #}
+<div class="background-layer"
+     data-layer-name="{{ background_map.name }}"
+     data-default="{{ background_map.default }}"
+     {% ifequal background_map.layer_type 1 %}{# GOOGLE #}
+     {# default=1, physical=2, hybrid=3, satellite=4 #}
+     data-layer-type="GOOGLE"
+     data-google-layer-type="{{ background_map.google_type }}"
+     {% endifequal %}
+     {% ifequal background_map.layer_type 2 %}{# OSM #}
+     data-layer-type="OSM"
+     data-layer-url="{{ background_map.layer_url|safe }}"
+     {% endifequal %}
+     {% ifequal background_map.layer_type 3 %}{# WMS #}
+     data-layer-type="WMS"
+     data-layer-url="{{ background_map.layer_url }}"
+     data-layer-layer-names="{{ background_map.layer_names }}"
+     data-is-base-layer="{{ background_map.is_base_layer }}"
+     data-is-single-tile="{{ background_map.is_single_tile }}"
+     {% endifequal %}
+     {% ifequal background_map.layer_type 4 %}{# TMS #}
+     data-layer-type="TMS"
+     data-layer-url="{{ background_map.layer_url|safe }}"
+     data-layer-layer-names="{{ background_map.layer_names }}"
+     data-is-base-layer="{{ background_map.is_base_layer }}"
+     {% endifequal %}
+     ></div>
+    {% endfor %}
+  </div>
+  <div id="map"></div>
 
   <div class="modal hide" id="loadingModal">
     <div class="modal-header">
@@ -310,3 +398,10 @@ Kanaal en IJssel. Voor de andere rivieren is deze op nul gezet.
 
 
 {% endblock orthogonal-actions %}
+
+{% block rightbar %}
+  <h2>{% trans "Legend" %}</h2>
+  {% for legend in view.legends %}
+    {{ legend.to_html }}
+  {% endfor %}
+{% endblock rightbar %}
