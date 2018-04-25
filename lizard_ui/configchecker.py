@@ -79,7 +79,7 @@ def checker():  # Pragma: nocover
     # TODO: compressor settings.
     for app in ['lizard_ui',
                 'compressor',
-                'staticfiles',
+                'django.contrib.staticfiles',
                 'lizard_security',
                 'django.contrib.admin',
                 'django.contrib.auth',

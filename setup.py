@@ -17,7 +17,6 @@ install_requires = [
     'xhtml2pdf',
     'xlrd',
     # from lizard-ui
-    'django-staticfiles >= 1.0',
     'django_compressor >= 1.1',  # Yes, underscore.
     ],
 
