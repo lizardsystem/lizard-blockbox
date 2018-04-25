@@ -1,0 +1,10 @@
+jQuery plugin: Treeview
+
+Lightweight and flexible transformation of an unordered list into an expandable and collapsable tree, great for unobtrusive navigation enhancements. Supports both location and cookie based persistence.
+
+Current version: 1.4.1
+
+---
+http://bassistance.de/jquery-plugins/jquery-plugin-treeview/
+
+Note: You have to remove all ^M's (different line ending style) from jquery.treeview.css before committing.

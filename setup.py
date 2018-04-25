@@ -10,16 +10,13 @@ long_description = '\n\n'.join([
     ])
 
 install_requires = [
-    'Django',
+    'Django >= 1.4',
     'django-celery',
-    'django-extensions',
-    'django-kombu',
     'lizard-management-command-runner',
-    'lizard-ui >= 4.0b4',
-    'pkginfo',
-    'pyproj',
     'xhtml2pdf',
     'xlrd',
+    # from lizard-ui
+    'django_compressor >= 1.1',  # Yes, underscore.
     ],
 
 tests_require = [
