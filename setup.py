@@ -13,10 +13,7 @@ install_requires = [
     'Django >= 1.4',
     'django-celery',
     'django-extensions',
-    'django-kombu',
     'lizard-management-command-runner',
-    'pkginfo',
-    'pyproj',
     'xhtml2pdf',
     'xlrd',
     # from lizard-ui
