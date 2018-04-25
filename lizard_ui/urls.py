@@ -1,11 +1,9 @@
 import logging
 
 from django.conf import settings
-from django.conf.urls.defaults import patterns
-from django.conf.urls.defaults import url
+from django.conf.urls import patterns, url
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
 
 import lizard_ui.views
 
