@@ -5,6 +5,7 @@ from datetime import datetime
 from hashlib import md5
 import StringIO
 import csv
+import json
 import logging
 import mimetypes
 import operator
@@ -24,7 +25,6 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.template import Context
 from django.template.loader import get_template
-from django.utils import simplejson as json
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
