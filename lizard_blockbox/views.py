@@ -687,7 +687,7 @@ class PlainGraphMapView(BlockboxView):
     def get_context_data(self, **kwargs):
         # Parse QueryString
         session = self.request.session
-        measures = set(self.request.GET.get('measures').split(';'))
+        measures = list(set(self.request.GET.get('measures').split(';')))
         session[SELECTED_MEASURES_KEY] = measures
         session['vertex'] = int(self.request.GET.get('vertex'))
         session[YEAR_SESSION_KEY] = self.request.GET.get(
@@ -777,7 +777,7 @@ class BookmarkedMeasuresView(RedirectView):
         # put them on the session
 
         short_names = self.request.GET.getlist('m')
-        self.request.session[SELECTED_MEASURES_KEY] = set(short_names)
+        self.request.session[SELECTED_MEASURES_KEY] = list(set(short_names))
 
         river = self.request.GET.get('r', None)
         if river and river in models.NamedReach.objects.values_list(
@@ -934,8 +934,8 @@ def protection_level_json(request):
 def _selected_measures(request):
     """Return selected measures."""
     if not SELECTED_MEASURES_KEY in request.session:
-        request.session[SELECTED_MEASURES_KEY] = set()
-    return request.session[SELECTED_MEASURES_KEY]
+        request.session[SELECTED_MEASURES_KEY] = []
+    return set(request.session[SELECTED_MEASURES_KEY])
 
 
 def _included_measures(request):
@@ -1006,7 +1006,7 @@ def toggle_measure(request):
                 shortname)
     if to_remove:
         selected_measures = selected_measures - set(to_remove)
-        request.session[SELECTED_MEASURES_KEY] = selected_measures
+        request.session[SELECTED_MEASURES_KEY] = list(selected_measures)
 
     unselectable_measures = _unselectable_measures(request)
     if measure_id in selected_measures:
@@ -1016,7 +1016,7 @@ def toggle_measure(request):
                      measure_id)
     elif not measure_id in unselectable_measures:
         selected_measures.add(measure_id)
-    request.session[SELECTED_MEASURES_KEY] = selected_measures
+    request.session[SELECTED_MEASURES_KEY] = list(selected_measures)
     return HttpResponse(json.dumps(list(selected_measures)))
 
 
