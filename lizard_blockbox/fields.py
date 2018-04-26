@@ -1,8 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from south.modelsinspector import add_introspection_rules
-
 
 class EmptyStringFloatField(models.FloatField):
     empty_strings_allowed = True
@@ -26,10 +24,3 @@ class EmptyStringUnknownFloatField(models.FloatField):
             return None
 
         return super(EmptyStringUnknownFloatField, self).get_prep_value(value)
-
-# Add introspection rules for EmptyStringFloatField
-add_introspection_rules([], ['lizard_blockbox.fields.EmptyStringFloatField'])
-# Add introspection rules for EmptyStringUnknownFloatField
-add_introspection_rules(
-    [],
-    ['lizard_blockbox.fields.EmptyStringUnknownFloatField'])
