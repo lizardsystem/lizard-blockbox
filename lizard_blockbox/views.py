@@ -64,7 +64,7 @@ def download_data(request, *args, **kwargs):
     with open(f, "rb") as ff:
         result = StringIO.StringIO(ff.read())
     mime_type_guess = mimetypes.guess_type(f)
-    response = HttpResponse(mimetype=mime_type_guess[0])
+    response = HttpResponse(content_type=mime_type_guess[0])
     response['Content-Disposition'] = 'filename=%s' % os.path.basename(f)
     response.write(result.getvalue())
     return response
@@ -82,7 +82,7 @@ def render_to_pdf(template_src, context_dict):
     if pdf.err:
         return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
 
-    response = HttpResponse(mimetype='application/pdf')
+    response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'filename=blokkendoos-report.pdf'
     response.write(result.getvalue())
     return response
@@ -169,7 +169,7 @@ def generate_report(request, template='lizard_blockbox/report.html'):
 
 
 def generate_csv(request):
-    response = HttpResponse(mimetype='application/csv')
+    response = HttpResponse(content_type='application/csv')
     response['Content-Disposition'] = 'filename=blokkendoos-report.csv'
     writer = UnicodeWriter(response, dialect='excel', delimiter=';',
                            quoting=csv.QUOTE_ALL)
@@ -902,7 +902,7 @@ def calculated_measures_json(request):
     measures = _list_measures_json(request)
     cities = _city_locations_json(request)
 
-    response = HttpResponse(mimetype='application/json')
+    response = HttpResponse(content_type='application/json')
     json.dump({'water_levels': water_levels,
                'measures': measures,
                'cities': cities},
@@ -920,14 +920,14 @@ def vertex_json(request):
             to_json[vertex.header].append([vertex.id, vertex.name, "selected"])
         else:
             to_json[vertex.header].append([vertex.id, vertex.name])
-    response = HttpResponse(mimetype='application/json')
+    response = HttpResponse(content_type='application/json')
     json.dump(to_json, response)
     return response
 
 
 @never_cache
 def protection_level_json(request):
-    response = HttpResponse(mimetype='application/json')
+    response = HttpResponse(content_type='application/json')
     json.dump(_available_protection_levels(request), response)
     return response
 
