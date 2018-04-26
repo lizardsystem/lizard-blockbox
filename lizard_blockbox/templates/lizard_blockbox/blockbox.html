@@ -86,7 +86,7 @@
 {% block sidebar %}
   <h2>Rivierselectie</h2>
   <form id="blockbox-river"
-	data-select-river-url="{% url lizard_blockbox_select_river %}">
+	data-select-river-url="{% url 'lizard_blockbox_select_river' %}">
 	<label for="select-river">Selecteer een rivier:</label>
     <select data-placeholder="Kies een rivier"
 	    id="select-river"
@@ -114,8 +114,8 @@ waterkeringen op de linker oever (LO) of de rechter oever (RO).
 "
 href="#"><i class="icon-info-sign icon-grey"></i></a>
     <form id="blockbox-vertex"
-	  data-select-vertex-url="{% url lizard_blockbox_select_vertex %}"
-	  data-update-vertex-url="{% url lizard_blockbox_vertex_list %}">
+	  data-select-vertex-url="{% url 'lizard_blockbox_select_vertex' %}"
+	  data-update-vertex-url="{% url 'lizard_blockbox_vertex_list' %}">
       <label for="select-strategy">
         Selecteer een strategie (oud) of een oeverzijde (nieuw):
       </label>
@@ -137,7 +137,7 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
   <h3>Geselecteerde maatregelen</h3>
     <p>
     <a href='#' id="blockbox-deselect-all-measures"
-       data-deselect-url="{% url lizard_blockbox.bookmarked_measures %}">
+       data-deselect-url="{% url 'lizard_blockbox.bookmarked_measures' %}">
       Deselecteer alle maatregelen</a> of klik op een maatregel om deze te deselecteren.</p>
 
   <ul class="unstyled" id="investmentcosts">
@@ -169,8 +169,8 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
     Genereer een rapport met de geselecteerde maatregelen in het gewenste formaat:
   </p>
   <p>
-    <a href="{% url lizard_blockbox.generate_report %}" title="PDF-bestand" style="margin-right: 20px;" target="_blank"><i class="fa fa-file-pdf-o fa-3x"></i></a>
-    <a href="{% url lizard_blockbox.generate_csv %}" title="CSV-bestand"><i class="fa fa-file-excel-o fa-3x"></i></a>
+    <a href="{% url 'lizard_blockbox.generate_report' %}" title="PDF-bestand" style="margin-right: 20px;" target="_blank"><i class="fa fa-file-pdf-o fa-3x"></i></a>
+    <a href="{% url 'lizard_blockbox.generate_csv' %}" title="CSV-bestand"><i class="fa fa-file-excel-o fa-3x"></i></a>
   </p>
   <hr>
   <p>
@@ -178,7 +178,7 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
   </p>
   <p>
     {# TODO: our customer will provide us with the proper document to download #}
-    <a href="{% url lizard_blockbox.excluding_measures %}" title="XLS-bestand"><i class="fa fa-file-excel-o fa-3x"></i></a>
+    <a href="{% url 'lizard_blockbox.excluding_measures' %}" title="XLS-bestand"><i class="fa fa-file-excel-o fa-3x"></i></a>
   </p>
 
   <h3>Versie</h3>
@@ -197,8 +197,8 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
   </div>
 
   <div id="blockbox-table"
-       data-measure-toggle-url="{% url lizard_blockbox_toggle_measure %}"
-       data-calculated-measures-url="{% url calculated_measures_json %}">
+       data-measure-toggle-url="{% url 'lizard_blockbox_toggle_measure' %}"
+       data-calculated-measures-url="{% url 'calculated_measures_json' %}">
     <table id="measures-table-top"
 	   class="table table-striped table-bordered">
       <thead>
@@ -278,8 +278,8 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
        {# for WMS: EPSG:28992, EPSG:900913, EPSG:4326 #}
        data-display-projection="{{ view.display_projection }}"
        {# URLS for saving, loading map locations #}
-       data-save-location-url="{% url lizard_map.map_location_save %}"
-       data-load-location-url="{% url lizard_map.map_location_load_default %}"
+       data-save-location-url="{% url 'lizard_map.map_location_save' %}"
+       data-load-location-url="{% url 'lizard_map.map_location_load_default' %}"
        {# Selected base layer #}
        data-selected-base-layer="{{ view.base_layer_name }}"
        >
@@ -342,7 +342,7 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
           <a data-year="{{ choice.key }}"
              title="Oude klimaatopgave voor de zichtjaren 2050 en 2100."
              class="btn {% if choice.selected %}active{% endif %}"
-             href="{% url lizard_blockbox_select_year %}?year={{ choice.key }}">
+             href="{% url 'lizard_blockbox_select_year' %}?year={{ choice.key }}">
             {{ choice.visible_value }}
           </a>
         {% else %}
@@ -360,7 +360,7 @@ href="#"><i class="icon-info-sign icon-grey"></i></a>
           <a data-year="{{ choice.key }}"
              title="Gecombineerde norm plus klimaatopgave"
              class="btn {% if choice.selected %}active{% endif %}"
-             href="{% url lizard_blockbox_select_year %}?year={{ choice.key }}">
+             href="{% url 'lizard_blockbox_select_year' %}?year={{ choice.key }}">
             {{ choice.visible_value }}
           </a>
         {% else %}

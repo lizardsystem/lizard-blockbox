@@ -12,12 +12,8 @@ long_description = '\n\n'.join([
 install_requires = [
     'Django',
     'django-celery',
-    'django-extensions',
-    'django-kombu',
     'lizard-management-command-runner',
-    'lizard-ui >= 4.0b4',
-    'pkginfo',
-    'pyproj',
+    'lizard-ui',
     'xhtml2pdf',
     'xlrd',
     ],
