@@ -1,4 +1,3 @@
-from optparse import make_option
 import logging
 import os
 import re
@@ -16,12 +15,14 @@ class Command(BaseCommand):
     help = ("Imports measure excelfiles, "
             "use --flush to flush the previous imports.")
 
-    option_list = BaseCommand.option_list + (
-        make_option('--flush',
-                    action='store_true',
-                    dest='flush',
-                    default=False,
-                    help='Flush all blockbox models for a clean import'),)
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--flush',
+            action='store_true',
+            dest='flush',
+            default=False,
+            help='Delete poll instead of closing it',
+        )
 
     def handle(self, *args, **options):
         flush = options['flush']
