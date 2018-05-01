@@ -73,7 +73,7 @@
     "pk": 4,
     "model": "lizard_map.setting",
     "fields": {
-      "value": "EPSG:900913",
+      "value": "EPSG:3857",
       "key": "projection"
     }
   },
