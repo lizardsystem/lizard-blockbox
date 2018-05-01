@@ -112,7 +112,7 @@ def map_over_sheets(excelpath, function, stdout, *args, **kwargs):
     stdout.write("Parsing '{excel}'\n".format(excel=excelpath))
     wb = xlrd.open_workbook(excelpath)
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def call_function(sheet):
         try:
             return function(sheet, stdout, *args, **kwargs)
@@ -128,17 +128,31 @@ def map_over_sheets(excelpath, function, stdout, *args, **kwargs):
 # Fetch blockbox data command
 
 def fetch_blockbox_data(stdout):
-    raise RuntimeError("FTP credentials are incorrect, this won't work")
     DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal/data')
 
-    # Note: stored user:password combination in deltaportaal's settings
-    COMMANDS = """
-rm -rf excelsheets factsheets geojson shapefiles
-wget -nv -nH -r -N ftp://{ftp_credentials}@ftp.deltares.nl
-""".format(ftp_credentials=settings.DELTARES_FTP_CREDENTIALS)
+    # remove the data dir if it exists
+    if os.path.exists(DATA_DIR):
+        shutil.rmtree(DATA_DIR)
 
-    stdout.write(run_commands_in(DATA_DIR, COMMANDS))
-    stdout.write("Fetched blockbox data...\n")
+    os.mkdir(DATA_DIR)
+
+    DATA_SOURCE_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/data')
+    if os.path.exists(DATA_SOURCE_DIR):
+        stdout.write("Using blockbox data from /var...\n")
+        COMMANDS = """
+        cp -a . {}
+        """.format(DATA_DIR)
+        stdout.write(run_commands_in(DATA_SOURCE_DIR, COMMANDS))
+    else:
+        raise RuntimeError("FTP credentials are incorrect, this won't work")
+
+        # Note: stored user:password combination in deltaportaal's settings
+        COMMANDS = """
+    wget -nv -nH -r -N ftp://{ftp}
+    """.format(ftp=settings.DELTARES_FTP)
+
+        stdout.write(run_commands_in(DATA_DIR, COMMANDS))
+        stdout.write("Fetched blockbox data...\n")
 
 
 def set_permissions_pdf(stdout):
