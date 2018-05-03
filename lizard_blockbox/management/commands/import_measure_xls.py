@@ -21,7 +21,7 @@ class Command(BaseCommand):
             action='store_true',
             dest='flush',
             default=False,
-            help='Delete poll instead of closing it',
+            help='Flush all blockbox models for a clean import',
         )
 
     def handle(self, *args, **options):
