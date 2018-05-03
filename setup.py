@@ -11,7 +11,6 @@ long_description = '\n\n'.join([
 
 install_requires = [
     'Django >= 1.9, < 2',
-    'django-celery',
     'lizard-management-command-runner',
     'lizard-ui',
     'xhtml2pdf',
@@ -36,7 +35,7 @@ setup(name='lizard-blockbox',
       author_email='roland.vanlaar@nelen-schuurmans.nl',
       url='https://github.com/lizardsystem/lizard-blockbox',
       license='GPL',
-      packages=['lizard_blockbox'],
+      packages=['lizard_blockbox', 'lizard_map'],
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
