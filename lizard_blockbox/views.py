@@ -15,7 +15,6 @@ import urlparse
 
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
-from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import NoReverseMatch
@@ -72,8 +71,7 @@ def download_data(request, *args, **kwargs):
 
 def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
-    context = Context(context_dict)
-    html = template.render(context)
+    html = template.render(context_dict)
     result = StringIO.StringIO()
 
     pdf = pisa.pisaDocument(
@@ -143,19 +141,21 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     querystring['measures'] = ';'.join(session[SELECTED_MEASURES_KEY])
     querystring = urllib.urlencode(querystring)
     path = reverse('lizard_blockbox.plain_graph_map')
-    domain = Site.objects.get_current().domain
+    domain = 'www.deltaportaal.nl'  # hardcode it for safety and simplicity
     if hasattr(settings, 'BLOCKBOX_DOMAIN_PREFIX'):
         domain = settings.BLOCKBOX_DOMAIN_PREFIX + domain
 
-    graph_map_url = urlparse.urlunparse(('http', domain, path, '',
+    graph_map_url = urlparse.urlunparse(('https', domain, path, '',
                                          querystring, ''))
 
-    graph_map_url = urllib.urlencode({'url': graph_map_url,
-                                      'width': 1280,
-                                      'height': 800,
-                                      'delay': 500})
-    image_url = urlparse.urlunparse(('https', 'screenshotter.lizard.net/', '',
-                                     '', graph_map_url, ''))
+    graph_map_url = urllib.urlencode({'key': settings.SCREENSHOT_KEY,
+                                      'url': graph_map_url,
+                                      'dimension': '1280x800',
+                                      'format': 'png',
+                                      'delay': 600})
+    image_url = urlparse.urlunparse(('http', settings.SCREENSHOT_URL + '/',
+                                     '', '',
+                                     graph_map_url, ''))
     logger.info(image_url)
 
     return render_to_pdf(
