@@ -108,8 +108,8 @@ def map_over_sheets(excelpath, function, stdout, *args, **kwargs):
     not processed (no exceptions are caught).
 
     Returns a list of function results."""
-
-    stdout.write("Parsing '{excel}'\n".format(excel=excelpath))
+    relpath = os.path.relpath(excelpath, settings.BUILDOUT_DIR)
+    stdout.write("Parsing '{excel}'\n".format(excel=relpath))
     wb = xlrd.open_workbook(excelpath)
 
     @transaction.atomic
@@ -136,23 +136,23 @@ def fetch_blockbox_data(stdout):
 
     os.mkdir(DATA_DIR)
 
-    DATA_SOURCE_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/data')
-    if os.path.exists(DATA_SOURCE_DIR):
+    try:  # first try the FTP
+        raise RuntimeError("FTP credentials are incorrect, this won't work")
+
+        # Note: stored user:password combination in deltaportaal's settings
+        COMMANDS = """
+            wget -nv -nH -r -N ftp://{ftp}
+            """.format(ftp=settings.DELTARES_FTP)
+
+        stdout.write(run_commands_in(DATA_DIR, COMMANDS))
+        stdout.write("Fetched blockbox data...\n")
+    except:
+        DATA_SOURCE_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/data')
         stdout.write("Using blockbox data from /var...\n")
         COMMANDS = """
         cp -a . {}
         """.format(DATA_DIR)
         stdout.write(run_commands_in(DATA_SOURCE_DIR, COMMANDS))
-    else:
-        raise RuntimeError("FTP credentials are incorrect, this won't work")
-
-        # Note: stored user:password combination in deltaportaal's settings
-        COMMANDS = """
-    wget -nv -nH -r -N ftp://{ftp}
-    """.format(ftp=settings.DELTARES_FTP)
-
-        stdout.write(run_commands_in(DATA_DIR, COMMANDS))
-        stdout.write("Fetched blockbox data...\n")
 
 
 def set_permissions_pdf(stdout):

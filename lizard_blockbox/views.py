@@ -837,10 +837,15 @@ def _available_factsheets():
     if factsheets:
         return factsheets
 
-    factsheets = [
-        os.path.splitext(i)[0] for i in os.listdir(settings.FACTSHEETS_DIR)
-        if i.endswith('.pdf')
-    ]
+
+    if os.path.isdir(settings.FACTSHEETS_DIR):
+        factsheets = [
+            os.path.splitext(i)[0] for i in os.listdir(settings.FACTSHEETS_DIR)
+            if i.endswith('.pdf')
+        ]
+    else:
+        factsheets = []
+
     cache.set(cache_key, factsheets, 60 * 60 * 12)
     return factsheets
 
