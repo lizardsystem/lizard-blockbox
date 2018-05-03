@@ -676,7 +676,10 @@ class BlockboxView(MapView):
 
     @cached_property
     def breadcrumbs(self):
-        return [Action(name=BlockboxView.page_title)]
+        return [Action(name='Home',
+                       url=reverse('deltaportaal.portalhomepage')),
+                Action(name=self.page_title,
+                       url=reverse('lizard_blockbox.home'))]
 
 
 class PlainGraphMapView(BlockboxView):
@@ -764,9 +767,10 @@ class SelectedMeasuresView(UiView):
 
     @cached_property
     def breadcrumbs(self):
-        result = super(SelectedMeasuresView, self).breadcrumbs
-        result.append(Action(name=SelectedMeasuresView.page_title))
-        return result
+        return [Action(name='Home',
+                       url=reverse('deltaportaal.portalhomepage')),
+                Action(name=self.page_title,
+                       url=reverse('lizard_blockbox.selected_measures'))]
 
 
 class BookmarkedMeasuresView(RedirectView):
@@ -1117,9 +1121,10 @@ class AutomaticImportPage(BlockboxView):
 
     @cached_property
     def breadcrumbs(self):
-        result = super(AutomaticImportPage, self).breadcrumbs
-        result.append(Action(name=AutomaticImportPage.page_title))
-        return result
+        return [Action(name='Home',
+                       url=reverse('deltaportaal.portalhomepage')),
+                Action(name=self.page_title,
+                       url=reverse('lizard_blockbox.automatic_import'))]
 
     @cached_property
     def measure_versions(self):
