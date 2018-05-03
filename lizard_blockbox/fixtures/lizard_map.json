@@ -1,0 +1,74 @@
+[
+{
+  "model": "lizard_map.backgroundmap",
+  "pk": 2,
+  "fields": {
+    "name": "Openstreetmap",
+    "index": 50,
+    "default": false,
+    "active": true,
+    "is_base_layer": true,
+    "is_single_tile": false,
+    "layer_type": 2,
+    "google_type": null,
+    "layer_url": "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+    "layer_names": ""
+  }
+},
+{
+  "model": "lizard_map.backgroundmap",
+  "pk": 10,
+  "fields": {
+    "name": "Basiskaart",
+    "index": 10,
+    "default": true,
+    "active": true,
+    "is_base_layer": true,
+    "is_single_tile": false,
+    "layer_type": 4,
+    "google_type": null,
+    "layer_url": "https://tiles.lizard.net/tms/",
+    "layer_names": "basiskaart/webmercator"
+  }
+},
+{
+  "model": "lizard_map.setting",
+  "pk": 2,
+  "fields": {
+    "key": "javascript_hover_handler",
+    "value": "None"
+  }
+},
+{
+  "model": "lizard_map.setting",
+  "pk": 3,
+  "fields": {
+    "key": "start_extent",
+    "value": "100000, 6768977, 1200000, 6864942"
+  }
+},
+{
+  "model": "lizard_map.setting",
+  "pk": 4,
+  "fields": {
+    "key": "projection",
+    "value": "EPSG:3857"
+  }
+},
+{
+  "model": "lizard_map.setting",
+  "pk": 5,
+  "fields": {
+    "key": "display_projection",
+    "value": "EPSG:4326"
+  }
+},
+{
+  "model": "lizard_map.setting",
+  "pk": 11,
+  "fields": {
+    "key": "max_extent",
+    "value": "-20037508.34, -20037508.34, 20037508.34, 20037508.34"
+  }
+}
+]

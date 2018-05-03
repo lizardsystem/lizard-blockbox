@@ -33,5 +33,4 @@ class Legend(object):
 
     def to_html(self):
         template = loader.get_template(self.template_name)
-        context = Context({'legend': self})
-        return mark_safe(template.render(context))
+        return mark_safe(template.render(dict(legend=self)))

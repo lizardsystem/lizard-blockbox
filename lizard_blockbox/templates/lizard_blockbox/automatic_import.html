@@ -21,8 +21,8 @@
 {% block sidebar %}
 <h2>Automatische import</h2>
 <p>
-<button data-url="{% url lizard_blockbox.automatic_import_command command="run_import" %}" class="start-import-button btn btn-primary">Ophalen data</button>
-<button data-url="{% url lizard_blockbox.automatic_import_command command="load_blockbox_data" %}" class="start-import-button btn btn-primary">Verwerken data</button>
+<button data-url="{% url 'lizard_blockbox.automatic_import_command' command="run_import" %}" class="start-import-button btn btn-primary">Ophalen data</button>
+<button data-url="{% url 'lizard_blockbox.automatic_import_command' command="load_blockbox_data" %}" class="start-import-button btn btn-primary">Verwerken data</button>
 </p>
 <h2>Versies</h2>
 <h3>Maatregelen</h3>
@@ -39,7 +39,7 @@
 {% block content %}
 <div id="last-imports" >
 <h2>Laatste commando's</h2>
-<table class="table table-bordered" id="last-commands-table" data-update-url="{% url latest_runs_view %}">
+<table class="table table-bordered" id="last-commands-table" data-update-url="{% url 'latest_runs_view' %}">
   <thead>
     <th width="50">Command</th>
     <th width="50">Start</th>

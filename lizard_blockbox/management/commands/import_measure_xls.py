@@ -1,4 +1,3 @@
-from optparse import make_option
 import logging
 import os
 import re
@@ -16,12 +15,14 @@ class Command(BaseCommand):
     help = ("Imports measure excelfiles, "
             "use --flush to flush the previous imports.")
 
-    option_list = BaseCommand.option_list + (
-        make_option('--flush',
-                    action='store_true',
-                    dest='flush',
-                    default=False,
-                    help='Flush all blockbox models for a clean import'),)
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--flush',
+            action='store_true',
+            dest='flush',
+            default=False,
+            help='Flush all blockbox models for a clean import',
+        )
 
     def handle(self, *args, **options):
         flush = options['flush']
@@ -64,6 +65,8 @@ def latest_xls(d):
     PKB_LT_Waal_v20141118.xls
 
     """
+    if not os.path.isdir(d):
+        return []
     files = [f for f in os.listdir(d) if re.match(r'.+_v\d+\.xls', f)]
     names = set([f.rsplit('_v', 1)[0] for f in files])
     files = []
