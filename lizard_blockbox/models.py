@@ -35,7 +35,7 @@ class Trajectory(models.Model):
 
     name = models.TextField(blank=False,
                             help_text=u"The name of the trajectory.")
-    reach = models.ManyToManyField(Reach, null=True, blank=True)
+    reach = models.ManyToManyField(Reach, blank=True)
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -198,13 +198,9 @@ class Measure(models.Model):
     grondverzet = models.CharField(
         'Grondverzet m3', max_length=255, blank=True, null=True)
 
-    exclude = models.ManyToManyField(
-        'self',
-        blank=True, null=True)
+    exclude = models.ManyToManyField('self', blank=True)
 
-    include = models.ManyToManyField(
-        'self',
-        blank=True, null=True)
+    include = models.ManyToManyField('self', blank=True)
 
     def __unicode__(self):
         name = self.name or self.short_name
@@ -266,8 +262,7 @@ class Vertex(models.Model):
 
     header = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
-    named_reaches = models.ManyToManyField(
-        NamedReach, null=True, blank=True)
+    named_reaches = models.ManyToManyField(NamedReach, blank=True)
 
     def named_reaches_string(self):
         # For the admin.

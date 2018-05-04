@@ -1,7 +1,5 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
-from django.conf.urls.defaults import include
-from django.conf.urls.defaults import patterns
-from django.conf.urls.defaults import url
+from django.conf.urls import include, url
 
 from lizard_ui.urls import debugmode_urlpatterns
 from lizard_blockbox.views import BlockboxView, PlainGraphMapView
@@ -9,22 +7,21 @@ from lizard_blockbox.views import SelectedMeasuresView
 from lizard_blockbox.views import BookmarkedMeasuresView
 from lizard_blockbox import views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$',
         BlockboxView.as_view(),
         name='lizard_blockbox.home'),
     url(r'^report/$',
-        'lizard_blockbox.views.generate_report',
+        views.generate_report,
         name='lizard_blockbox.generate_report'),
     url(r'^graphmapview/$',
         PlainGraphMapView.as_view(),
         name='lizard_blockbox.plain_graph_map'),
     url(r'^csv/$',
-        'lizard_blockbox.views.generate_csv',
+        views.generate_csv,
         name='lizard_blockbox.generate_csv'),
     url(r'^data/measures/excluding/$',
-        'lizard_blockbox.views.download_data',
+        views.download_data,
         kwargs={'file': ('excelsheets', 'elkaar uitsluitende maatregelen',
                 'Maatregelen die elkaar uitsluiten.xls')},
         name='lizard_blockbox.excluding_measures'),
@@ -39,28 +36,28 @@ urlpatterns = patterns(
     #         template_name='lizard_blockbox/blockbox-table.html'),
     #     name='lizard_blockbox_table'),
     url(r'^toggle_measure/$',
-        'lizard_blockbox.views.toggle_measure',
+        views.toggle_measure,
         name='lizard_blockbox_toggle_measure'),
     url(r'^select_river/$',
-        'lizard_blockbox.views.select_river',
+        views.select_river,
         name='lizard_blockbox_select_river'),
     url(r'^select_year/$',
-        'lizard_blockbox.views.select_year',
+        views.select_year,
         name='lizard_blockbox_select_year'),
     url(r'(?P<measure>[\w\-,+]+)/pdf/$',
-        'lizard_blockbox.views.fetch_factsheet',
+        views.fetch_factsheet,
         name="measure_factsheet"),
     url(r'^api/measures/calculated/$',
-        'lizard_blockbox.views.calculated_measures_json',
+        views.calculated_measures_json,
         name="calculated_measures_json"),
     url(r'^api/vertex/list/$',
-        'lizard_blockbox.views.vertex_json',
+        views.vertex_json,
         name='lizard_blockbox_vertex_list'),
     url(r'^select_vertex/$',
-        'lizard_blockbox.views.select_vertex',
+        views.select_vertex,
         name='lizard_blockbox_select_vertex'),
     url(r'^api/protection_level/list/$',
-        'lizard_blockbox.views.protection_level_json',
+        views.protection_level_json,
         name='lizard_blockbox_protection_level_list'),
     # url(r'^select_protection_level/$',
     #     'lizard_blockbox.views.select_protection_level',
@@ -75,5 +72,5 @@ urlpatterns = patterns(
         name="lizard_blockbox.automatic_import_command"),
     url(r'^allimport/',
         include('lizard_management_command_runner.urls'))
-)
+]
 urlpatterns += debugmode_urlpatterns()

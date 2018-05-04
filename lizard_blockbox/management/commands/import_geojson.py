@@ -1,5 +1,6 @@
+import json
+
 from django.core.management.base import BaseCommand
-from django.utils import simplejson as json
 
 from lizard_blockbox import models
 

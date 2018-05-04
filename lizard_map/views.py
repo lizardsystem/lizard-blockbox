@@ -5,8 +5,9 @@ except ImportError:
 
 import logging
 
+import json
+
 from django.http import HttpResponse
-from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 from lizard_ui.views import UiView
 

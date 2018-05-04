@@ -5,6 +5,7 @@ from datetime import datetime
 from hashlib import md5
 import StringIO
 import csv
+import json
 import logging
 import mimetypes
 import operator
@@ -24,7 +25,6 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.template import Context
 from django.template.loader import get_template
-from django.utils import simplejson as json
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
@@ -64,7 +64,7 @@ def download_data(request, *args, **kwargs):
     with open(f, "rb") as ff:
         result = StringIO.StringIO(ff.read())
     mime_type_guess = mimetypes.guess_type(f)
-    response = HttpResponse(mimetype=mime_type_guess[0])
+    response = HttpResponse(content_type=mime_type_guess[0])
     response['Content-Disposition'] = 'filename=%s' % os.path.basename(f)
     response.write(result.getvalue())
     return response
@@ -82,7 +82,7 @@ def render_to_pdf(template_src, context_dict):
     if pdf.err:
         return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
 
-    response = HttpResponse(mimetype='application/pdf')
+    response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'filename=blokkendoos-report.pdf'
     response.write(result.getvalue())
     return response
@@ -169,7 +169,7 @@ def generate_report(request, template='lizard_blockbox/report.html'):
 
 
 def generate_csv(request):
-    response = HttpResponse(mimetype='application/csv')
+    response = HttpResponse(content_type='application/csv')
     response['Content-Disposition'] = 'filename=blokkendoos-report.csv'
     writer = UnicodeWriter(response, dialect='excel', delimiter=';',
                            quoting=csv.QUOTE_ALL)
@@ -461,6 +461,8 @@ class BlockboxView(MapView):
     # We don't want empty popups, so disable it.
     javascript_click_handler = ''
     show_secondary_sidebar_title = False  # Don't show the 'layers' button.
+    rightbar_is_collapsed = False
+    page_title = "Blokkendoos"
 
     def wms_layers(self):
         # No more lizard-map
@@ -672,6 +674,10 @@ class BlockboxView(MapView):
         except IndexError:
             pass
 
+    @cached_property
+    def breadcrumbs(self):
+        return [Action(name=BlockboxView.page_title)]
+
 
 class PlainGraphMapView(BlockboxView):
     required_permission = None
@@ -682,7 +688,7 @@ class PlainGraphMapView(BlockboxView):
     def get_context_data(self, **kwargs):
         # Parse QueryString
         session = self.request.session
-        measures = set(self.request.GET.get('measures').split(';'))
+        measures = list(set(self.request.GET.get('measures').split(';')))
         session[SELECTED_MEASURES_KEY] = measures
         session['vertex'] = int(self.request.GET.get('vertex'))
         session[YEAR_SESSION_KEY] = self.request.GET.get(
@@ -711,7 +717,7 @@ class SelectedMeasuresView(UiView):
     """Show info on the selected measures."""
     template_name = 'lizard_blockbox/selected_measures.html'
     required_permission = VIEW_PERM
-    page_title = "Geselecteerde blokkendoos maatregelen"
+    page_title = "Geselecteerde maatregelen"
 
     def selected_names(self):
         """Return set of selected measures from session."""
@@ -759,7 +765,7 @@ class SelectedMeasuresView(UiView):
     @cached_property
     def breadcrumbs(self):
         result = super(SelectedMeasuresView, self).breadcrumbs
-        result.append(Action(name=self.page_title))
+        result.append(Action(name=SelectedMeasuresView.page_title))
         return result
 
 
@@ -772,7 +778,7 @@ class BookmarkedMeasuresView(RedirectView):
         # put them on the session
 
         short_names = self.request.GET.getlist('m')
-        self.request.session[SELECTED_MEASURES_KEY] = set(short_names)
+        self.request.session[SELECTED_MEASURES_KEY] = list(set(short_names))
 
         river = self.request.GET.get('r', None)
         if river and river in models.NamedReach.objects.values_list(
@@ -896,7 +902,7 @@ def calculated_measures_json(request):
     measures = _list_measures_json(request)
     cities = _city_locations_json(request)
 
-    response = HttpResponse(mimetype='application/json')
+    response = HttpResponse(content_type='application/json')
     json.dump({'water_levels': water_levels,
                'measures': measures,
                'cities': cities},
@@ -914,14 +920,14 @@ def vertex_json(request):
             to_json[vertex.header].append([vertex.id, vertex.name, "selected"])
         else:
             to_json[vertex.header].append([vertex.id, vertex.name])
-    response = HttpResponse(mimetype='application/json')
+    response = HttpResponse(content_type='application/json')
     json.dump(to_json, response)
     return response
 
 
 @never_cache
 def protection_level_json(request):
-    response = HttpResponse(mimetype='application/json')
+    response = HttpResponse(content_type='application/json')
     json.dump(_available_protection_levels(request), response)
     return response
 
@@ -929,8 +935,8 @@ def protection_level_json(request):
 def _selected_measures(request):
     """Return selected measures."""
     if not SELECTED_MEASURES_KEY in request.session:
-        request.session[SELECTED_MEASURES_KEY] = set()
-    return request.session[SELECTED_MEASURES_KEY]
+        request.session[SELECTED_MEASURES_KEY] = []
+    return set(request.session[SELECTED_MEASURES_KEY])
 
 
 def _included_measures(request):
@@ -1001,7 +1007,7 @@ def toggle_measure(request):
                 shortname)
     if to_remove:
         selected_measures = selected_measures - set(to_remove)
-        request.session[SELECTED_MEASURES_KEY] = selected_measures
+        request.session[SELECTED_MEASURES_KEY] = list(selected_measures)
 
     unselectable_measures = _unselectable_measures(request)
     if measure_id in selected_measures:
@@ -1011,7 +1017,7 @@ def toggle_measure(request):
                      measure_id)
     elif not measure_id in unselectable_measures:
         selected_measures.add(measure_id)
-    request.session[SELECTED_MEASURES_KEY] = selected_measures
+    request.session[SELECTED_MEASURES_KEY] = list(selected_measures)
     return HttpResponse(json.dumps(list(selected_measures)))
 
 
@@ -1077,7 +1083,7 @@ def _list_measures_json(request):
 
 class AutomaticImportPage(BlockboxView):
     template_name = "lizard_blockbox/automatic_import.html"
-    page_title = "Automatische import Blokkendoos"
+    page_title = "Automatische import"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.has_perm(
@@ -1107,7 +1113,7 @@ class AutomaticImportPage(BlockboxView):
     @cached_property
     def breadcrumbs(self):
         result = super(AutomaticImportPage, self).breadcrumbs
-        result.append(Action(name=self.page_title))
+        result.append(Action(name=AutomaticImportPage.page_title))
         return result
 
     @cached_property
