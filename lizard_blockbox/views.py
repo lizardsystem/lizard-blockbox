@@ -506,7 +506,7 @@ class BlockboxView(MapView):
                 <a href="{}" target="_blank">here</a>
                 (in Dutch).''').format(url),
             icon='icon-info-sign',
-            klass='has_clickover_south'
+            klass='has_popover_south'
         )
         actions.insert(index, action)
         return actions
