@@ -22,7 +22,6 @@ from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
-from django.template import Context
 from django.template.loader import get_template
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
@@ -37,9 +36,9 @@ from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
 from xhtml2pdf import pisa
 
+from lizard_management_command_runner.views import run_command
 from lizard_management_command_runner.models import CommandRun
 from lizard_management_command_runner.models import ManagementCommand
-from lizard_management_command_runner import tasks
 
 from lizard_blockbox import models
 from lizard_blockbox.management.commands.import_measure_xls import latest_xls
@@ -1109,11 +1108,7 @@ class AutomaticImportPage(BlockboxView):
             return
 
         # Management command checks the user's rights
-        tasks.run_management_command.delay(
-            request.user,
-            management_command)
-
-        return HttpResponse()
+        return run_command(request, management_command.pk)
 
     @cached_property
     def content_actions(self):
