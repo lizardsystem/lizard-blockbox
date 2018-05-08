@@ -13,7 +13,6 @@ install_requires = [
     'Django >= 1.9, < 2',
     'lizard-management-command-runner',
     'lizard-ui',
-    'xhtml2pdf',
     'xlrd',
     ],
 
