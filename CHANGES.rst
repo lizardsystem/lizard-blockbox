@@ -2,8 +2,26 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-0.30 (unreleased)
+1.0 (unreleased)
 -----------------
+
+- Upgraded to Django 1.11
+
+- Integrated a ripped version of ``lizard_map 4.32``, merged the HTML templates
+
+- Removed PDF export and screenshotter
+
+- Hardcoded breadcrumbs
+
+- Fixed popups
+
+- Cleaned unused fixtures
+
+- Regenerated migrations
+
+- Fixed excel and shapefile imports
+
+- Removed the unused secondary sidebar
 
 - Added support for new years (apart from 2050/2100). The new
   2025/2050/2075/2100 years have IDs like ``n025`` till ``n100`` to
