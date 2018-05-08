@@ -7,9 +7,12 @@ import logging
 
 import json
 
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.utils.translation import ugettext as _
+from django.utils.functional import cached_property
 from lizard_ui.views import UiView
+from lizard_ui.layout import Action
 
 from lizard_map.models import BackgroundMap
 from lizard_map.models import Setting
@@ -29,6 +32,10 @@ logger = logging.getLogger(__name__)
 class MapView(UiView):
     """All map stuff
     """
+    map_show_default_zoom = True
+    map_show_base_layers_menu = True
+    map_show_layers_menu = True
+
     def max_extent(self):
         s = Setting.extent(
             'max_extent',
@@ -79,6 +86,39 @@ class MapView(UiView):
     def legends(self):
         """Return legends for the rightbar."""
         return []  # legends are determined by the blockbox view
+
+    @cached_property
+    def content_actions(self):
+        """Add default-location-zoom."""
+        actions = super(MapView, self).content_actions
+        if self.map_show_default_zoom:
+            zoom_to_default = Action(
+                name='',
+                description=_('Zoom to default location'),
+                url=reverse('lizard_map.map_location_load_default'),
+                icon='icon-screenshot',
+                klass='map-load-default-location')
+            actions.insert(0, zoom_to_default)
+        if self.map_show_base_layers_menu:
+            show_layers = Action(
+                name='',
+                element_id='base-layers',
+                description=_('Show base layers'),
+                url="#",
+                icon='icon-globe',
+                klass='dropdown-toggle')
+            actions.insert(0, show_layers)
+        if self.map_show_layers_menu:
+            show_layers = Action(
+                name='',
+                element_id='layers',
+                description=_('Show map layers'),
+                url="#",
+                icon='icon-map-marker',
+                klass='dropdown-toggle')
+            actions.insert(0, show_layers)
+
+        return actions
 
 
 """

@@ -15,7 +15,6 @@ import urlparse
 
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
-from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import NoReverseMatch
@@ -23,7 +22,6 @@ from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
-from django.template import Context
 from django.template.loader import get_template
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
@@ -38,9 +36,9 @@ from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
 from xhtml2pdf import pisa
 
+from lizard_management_command_runner.views import run_command
 from lizard_management_command_runner.models import CommandRun
 from lizard_management_command_runner.models import ManagementCommand
-from lizard_management_command_runner import tasks
 
 from lizard_blockbox import models
 from lizard_blockbox.management.commands.import_measure_xls import latest_xls
@@ -72,8 +70,7 @@ def download_data(request, *args, **kwargs):
 
 def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
-    context = Context(context_dict)
-    html = template.render(context)
+    html = template.render(context_dict)
     result = StringIO.StringIO()
 
     pdf = pisa.pisaDocument(
@@ -143,19 +140,21 @@ def generate_report(request, template='lizard_blockbox/report.html'):
     querystring['measures'] = ';'.join(session[SELECTED_MEASURES_KEY])
     querystring = urllib.urlencode(querystring)
     path = reverse('lizard_blockbox.plain_graph_map')
-    domain = Site.objects.get_current().domain
+    domain = 'www.deltaportaal.nl'  # hardcode it for safety and simplicity
     if hasattr(settings, 'BLOCKBOX_DOMAIN_PREFIX'):
         domain = settings.BLOCKBOX_DOMAIN_PREFIX + domain
 
-    graph_map_url = urlparse.urlunparse(('http', domain, path, '',
+    graph_map_url = urlparse.urlunparse(('https', domain, path, '',
                                          querystring, ''))
 
-    graph_map_url = urllib.urlencode({'url': graph_map_url,
-                                      'width': 1280,
-                                      'height': 800,
-                                      'delay': 500})
-    image_url = urlparse.urlunparse(('https', 'screenshotter.lizard.net/', '',
-                                     '', graph_map_url, ''))
+    graph_map_url = urllib.urlencode({'key': settings.SCREENSHOT_KEY,
+                                      'url': graph_map_url,
+                                      'dimension': '1280x800',
+                                      'format': 'png',
+                                      'delay': 600})
+    image_url = urlparse.urlunparse(('http', settings.SCREENSHOT_URL + '/',
+                                     '', '',
+                                     graph_map_url, ''))
     logger.info(image_url)
 
     return render_to_pdf(
@@ -506,7 +505,7 @@ class BlockboxView(MapView):
                 <a href="{}" target="_blank">here</a>
                 (in Dutch).''').format(url),
             icon='icon-info-sign',
-            klass='has_clickover_south'
+            klass='has_popover_south'
         )
         actions.insert(index, action)
         return actions
@@ -676,7 +675,10 @@ class BlockboxView(MapView):
 
     @cached_property
     def breadcrumbs(self):
-        return [Action(name=BlockboxView.page_title)]
+        return [Action(name='Home',
+                       url=reverse('deltaportaal.portalhomepage')),
+                Action(name=self.page_title,
+                       url=reverse('lizard_blockbox.home'))]
 
 
 class PlainGraphMapView(BlockboxView):
@@ -764,9 +766,10 @@ class SelectedMeasuresView(UiView):
 
     @cached_property
     def breadcrumbs(self):
-        result = super(SelectedMeasuresView, self).breadcrumbs
-        result.append(Action(name=SelectedMeasuresView.page_title))
-        return result
+        return [Action(name='Home',
+                       url=reverse('deltaportaal.portalhomepage')),
+                Action(name=self.page_title,
+                       url=reverse('lizard_blockbox.selected_measures'))]
 
 
 class BookmarkedMeasuresView(RedirectView):
@@ -837,10 +840,15 @@ def _available_factsheets():
     if factsheets:
         return factsheets
 
-    factsheets = [
-        os.path.splitext(i)[0] for i in os.listdir(settings.FACTSHEETS_DIR)
-        if i.endswith('.pdf')
-    ]
+
+    if os.path.isdir(settings.FACTSHEETS_DIR):
+        factsheets = [
+            os.path.splitext(i)[0] for i in os.listdir(settings.FACTSHEETS_DIR)
+            if i.endswith('.pdf')
+        ]
+    else:
+        factsheets = []
+
     cache.set(cache_key, factsheets, 60 * 60 * 12)
     return factsheets
 
@@ -1100,11 +1108,7 @@ class AutomaticImportPage(BlockboxView):
             return
 
         # Management command checks the user's rights
-        tasks.run_management_command.delay(
-            request.user,
-            management_command)
-
-        return HttpResponse()
+        return run_command(request, management_command.pk)
 
     @cached_property
     def content_actions(self):
@@ -1112,9 +1116,10 @@ class AutomaticImportPage(BlockboxView):
 
     @cached_property
     def breadcrumbs(self):
-        result = super(AutomaticImportPage, self).breadcrumbs
-        result.append(Action(name=AutomaticImportPage.page_title))
-        return result
+        return [Action(name='Home',
+                       url=reverse('deltaportaal.portalhomepage')),
+                Action(name=self.page_title,
+                       url=reverse('lizard_blockbox.automatic_import'))]
 
     @cached_property
     def measure_versions(self):

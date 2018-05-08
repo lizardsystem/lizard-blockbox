@@ -1,0 +1,24 @@
+[
+{
+  "model": "lizard_management_command_runner.managementcommand",
+  "pk": 1,
+  "fields": {
+    "description": "Import data into the database",
+    "command": "load_blockbox_data",
+    "max_minutes_to_run": 120,
+    "currently_running": false,
+    "last_start": "2014-12-10T20:52:27.453"
+  }
+},
+{
+  "model": "lizard_management_command_runner.managementcommand",
+  "pk": 2,
+  "fields": {
+    "description": "Run Blockbox import",
+    "command": "run_import",
+    "max_minutes_to_run": 120,
+    "currently_running": false,
+    "last_start": "2014-12-10T20:50:27.093"
+  }
+}
+]

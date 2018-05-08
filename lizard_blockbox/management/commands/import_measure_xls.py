@@ -65,6 +65,8 @@ def latest_xls(d):
     PKB_LT_Waal_v20141118.xls
 
     """
+    if not os.path.isdir(d):
+        return []
     files = [f for f in os.listdir(d) if re.match(r'.+_v\d+\.xls', f)]
     names = set([f.rsplit('_v', 1)[0] for f in files])
     files = []
