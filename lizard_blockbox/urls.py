@@ -2,7 +2,7 @@
 from django.conf.urls import include, url
 
 from lizard_ui.urls import debugmode_urlpatterns
-from lizard_blockbox.views import BlockboxView, PlainGraphMapView
+from lizard_blockbox.views import BlockboxView
 from lizard_blockbox.views import SelectedMeasuresView
 from lizard_blockbox.views import BookmarkedMeasuresView
 from lizard_blockbox import views
@@ -11,12 +11,6 @@ urlpatterns = [
     url(r'^$',
         BlockboxView.as_view(),
         name='lizard_blockbox.home'),
-    url(r'^report/$',
-        views.generate_report,
-        name='lizard_blockbox.generate_report'),
-    url(r'^graphmapview/$',
-        PlainGraphMapView.as_view(),
-        name='lizard_blockbox.plain_graph_map'),
     url(r'^csv/$',
         views.generate_csv,
         name='lizard_blockbox.generate_csv'),

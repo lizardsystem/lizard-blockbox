@@ -34,7 +34,6 @@ from lizard_map.views import MapView
 from lizard_ui.layout import Action
 from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
-from xhtml2pdf import pisa
 
 from lizard_management_command_runner.views import run_command
 from lizard_management_command_runner.models import CommandRun
@@ -68,103 +67,6 @@ def download_data(request, *args, **kwargs):
     return response
 
 
-def render_to_pdf(template_src, context_dict):
-    template = get_template(template_src)
-    html = template.render(context_dict)
-    result = StringIO.StringIO()
-
-    pdf = pisa.pisaDocument(
-        StringIO.StringIO(html.encode("ISO-8859-1")), result)
-
-    if pdf.err:
-        return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
-
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'filename=blokkendoos-report.pdf'
-    response.write(result.getvalue())
-    return response
-
-
-def generate_report(request, template='lizard_blockbox/report.html'):
-    """
-    Uses PISA to generate a PDF report
-    """
-
-    measures = models.Measure.objects.filter(
-        short_name__in=_selected_measures(request))
-
-    measures_header = []
-    if measures.count() != 0:
-        measures_header = [field['label'] for field in measures[0].pretty()
-                           if field['label'] != 'Riviertak']
-    total_cost = {
-        'minimal': 0.0,
-        'maximal': 0.0,
-        'expected': 0.0
-        }
-
-    reaches = defaultdict(list)
-
-    for measure in measures:
-        if measure.reach:
-            try:
-                trajectory = measure.reach.trajectory_set.get()
-            except (measure.reach.DoesNotExist,
-                    measure.reach.MultipleObjectsReturned):
-                reach_name = measure.reach.slug
-            else:
-                reach_name = trajectory.name
-        else:
-            reach_name = 'unknown'
-        measure_p = [i for i in measure.pretty() if i['label'] != 'Riviertak']
-        reaches[reach_name].append(measure_p)
-
-        total_cost['minimal'] += measure.minimal_investment_costs or 0.0
-        total_cost['maximal'] += measure.maximal_investment_costs or 0.0
-        total_cost['expected'] += measure.investment_costs or 0.0
-    result = []
-    for name, measures in reaches.items():
-        reach = {'name': name,
-                 'amount': len(measures),
-                 'measures': measures}
-        result.append(reach)
-    result.sort(key=lambda x: x['amount'], reverse=True)
-
-    # Build the graph map url
-    session = request.session
-    querystring = dict((i, session['map_location'][i]) for i in
-                        ('top', 'bottom', 'left', 'right'))
-    querystring['vertex'] = session['vertex']
-    querystring['river'] = session['river']
-    querystring['selected_year'] = _selected_year(request)
-    querystring['measures'] = ';'.join(session[SELECTED_MEASURES_KEY])
-    querystring = urllib.urlencode(querystring)
-    path = reverse('lizard_blockbox.plain_graph_map')
-    domain = 'www.deltaportaal.nl'  # hardcode it for safety and simplicity
-    if hasattr(settings, 'BLOCKBOX_DOMAIN_PREFIX'):
-        domain = settings.BLOCKBOX_DOMAIN_PREFIX + domain
-
-    graph_map_url = urlparse.urlunparse(('https', domain, path, '',
-                                         querystring, ''))
-
-    graph_map_url = urllib.urlencode({'key': settings.SCREENSHOT_KEY,
-                                      'url': graph_map_url,
-                                      'dimension': '1280x800',
-                                      'format': 'png',
-                                      'delay': 600})
-    image_url = urlparse.urlunparse(('http', settings.SCREENSHOT_URL + '/',
-                                     '', '',
-                                     graph_map_url, ''))
-    logger.info(image_url)
-
-    return render_to_pdf(
-        'lizard_blockbox/report.html',
-        {'date': datetime.now(),
-         'image_url': image_url,
-         'pagesize': 'A4',
-         'reaches': result,
-         'measures_header': measures_header,
-         'total_cost': total_cost})
 
 
 def generate_csv(request):
@@ -679,27 +581,6 @@ class BlockboxView(MapView):
                        url=reverse('deltaportaal.portalhomepage')),
                 Action(name=self.page_title,
                        url=reverse('lizard_blockbox.home'))]
-
-
-class PlainGraphMapView(BlockboxView):
-    required_permission = None
-    template_name = 'lizard_blockbox/report_map_template.html'
-    # Don't show the login modal for a pdf.
-    modal_for_pdf_view = True
-
-    def get_context_data(self, **kwargs):
-        # Parse QueryString
-        session = self.request.session
-        measures = list(set(self.request.GET.get('measures').split(';')))
-        session[SELECTED_MEASURES_KEY] = measures
-        session['vertex'] = int(self.request.GET.get('vertex'))
-        session[YEAR_SESSION_KEY] = self.request.GET.get(
-            'selected_year', '2100')
-        session['river'] = self.request.GET.get('river')
-        session['map_location'] = dict((i, self.request.GET.get(i))
-            for i in ('top', 'bottom', 'left', 'right'))
-        session.save()
-        return super(PlainGraphMapView, self).get_context_data(**kwargs)
 
 
 class FlotLegend(Legend):

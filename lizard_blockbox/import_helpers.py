@@ -245,20 +245,20 @@ def merge_measures_blockbox(stdout):
 # Copy JSON to blockbox command
 
 def copy_json_to_blockbox(stdout):
-    JSON_DIR = os.path.join(
-        settings.BUILDOUT_DIR, 'deltaportaal/data/geojson')
+    JSON_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal',
+                            'data', 'geojson')
+    STATIC_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal',
+                              'static', 'lizard_blockbox')
+
+    os.makedirs(STATIC_DIR, exists_ok=True)
 
     shutil.copyfile(
         os.path.join(JSON_DIR, 'measures.json'),
-        os.path.join(
-            settings.BUILDOUT_DIR, 'deltaportaal',
-            'static', 'lizard_blockbox', 'measures.json'))
+        os.path.join(STATIC_DIR, 'measures.json'))
 
     shutil.copyfile(
         os.path.join(JSON_DIR, 'kilometers.json'),
-        os.path.join(
-            settings.BUILDOUT_DIR, 'deltaportaal',
-            'static', 'lizard_blockbox', 'kilometers.json'))
+        os.path.join(STATIC_DIR, 'kilometers.json'))
     stdout.write("Copied json to blockbox...\n")
 
 
