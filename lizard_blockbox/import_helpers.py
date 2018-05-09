@@ -247,8 +247,7 @@ def merge_measures_blockbox(stdout):
 def copy_json_to_blockbox(stdout):
     JSON_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal',
                             'data', 'geojson')
-    STATIC_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal',
-                              'static', 'lizard_blockbox')
+    STATIC_DIR = os.path.join(settings.STATIC_ROOT, 'lizard_blockbox')
 
     os.makedirs(STATIC_DIR, exist_ok=True)
 
