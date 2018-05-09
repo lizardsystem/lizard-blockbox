@@ -5,7 +5,9 @@ Changelog of lizard-blockbox
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Re-add the migrations
+
+- Fix run_import
 
 
 1.0 (2018-05-08)
