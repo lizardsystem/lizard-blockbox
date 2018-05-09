@@ -250,7 +250,7 @@ def copy_json_to_blockbox(stdout):
     STATIC_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal',
                               'static', 'lizard_blockbox')
 
-    os.makedirs(STATIC_DIR, exists_ok=True)
+    os.makedirs(STATIC_DIR, exist_ok=True)
 
     shutil.copyfile(
         os.path.join(JSON_DIR, 'measures.json'),
