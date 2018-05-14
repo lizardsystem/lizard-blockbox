@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-1.0.2 (unreleased)
+1.0.2 (2018-05-14)
 ------------------
 
 - Fixed copy_json_to_blockbox
