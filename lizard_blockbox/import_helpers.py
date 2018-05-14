@@ -249,7 +249,8 @@ def copy_json_to_blockbox(stdout):
                             'data', 'geojson')
     STATIC_DIR = os.path.join(settings.STATIC_ROOT, 'lizard_blockbox')
 
-    os.makedirs(STATIC_DIR, exist_ok=True)
+    if not os.path.isdir(STATIC_DIR):
+        os.mkdir(STATIC_DIR)
 
     shutil.copyfile(
         os.path.join(JSON_DIR, 'measures.json'),
