@@ -247,7 +247,8 @@ def merge_measures_blockbox(stdout):
 def copy_json_to_blockbox(stdout):
     JSON_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal',
                             'data', 'geojson')
-    STATIC_DIR = os.path.join(settings.STATIC_ROOT, 'lizard_blockbox')
+    STATIC_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal',
+                              'static', 'lizard_blockbox')
 
     if not os.path.isdir(STATIC_DIR):
         os.mkdir(STATIC_DIR)
@@ -260,6 +261,22 @@ def copy_json_to_blockbox(stdout):
         os.path.join(JSON_DIR, 'kilometers.json'),
         os.path.join(STATIC_DIR, 'kilometers.json'))
     stdout.write("Copied json to blockbox...\n")
+
+    # also update the files in settings.STATIC_ROOT
+
+    COLLECTED_STATIC = os.path.join(settings.STATIC_ROOT, 'lizard_blockbox')
+
+    if not os.path.isdir(COLLECTED_STATIC):
+        os.mkdir(COLLECTED_STATIC)
+
+    shutil.copyfile(
+        os.path.join(JSON_DIR, 'measures.json'),
+        os.path.join(COLLECTED_STATIC, 'measures.json'))
+
+    shutil.copyfile(
+        os.path.join(JSON_DIR, 'kilometers.json'),
+        os.path.join(COLLECTED_STATIC, 'kilometers.json'))
+    stdout.write("Copied json to static...\n")
 
 
 # Parse trajectory classification command
