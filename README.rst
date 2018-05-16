@@ -50,6 +50,6 @@ Technologies used
 Issues
 ------
 
-Issues for the Blockbox specifically are gathered at Github and are managed through Huboard:
+Issues for the Blockbox specifically are gathered at Github:
 
-http://huboard.com/lizardsystem/lizard-blockbox/board
+https://github.com/nens/deltaportaal/issues
