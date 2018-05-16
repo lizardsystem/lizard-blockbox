@@ -14,4 +14,4 @@ class Command(BaseCommand):
         import_helpers.parse_shapes_blockbox(self.stdout)
         import_helpers.parse_kilometers_json(self.stdout)
         import_helpers.merge_measures_blockbox(self.stdout)
-        import_helpers.copy_json_to_blockbox(self.stdout)
+        import_helpers.copy_json_to_media(self.stdout)

@@ -5,7 +5,7 @@ from lizard_blockbox import import_helpers
 
 class Command(BaseCommand):
     args = ''
-    help = ("Copy the geojson shape files to the static directory for Django")
+    help = ("Copy the geojson shape files to the media directory for Django")
 
     def handle(self, *args, **kwargs):
-        import_helpers.copy_json_to_blockbox(self.stdout)
+        import_helpers.copy_json_to_media(self.stdout)
