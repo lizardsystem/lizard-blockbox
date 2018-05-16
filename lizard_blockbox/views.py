@@ -685,11 +685,6 @@ class BookmarkedMeasuresView(RedirectView):
 def fetch_factsheet(request, measure):
     """Return download header for nginx to serve pdf file."""
 
-    # ToDo: Better security model based on views...
-    if not ApplicationIcon.objects.filter(url__startswith='/blokkendoos'):
-        # ToDo: Change to 403 with templates
-        raise Http404
-
     if not measure in _available_factsheets():
         # There is no factsheet for this measure
         raise Http404
