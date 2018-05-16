@@ -2,10 +2,13 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-1.0.3 (unreleased)
+1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Moved the GeoJSON measure and kilometers files to ``/media``, renamed
+  ``copy_json_to_blockbox`` to ``copy_json_to_media``.
+
+- Fixed a permission issue with factsheets.
 
 
 1.0.2 (2018-05-14)
