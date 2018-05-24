@@ -1,7 +1,5 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
-from cgi import escape
 from collections import defaultdict
-from datetime import datetime
 from hashlib import md5
 import StringIO
 import csv
@@ -11,7 +9,6 @@ import mimetypes
 import operator
 import os
 import urllib
-import urlparse
 
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
@@ -22,7 +19,6 @@ from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
-from django.template.loader import get_template
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
@@ -32,7 +28,6 @@ from django.views.static import serve
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
-from lizard_ui.models import ApplicationIcon
 from lizard_ui.views import UiView
 
 from lizard_management_command_runner.views import run_command
