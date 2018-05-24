@@ -67,8 +67,6 @@ def download_data(request, *args, **kwargs):
     return response
 
 
-
-
 def generate_csv(request):
     response = HttpResponse(content_type='application/csv')
     response['Content-Disposition'] = 'filename=blokkendoos-report.csv'
@@ -88,10 +86,10 @@ def generate_csv(request):
     summed_maximal_investment_costs = 0.0
     summed_investment_costs = 0.0
 
-    def floatf(f):
+    def floatf(f, decimals=1):
         if f is None:
             return "Onbekend"
-        return "{:.1f}".format(f)
+        return '{0:.{1}f}'.format(f, decimals)
 
     for measure in measures:
         # mhw_profit_cm must be a number not None
@@ -100,7 +98,7 @@ def generate_csv(request):
         writer.writerow([measure.name, measure.short_name,
                          measure.measure_type, measure.km_from, measure.km_to,
                          measure.reach, measure.riverpart,
-                         floatf(mhw_profit_cm / 100),
+                         floatf(mhw_profit_cm / 100, decimals=1),
                          floatf(measure.mhw_profit_m2),
                          floatf(measure.minimal_investment_costs),
                          floatf(measure.investment_costs),
@@ -140,7 +138,7 @@ def generate_csv(request):
 
     # Expand using the 'hoofdtrajecten' list
     reaches = models.NamedReach.objects.get(name=river
-                                          ).expanded_reaches()
+                                            ).expanded_reaches()
 
     segments = models.RiverSegment.objects.filter(reach__in=reaches
                                                   ).order_by('location')
@@ -153,7 +151,7 @@ def generate_csv(request):
     for water_level in water_levels:
         writer.writerow([water_level['location_segment'],
                          water_level['location'],
-                         water_level['measures_level'],
+                         floatf(water_level['measures_level'], 3),
                          ])
     return response
 
