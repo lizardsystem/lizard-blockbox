@@ -93,7 +93,7 @@ def generate_csv(request):
         writer.writerow([measure.name, measure.short_name,
                          measure.measure_type, measure.km_from, measure.km_to,
                          measure.reach, measure.riverpart,
-                         floatf(mhw_profit_cm / 100, decimals=1),
+                         floatf(mhw_profit_cm / 100, decimals=3),
                          floatf(measure.mhw_profit_m2),
                          floatf(measure.minimal_investment_costs),
                          floatf(measure.investment_costs),
@@ -146,7 +146,7 @@ def generate_csv(request):
     for water_level in water_levels:
         writer.writerow([water_level['location_segment'],
                          water_level['location'],
-                         floatf(water_level['measures_level'], 3),
+                         floatf(water_level['measures_level'], decimals=3),
                          ])
     return response
 
