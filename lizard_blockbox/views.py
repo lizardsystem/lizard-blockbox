@@ -987,6 +987,8 @@ class AutomaticImportPage(BlockboxView):
     def breadcrumbs(self):
         return [Action(name='Home',
                        url=reverse('deltaportaal.portalhomepage')),
+                Action(name='Blokkendoos',
+                       url=reverse('lizard_blockbox.home')),
                 Action(name=self.page_title,
                        url=reverse('lizard_blockbox.automatic_import'))]
 
