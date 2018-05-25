@@ -6,11 +6,13 @@ from lizard_blockbox import models
 
 
 class Command(BaseCommand):
-    args = '<geojson geojson ...>'
     help = "Imports the measure geojson file"
 
+    def add_arguments(self, parser):
+        parser.add_argument('geojson', nargs='+')
+
     def handle(self, *args, **options):
-        map(self.parse, args)
+        map(self.parse, options['geojson'])
 
     def parse(self, json_file):
         data = json.load(open(json_file, 'rb'))

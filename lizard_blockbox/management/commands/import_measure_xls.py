@@ -11,11 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    args = '<directory> OR <excelfile excelfile ...>'
     help = ("Imports measure excelfiles, "
             "use --flush to flush the previous imports.")
 
     def add_arguments(self, parser):
+        parser.add_argument('directory_or_excelfile', nargs='+')
+
         parser.add_argument(
             '--flush',
             action='store_true',
@@ -29,6 +30,7 @@ class Command(BaseCommand):
         if flush:
             import_helpers.flush_database(self.stdout)
 
+        args = options.get('directory_or_excelfile', [])
         if len(args) == 0:
             if not flush:
                 print "Pass a directory as argument."
