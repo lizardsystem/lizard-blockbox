@@ -9,7 +9,6 @@ DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal/data')
 
 
 class Command(BaseCommand):
-    args = ''
     help = ("Run a data import using fab.")
 
     def handle(self, *args, **kwargs):

@@ -4,7 +4,6 @@ from lizard_blockbox import import_helpers
 
 
 class Command(BaseCommand):
-    args = ''
     help = ("Set read permissions for the facsheets.")
 
     def handle(self, *args, **kwargs):

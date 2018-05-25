@@ -4,7 +4,6 @@ from lizard_blockbox import import_helpers
 
 
 class Command(BaseCommand):
-    args = ''
     help = ("Parse the shapes for the blockbox data.")
 
     def handle(self, *args, **kwargs):

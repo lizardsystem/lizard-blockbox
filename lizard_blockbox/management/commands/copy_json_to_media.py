@@ -4,7 +4,6 @@ from lizard_blockbox import import_helpers
 
 
 class Command(BaseCommand):
-    args = ''
     help = ("Copy the geojson shape files to the media directory for Django")
 
     def handle(self, *args, **kwargs):
