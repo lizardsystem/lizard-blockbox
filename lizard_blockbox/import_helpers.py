@@ -10,6 +10,7 @@ import xlrd
 
 from django.db import transaction
 from django.conf import settings
+from django.core.cache import cache
 
 from lizard_blockbox import models
 from lizard_blockbox import utils
@@ -387,6 +388,10 @@ def link_vertices_with_namedreaches():
 # Import measure xls
 
 def flush_database(stdout):
+    # Flush the cache.
+    stdout.write("Flushing cache.\n")
+    cache.clear()
+
     # Delete all objects from models.
     stdout.write("Flushing measures.\n")
     for model in ('RiverSegment', 'Measure',
