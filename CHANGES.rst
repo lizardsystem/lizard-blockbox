@@ -5,7 +5,15 @@ Changelog of lizard-blockbox
 1.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Limited number of decimals in CSV output to 3.
+
+- Fixed the breadcrumbs on the import page.
+
+- Fixed the management commands that take arguments.
+
+- Added a flush cache step in the ``flush_database`` command.
+
+- Use DELTARES_FTP setting in ``fetch_blockbox_data``.
 
 
 1.1 (2018-05-16)
