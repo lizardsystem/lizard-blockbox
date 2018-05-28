@@ -138,12 +138,14 @@ def fetch_blockbox_data(stdout):
     os.mkdir(DATA_DIR)
 
     try:  # first try the FTP
-        raise RuntimeError("FTP credentials are incorrect, this won't work")
+        DELTARES_FTP = getattr(settings, 'DELTARES_FTP', None)
+        if DELTARES_FTP is None:
+            raise RuntimeError("No FTP credentials provided.")
 
         # Note: stored user:password combination in deltaportaal's settings
         COMMANDS = """
             wget -nv -nH -r -N ftp://{ftp}
-            """.format(ftp=settings.DELTARES_FTP)
+            """.format(ftp=DELTARES_FTP)
 
         stdout.write(run_commands_in(DATA_DIR, COMMANDS))
         stdout.write("Fetched blockbox data...\n")
