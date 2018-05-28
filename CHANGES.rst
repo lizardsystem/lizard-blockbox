@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-1.2 (unreleased)
+1.2 (2018-05-28)
 ----------------
 
 - Limited number of decimals in CSV output to 3.
