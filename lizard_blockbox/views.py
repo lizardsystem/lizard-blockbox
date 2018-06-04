@@ -35,7 +35,7 @@ from lizard_management_command_runner.models import CommandRun
 from lizard_management_command_runner.models import ManagementCommand
 
 from lizard_blockbox import models
-from lizard_blockbox.management.commands.import_measure_xls import latest_xls
+from lizard_blockbox.management.commands.import_measure_xls import list_xls
 from lizard_blockbox.utils import UnicodeWriter
 from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
 
@@ -997,5 +997,5 @@ class AutomaticImportPage(BlockboxView):
         d = os.path.join(
             settings.BUILDOUT_DIR, 'deltaportaal', 'data', 'excelsheets',
             'maatregelen')
-        versions = sorted([os.path.basename(f) for f in latest_xls(d)])
+        versions = sorted([os.path.basename(f) for f in list_xls(d)])
         return versions
