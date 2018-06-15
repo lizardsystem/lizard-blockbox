@@ -5,7 +5,8 @@ Changelog of lizard-blockbox
 1.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- List all present files inside 'data/excelsheets/maatregelen' during import
+  and in the import view.
 
 
 1.2 (2018-05-28)
