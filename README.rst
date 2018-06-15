@@ -15,8 +15,6 @@ In The Netherlands, we have some large rivers such as the Maas and the IJssel.
 A bunch of measures can be taken to alter (improve) their characteristics.
 Blokkendoos presents a list of measures which the user can apply on a river to see the effect they will have in a graph and on a map.
 
-.. image:: http://i.imgur.com/C8F6p.png
-
 
 Rewriting
 ---------
