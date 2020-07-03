@@ -1,7 +1,7 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from collections import defaultdict
 from hashlib import md5
-import StringIO
+from io import BytesIO
 import csv
 import json
 import logging
@@ -50,7 +50,7 @@ def download_data(request, *args, **kwargs):
         settings.BUILDOUT_DIR, 'deltaportaal', 'data', *kwargs['file']
     )
     with open(f, "rb") as ff:
-        result = StringIO.StringIO(ff.read())
+        result = BytesIO(ff.read())
     mime_type_guess = mimetypes.guess_type(f)
     response = HttpResponse(content_type=mime_type_guess[0])
     response['Content-Disposition'] = 'filename=%s' % os.path.basename(f)
@@ -438,8 +438,8 @@ class BlockboxView(MapView):
             if measure.reach:
                 try:
                     trajectory = measure.reach.trajectory_set.get()
-                except measure.reach.DoesNotExist, \
-                        measure.reach.MultipleObjectsReturned:
+                except (measure.reach.DoesNotExist,
+                        measure.reach.MultipleObjectsReturned):
                     reach_name = measure.reach.slug
                 else:
                     reach_name = trajectory.name

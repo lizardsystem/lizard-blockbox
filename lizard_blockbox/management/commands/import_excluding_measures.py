@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if not options.get('excelfile', None):
-            print "Pass excel files as arguments."
+            print("Pass excel files as arguments.")
             sys.exit(1)
 
         for excelpath in options['excelfile']:

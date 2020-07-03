@@ -1,8 +1,3 @@
-try:
-    import cStringIO as StringIO
-except ImportError:
-    import StringIO
-
 import logging
 
 import json
