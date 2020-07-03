@@ -81,10 +81,10 @@ def run_commands_in(data_dir, commands, shell=False, no_extra_output=False):
                 output += "Running {command}.\n".format(command=command)
             if not shell:
                 command = command.split()
-            output += subprocess.check_output(
+            output += str(subprocess.check_output(
                 command,
                 stderr=subprocess.STDOUT,
-                shell=shell)
+                shell=shell))
 
         return output
     except subprocess.CalledProcessError as e:
@@ -141,7 +141,7 @@ def fetch_blockbox_data(stdout):
 
         # Note: stored user:password combination in deltaportaal's settings
         COMMANDS = """
-            wget -nv -nH -r -N ftp://{ftp}
+            wget -nv -nH -r -N ftps://{ftp}
             """.format(ftp=DELTARES_FTP)
 
         stdout.write(run_commands_in(DATA_DIR, COMMANDS))
