@@ -1,5 +1,5 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
-from django.conf.urls import include, url
+from django.conf.urls import url
 
 from lizard_ui.urls import debugmode_urlpatterns
 from lizard_blockbox.views import BlockboxView
