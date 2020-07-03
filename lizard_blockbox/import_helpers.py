@@ -359,7 +359,7 @@ def import_vertex_row(vertices, row):
     riversegment, _ = models.RiverSegment.objects.get_or_create(
         location=row[0], reach=reach)
 
-    for col_nr, vertex in vertices.iteritems():
+    for col_nr, vertex in vertices.items():
         value = row[col_nr]
         # TOOD: ^^^^ 0 is fine
         if not value:
@@ -444,7 +444,7 @@ def import_measure_row(measure, row_values, rownr, stdout):
     # The Meuse has both North and South (Z) kilometers with the same
     # kilometer identifier.
     #XXX: ToDo 68_N > 68, 69_N > 68.5, 68_Z -> 69, 69_Z -> 69.5
-    if isinstance(location, basestring):
+    if isinstance(location, str):
         if not location.endswith('_N'):
             # Take only the North reaches for Now
             return
