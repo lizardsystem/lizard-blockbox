@@ -2,6 +2,7 @@
 from collections import defaultdict
 from hashlib import md5
 from io import BytesIO
+from functools import reduce
 import csv
 import json
 import logging
@@ -13,7 +14,6 @@ import urllib
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.core.cache import cache
-from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import NoReverseMatch
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
@@ -31,7 +31,6 @@ from lizard_ui.layout import Action
 from lizard_ui.views import UiView
 
 from lizard_blockbox import models
-from lizard_blockbox.management.commands.import_measure_xls import list_xls
 from lizard_blockbox.utils import UnicodeWriter
 from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
 
@@ -476,7 +475,7 @@ class BlockboxView(MapView):
             measure = {}
             measure['fields'] = measure_obj.pretty()
             measure['selected'] = measure_obj.short_name in selected_measures
-            measure['name'] = unicode(measure_obj)
+            measure['name'] = str(measure_obj)
             measure['short_name'] = measure_obj.short_name
             if measure_obj.short_name in available_factsheets:
                 try:
