@@ -21,7 +21,7 @@ class Reach(models.Model):
     # occur in the hoofdtrajecten.xls file
     number = models.IntegerField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.slug
 
     class Meta:
@@ -37,8 +37,8 @@ class Trajectory(models.Model):
                             help_text=u"The name of the trajectory.")
     reach = models.ManyToManyField(Reach, blank=True)
 
-    def __unicode__(self):
-        return u'%s' % self.name
+    def __str__(self):
+        return self.name
 
 
 class RiverSegment(gis_models.Model):
@@ -51,7 +51,7 @@ class RiverSegment(gis_models.Model):
     reach = models.ForeignKey(Reach)
     objects = gis_models.GeoManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%i (%s)' % (self.location, self.reach)
 
 
@@ -62,7 +62,7 @@ class NamedReach(models.Model):
     """
     name = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property
@@ -127,7 +127,7 @@ class SubsetReach(models.Model):
     km_from = models.IntegerField()
     km_to = models.IntegerField()
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Subset reach {reach} of {named}'.format(
             reach=self.reach.slug,
             named=self.named_reach.name)
@@ -140,8 +140,8 @@ class CityLocation(models.Model):
     city = models.CharField(max_length=100)
     km = models.IntegerField()
 
-    def __unicode__(self):
-        return u'city: {city}, km: {km}'.format(**self.__dict__)
+    def __str__(self):
+        return 'city: {city}, km: {km}'.format(**self.__dict__)
 
 
 class Measure(models.Model):
@@ -202,9 +202,9 @@ class Measure(models.Model):
 
     include = models.ManyToManyField('self', blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         name = self.name or self.short_name
-        return u'%s' % name
+        return '%s' % name
 
     def pretty(self):
         """Return list with verbose name + value for every field for the view.
@@ -276,7 +276,7 @@ class Vertex(models.Model):
         return list(sorted(value['year'] for value in
                 self.vertexvalue_set.values('year').distinct()))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
