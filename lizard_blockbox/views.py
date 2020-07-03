@@ -732,7 +732,7 @@ def _water_levels(request):
     cache_key = (str(selected_river) + str(selected_vertex.id) +
                  selected_year + selected_protection_level +
                  ''.join(selected_measures))
-    cache_key = md5(cache_key).hexdigest()
+    cache_key = md5(cache_key.encode('utf-8')).hexdigest()
     water_levels = cache.get(cache_key)
     if not water_levels:
         logger.info("Cache miss for _water_levels")
