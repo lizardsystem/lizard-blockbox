@@ -25,7 +25,7 @@ class CommandError(Exception):
         super(CommandError, self).__init__(*args, **kwargs)
 
     def __str__(self):
-        return "Error: " + self.output
+        return "Error: " + str(self.output)
 
 
 class ExcelException(Exception):
@@ -46,16 +46,13 @@ class ExcelException(Exception):
         return ExcelException(path=path, sheet=sheet, rownr=rownr, error=error)
 
     def __str__(self):
-        return unicode(self).encode('utf8')
-
-    def __unicode__(self):
         return (
-            u"Fout in '{filename}', sheet '{sheet}', regel {rownr}: {error}"
+            "Fout in '{filename}', sheet '{sheet}', regel {rownr}: {error}"
             .format(
                 filename=(os.path.basename(self.path) if self.path is not None
-                          else u"<onbekend>"),
-                sheet=self.sheet or u"<onbekend>",
-                rownr=self.rownr if self.rownr is not None else u"?",
+                          else "<onbekend>"),
+                sheet=self.sheet or "<onbekend>",
+                rownr=self.rownr if self.rownr is not None else "?",
                 error=self.error or "Onbekende fout"))
 
 
@@ -91,7 +88,7 @@ def run_commands_in(data_dir, commands, shell=False, no_extra_output=False):
 
         return output
     except subprocess.CalledProcessError as e:
-        output += e.output
+        output += str(e.output)
         raise CommandError(output=output)
 
 
@@ -121,7 +118,7 @@ def map_over_sheets(excelpath, function, stdout, *args, **kwargs):
             raise e.add_details(path=excelpath, sheet=sheet.name)
         except Exception as e:
             raise ExcelException(
-                path=excelpath, sheet=sheet.name, error=unicode(e))
+                path=excelpath, sheet=sheet.name, error=str(e))
 
     return [call_function(sheet) for sheet in wb.sheets()]
 
@@ -271,7 +268,7 @@ def parse_trajectory_classification_excelfile(excelpath, stdout):
 
 
 def parse_trajectory_classification_sheet(sheet, stdout):
-    for row_nr in xrange(1, sheet.nrows):
+    for row_nr in range(1, sheet.nrows):
         name, reach_slug, km_from, km_to = sheet.row_values(row_nr)
         km_from, km_to = int(km_from), int(km_to)
         reach, _ = models.Reach.objects.get_or_create(slug=reach_slug)
@@ -291,7 +288,7 @@ def import_city_names(excelpath, stdout):
 
 
 def import_city_names_sheet(sheet, stdout):
-    for row_nr in xrange(1, sheet.nrows):
+    for row_nr in range(1, sheet.nrows):
         km, city, reach_slug = sheet.row_values(row_nr)[:3]
         reach = models.Reach.objects.get(slug=reach_slug)
         models.CityLocation.objects.create(
@@ -311,7 +308,7 @@ def import_vertex_sheet(sheet, stdout):
     vertices = build_vertex_dict(sheet.row_values(1)[2:])
 
     # Then, for every row after the first two, import it
-    for row_nr in xrange(2, sheet.nrows):
+    for row_nr in range(2, sheet.nrows):
         import_vertex_row(vertices, sheet.row_values(row_nr))
 
 
@@ -412,14 +409,14 @@ def import_measure_sheet(sheet, stdout):
     short_name = sheet.name
     if isinstance(short_name, float):
         short_name = int(short_name)
-    short_name = unicode(short_name).strip()
+    short_name = str(short_name).strip()
     measure, created = models.Measure.objects.get_or_create(
         short_name=short_name)
 
     if not created:
         # Measure exists.
         return
-    for row_nr in xrange(1, sheet.nrows):
+    for row_nr in range(1, sheet.nrows):
         import_measure_row(
             measure, sheet.row_values(row_nr),
             row_nr + 1,  # Row number for error messages starts at 1, not 0
@@ -512,9 +509,9 @@ def import_measure_table_sheet(sheet, stdout):
         'maximal_investment_costs', 'efficiency',
         'natuur', 'grondverzet')
 
-    col_index = dict(zip(col_names, xrange(len(col_names))))
+    col_index = dict(zip(col_names, range(len(col_names))))
 
-    for row_nr in xrange(1, sheet.nrows):
+    for row_nr in range(1, sheet.nrows):
         row_values = sheet.row_values(row_nr)
         short_name = row_values[col_index['short_name']]
 
@@ -545,9 +542,9 @@ def import_excluding_measures_xls(excelpath, stdout):
 
 
 def import_excluding_measures_sheet(sheet, stdout):
-    for row_nr in xrange(1, sheet.nrows):
+    for row_nr in range(1, sheet.nrows):
         measure, excluding = sheet.row_values(row_nr)[-2:]
-        excludes = [i.strip() for i in unicode(excluding).split(';')]
+        excludes = [i.strip() for i in str(excluding).split(';')]
         try:
             measure = models.Measure.objects.get(short_name=measure)
         except models.Measure.DoesNotExist:
@@ -568,9 +565,9 @@ def import_including_measures_xls(excelpath, stdout):
 
 
 def import_including_measures_sheet(sheet, stdout):
-    for row_nr in xrange(1, sheet.nrows):
+    for row_nr in range(1, sheet.nrows):
         measure, including = sheet.row_values(row_nr)[-2:]
-        includes = [i.strip() for i in unicode(including).split(';')]
+        includes = [i.strip() for i in str(including).split(';')]
         try:
             measure = models.Measure.objects.get(short_name=measure)
         except models.Measure.DoesNotExist:
@@ -592,7 +589,7 @@ def import_trajectory_names_xls(excelpath, stdout):
 
 
 def import_trajectory_names_sheet(sheet, stdout):
-    for row_nr in xrange(1, sheet.nrows):
+    for row_nr in range(1, sheet.nrows):
         _, reach_slugs, name = sheet.row_values(row_nr)
         reaches = reach_slugs.split(', ')
 
