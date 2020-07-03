@@ -11,7 +11,6 @@ long_description = '\n\n'.join([
 
 install_requires = [
     'Django >= 1.9, < 2',
-    'lizard-management-command-runner >= 0.2',
     'lizard-ui >= 4.50, < 5',
     'xlrd',
     ],

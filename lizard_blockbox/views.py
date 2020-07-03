@@ -30,10 +30,6 @@ from lizard_map.views import MapView
 from lizard_ui.layout import Action
 from lizard_ui.views import UiView
 
-from lizard_management_command_runner.views import run_command
-from lizard_management_command_runner.models import CommandRun
-from lizard_management_command_runner.models import ManagementCommand
-
 from lizard_blockbox import models
 from lizard_blockbox.management.commands.import_measure_xls import list_xls
 from lizard_blockbox.utils import UnicodeWriter
@@ -378,15 +374,6 @@ class BlockboxView(MapView):
             klass='toggle_map_and_table')
         actions.insert(0, switch_map_and_table)
 
-        if self.request.user.has_perm(
-            'lizard_management_command_runner.execute_managementcommand'):
-            actions.insert(0, Action(
-                    name=_("Import data"),
-                    description=_(
-                        "Page for automatically importing the blockbox data"),
-                    icon='icon-download-alt',
-                    url=reverse('lizard_blockbox.automatic_import')))
-
         return actions
 
     @cached_property
@@ -558,15 +545,7 @@ class BlockboxView(MapView):
 
     def version(self):
         "Return date of last successfull load_blockbox_data run."
-        try:
-            obj = CommandRun.objects.filter(
-                management_command__command="load_blockbox_data",
-                finished=True,
-                success=True
-            ).order_by("-start_time")[0]
-            return obj.start_time
-        except IndexError:
-            pass
+        return  # We do it on the command line now.
 
     @cached_property
     def breadcrumbs(self):
@@ -956,46 +935,3 @@ def _list_measures_json(request):
         measure['show'] = measure['short_name'] in measures_selected_river
 
     return list(measures)
-
-
-class AutomaticImportPage(BlockboxView):
-    template_name = "lizard_blockbox/automatic_import.html"
-    page_title = "Automatische import"
-
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.has_perm(
-            'lizard_management_command_runner.execute_managementcommand'):
-            raise PermissionDenied()
-        return super(
-            AutomaticImportPage, self).dispatch(request, *args, **kwargs)
-
-    def post(self, request, command):
-        """Posting to this URL starts the background task."""
-        try:
-            management_command = ManagementCommand.objects.get(command=command)
-        except ManagementCommand.DoesNotExist:
-            return
-
-        # Management command checks the user's rights
-        return run_command(request, management_command.pk)
-
-    @cached_property
-    def content_actions(self):
-        return []
-
-    @cached_property
-    def breadcrumbs(self):
-        return [Action(name='Home',
-                       url=reverse('deltaportaal.portalhomepage')),
-                Action(name='Blokkendoos',
-                       url=reverse('lizard_blockbox.home')),
-                Action(name=self.page_title,
-                       url=reverse('lizard_blockbox.automatic_import'))]
-
-    @cached_property
-    def measure_versions(self):
-        d = os.path.join(
-            settings.BUILDOUT_DIR, 'deltaportaal', 'data', 'excelsheets',
-            'maatregelen')
-        versions = sorted([os.path.basename(f) for f in list_xls(d)])
-        return versions

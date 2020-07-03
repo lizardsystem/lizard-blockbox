@@ -57,14 +57,5 @@ urlpatterns = [
     #     'lizard_blockbox.views.select_protection_level',
     #     name='lizard_blockbox_select_protection_level'),
 
-    # Automatic imports
-    url(r'^import/$',
-        views.AutomaticImportPage.as_view(),
-        name="lizard_blockbox.automatic_import"),
-    url(r'^import/(?P<command>\w+)/$',
-        views.AutomaticImportPage.as_view(),
-        name="lizard_blockbox.automatic_import_command"),
-    url(r'^allimport/',
-        include('lizard_management_command_runner.urls'))
 ]
 urlpatterns += debugmode_urlpatterns()
