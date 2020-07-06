@@ -87,6 +87,7 @@ def run_commands_in(data_dir, commands, shell=False, no_extra_output=False):
             output += str(subprocess.check_output(
                 command,
                 stderr=subprocess.STDOUT,
+                universal_newlines=True,
                 shell=shell))
 
         return output
@@ -145,7 +146,8 @@ def fetch_blockbox_data(stdout):
 
         stdout.write(run_commands_in(DATA_DIR, COMMANDS))
         stdout.write("Fetched blockbox data...\n")
-    except:
+    except Exception:
+        logger.exception("FTP download failed, continuing with var/data/...")
         DATA_SOURCE_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/data')
         stdout.write("Using blockbox data from /var...\n")
         COMMANDS = """
@@ -211,7 +213,7 @@ def parse_kilometers_json(stdout):
             coordinates[0], coordinates[-1]]
         #Only have the properties we need.
         feature['properties'] = {'label': feature['properties']['label']}
-    to_file = open(os.path.join(JSON_DIR, 'kilometers.json'), 'wb')
+    to_file = open(os.path.join(JSON_DIR, 'kilometers.json'), 'w')
     json.dump(json_data, to_file)
     stdout.write("Parsed kilometers json...\n")
 
@@ -232,7 +234,7 @@ def merge_measures_blockbox(stdout):
                 'titel': feature['properties']['maatregel']}
         concat_measures['features'] += features
 
-    concat_json = open(os.path.join(JSON_DIR, 'measures.json'), 'wb')
+    concat_json = open(os.path.join(JSON_DIR, 'measures.json'), 'w')
     json.dump(concat_measures, concat_json)
     stdout.write("Merged blockbox measures...\n")
 
@@ -240,8 +242,7 @@ def merge_measures_blockbox(stdout):
 # Copy JSON to media command
 
 def copy_json_to_media(stdout):
-    JSON_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal',
-                            'data', 'geojson')
+    JSON_DIR = os.path.join(DATA_DIR, "geojson")
     MEDIA_DIR = os.path.join(settings.MEDIA_ROOT, 'lizard_blockbox')
 
     if not os.path.isdir(MEDIA_DIR):
