@@ -19,6 +19,9 @@ from lizard_blockbox import utils
 logger = logging.getLogger(__name__)
 
 
+DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/blockbox')
+
+
 class CommandError(Exception):
     def __init__(self, output, *args, **kwargs):
         self.output = output
@@ -126,13 +129,9 @@ def map_over_sheets(excelpath, function, stdout, *args, **kwargs):
 # Fetch blockbox data command
 
 def fetch_blockbox_data(stdout):
-    DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal/data')
 
-    # remove the data dir if it exists
-    if os.path.exists(DATA_DIR):
-        shutil.rmtree(DATA_DIR)
-
-    os.mkdir(DATA_DIR)
+    print("Note: not removing data dir contents. Do 'docker-compose down -v' if you want "
+          "to remove all existing data.")
 
     try:  # first try the FTP
         DELTARES_FTP = getattr(settings, 'DELTARES_FTP', None)
@@ -156,7 +155,6 @@ def fetch_blockbox_data(stdout):
 
 
 def set_permissions_pdf(stdout):
-    DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal/data')
     PDF_DIR = os.path.join(DATA_DIR, 'factsheets')
 
     SET_PERMISSIONS_COMMAND = """
@@ -168,7 +166,6 @@ chmod a+r -R .
 
 # Parse shapes blockbox command
 def parse_shapes_blockbox(stdout):
-    DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal/data')
     JSON_DIR = 'geojson'
 
     SHAPE_COMMAND = """
@@ -203,8 +200,7 @@ mkdir {jsondir}
 # Parse kilometers json command
 
 def parse_kilometers_json(stdout):
-    JSON_DIR = os.path.join(
-        settings.BUILDOUT_DIR, 'deltaportaal/data/geojson')
+    JSON_DIR = os.path.join(DATA_DIR, "geojson")
 
     json_file = open(os.path.join(JSON_DIR, 'km_deltaportaal_tot.json'))
     json_data = json.load(json_file)
@@ -223,8 +219,7 @@ def parse_kilometers_json(stdout):
 # Merge measures blockbox command
 
 def merge_measures_blockbox(stdout):
-    JSON_DIR = os.path.join(
-        settings.BUILDOUT_DIR, 'deltaportaal/data/geojson')
+    JSON_DIR = os.path.join(DATA_DIR, "geojson")
     files = ('rivierengebied_totaal.json',)
     concat_measures = {'type': 'FeatureCollection',
                        'features': []}

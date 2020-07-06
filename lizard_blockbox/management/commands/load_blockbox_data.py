@@ -5,7 +5,7 @@ from django.conf import settings
 
 from lizard_blockbox import import_helpers
 
-DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'deltaportaal/data')
+DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/blockbox')
 
 
 class Command(BaseCommand):
