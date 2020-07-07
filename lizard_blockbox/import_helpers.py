@@ -147,7 +147,7 @@ def fetch_blockbox_data(stdout):
         stdout.write(run_commands_in(DATA_DIR, COMMANDS))
         stdout.write("Fetched blockbox data...\n")
     except Exception:
-        logger.exception("FTP download failed, continuing with var/data/...")
+        logger.exception("FTP download failed, looking in var/data/ instead...")
         DATA_SOURCE_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/data')
         stdout.write("Using blockbox data from /var...\n")
         COMMANDS = """
