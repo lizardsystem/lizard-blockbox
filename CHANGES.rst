@@ -5,7 +5,17 @@ Changelog of lizard-blockbox
 1.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Python3 fixes. xrange/range, unicode/string, basestring/str,
+  iteritems/items, print/print(), ``__unicode__()``/``__str__()``, etc.
+
+- The ftp-downloaded xls/pdf/etc are now placed in ``var/blockbox/`` instead
+  of ``deltaportaal/data/``. This is handier for the new docker-compose setup.
+
+- Removed lizard-management-command-runner support. So imports have to happen
+  with a management command on the commandline now instead of via the
+  admin. This is fine as such an import rarely happens. And it saves quite
+  some time as it means porting another app to python 3 and also configuring
+  rabbitmq/celery.
 
 
 1.3 (2018-06-15)
