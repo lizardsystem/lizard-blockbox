@@ -15,7 +15,7 @@ class EmptyStringFloatField(models.FloatField):
 class EmptyStringUnknownFloatField(models.FloatField):
     empty_strings_allowed = True
     description = _(
-        "Floating point number: converts empty strging and the "
+        "Floating point number: converts empty string and the "
         "string 'Onbekend' to None")
 
     def get_prep_value(self, value):
