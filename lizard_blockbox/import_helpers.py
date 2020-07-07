@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/blockbox')
+JSON_DIR = os.path.join(DATA_DIR, 'geojson')
 
 
 class CommandError(Exception):
@@ -168,8 +169,6 @@ chmod a+r -R .
 
 # Parse shapes blockbox command
 def parse_shapes_blockbox(stdout):
-    JSON_DIR = 'geojson'
-
     SHAPE_COMMAND = """
 find ./shapefiles -name *.shp
 """
@@ -202,8 +201,6 @@ mkdir {jsondir}
 # Parse kilometers json command
 
 def parse_kilometers_json(stdout):
-    JSON_DIR = os.path.join(DATA_DIR, "geojson")
-
     json_file = open(os.path.join(JSON_DIR, 'km_deltaportaal_tot.json'))
     json_data = json.load(json_file)
     for feature in json_data['features']:
@@ -221,7 +218,6 @@ def parse_kilometers_json(stdout):
 # Merge measures blockbox command
 
 def merge_measures_blockbox(stdout):
-    JSON_DIR = os.path.join(DATA_DIR, "geojson")
     files = ('rivierengebied_totaal.json',)
     concat_measures = {'type': 'FeatureCollection',
                        'features': []}
@@ -242,7 +238,6 @@ def merge_measures_blockbox(stdout):
 # Copy JSON to media command
 
 def copy_json_to_media(stdout):
-    JSON_DIR = os.path.join(DATA_DIR, "geojson")
     MEDIA_DIR = os.path.join(settings.MEDIA_ROOT, 'lizard_blockbox')
 
     if not os.path.isdir(MEDIA_DIR):
