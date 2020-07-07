@@ -35,6 +35,7 @@ from lizard_blockbox.utils import UnicodeWriter
 from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
 
 
+DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/blockbox')
 SELECTED_MEASURES_KEY = 'selected_measures_key'
 SELECTED_RIVER = 'river'
 SELECTED_VERTEX = 'vertex'
@@ -45,9 +46,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_data(request, *args, **kwargs):
-    f = os.path.join(
-        settings.BUILDOUT_DIR, 'deltaportaal', 'data', *kwargs['file']
-    )
+    f = os.path.join(DATA_DIR, *kwargs['file'])
     with open(f, "rb") as ff:
         result = BytesIO(ff.read())
     mime_type_guess = mimetypes.guess_type(f)
@@ -667,7 +666,7 @@ def fetch_factsheet(request, measure):
         # In short, we just do these ourselves...
         # XXX
         filepath = os.path.join(
-            settings.BUILDOUT_DIR, 'deltaportaal', 'data', 'factsheets',
+            DATA_DIR, 'factsheets',
             '{measure}.pdf'.format(measure=measure))
         return serve(request, filepath, '/')
 
