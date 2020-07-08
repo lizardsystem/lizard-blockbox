@@ -18,6 +18,7 @@ install_requires = [
 tests_require = [
     'django-nose',
     'mock',
+    'factory-boy',
     ]
 
 setup(name='lizard-blockbox',
