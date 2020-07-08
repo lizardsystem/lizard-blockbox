@@ -17,7 +17,7 @@ def namedreach2riversegments(river):
             location__range=(element.km_from, element.km_to))
         for element in subset_reaches)
 
-        # Join the querysets in segments_join into one.
+    # Join the querysets in segments_join into one.
     riversegments = reduce(operator.or_, segments_join)
     return riversegments.distinct().order_by('location')
 
