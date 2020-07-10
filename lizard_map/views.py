@@ -2,7 +2,7 @@ import logging
 
 import json
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 from django.utils.functional import cached_property
