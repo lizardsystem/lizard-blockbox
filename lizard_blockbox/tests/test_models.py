@@ -33,7 +33,7 @@ class TestNamedReach(TestCase):
         factories.WaterLevelDifferenceFactory.create(
             riversegment=segment, measure=measure, protection_level="250")
 
-        self.assertEquals(namedreach.protection_levels, ["250", "1250"])
+        self.assertEqual(namedreach.protection_levels, ["250", "1250"])
 
     def test_250_doesnt_occur(self):
         namedreach = factories.NamedReachFactory.create()
@@ -51,7 +51,7 @@ class TestNamedReach(TestCase):
         factories.WaterLevelDifferenceFactory.create(
             riversegment=segment, measure=measure, protection_level="1250")
 
-        self.assertEquals(namedreach.protection_levels, ["1250"])
+        self.assertEqual(namedreach.protection_levels, ["1250"])
 
     def test_250_occurs_outside_of_km_from_to(self):
         namedreach = factories.NamedReachFactory.create()
@@ -71,7 +71,7 @@ class TestNamedReach(TestCase):
         factories.WaterLevelDifferenceFactory.create(
             riversegment=segment, measure=measure, protection_level="250")
 
-        self.assertEquals(namedreach.protection_levels, ["1250"])
+        self.assertEqual(namedreach.protection_levels, ["1250"])
 
     def test_expanded_reaches(self):
         """If there are two trajectories -- A, B, C, D and E, F, G, H --
@@ -99,13 +99,13 @@ class TestNamedReach(TestCase):
             reach=reaches['F'], named_reach=river, km_from=201, km_to=300)
 
         expanded_reaches = river.expanded_reaches()
-        self.assertEquals(len(expanded_reaches), 6)
-        self.assertEquals(expanded_reaches[0].slug, 'A')
-        self.assertEquals(expanded_reaches[1].slug, 'B')
-        self.assertEquals(expanded_reaches[2].slug, 'C')
-        self.assertEquals(expanded_reaches[3].slug, 'F')
-        self.assertEquals(expanded_reaches[4].slug, 'G')
-        self.assertEquals(expanded_reaches[5].slug, 'H')
+        self.assertEqual(len(expanded_reaches), 6)
+        self.assertEqual(expanded_reaches[0].slug, 'A')
+        self.assertEqual(expanded_reaches[1].slug, 'B')
+        self.assertEqual(expanded_reaches[2].slug, 'C')
+        self.assertEqual(expanded_reaches[3].slug, 'F')
+        self.assertEqual(expanded_reaches[4].slug, 'G')
+        self.assertEqual(expanded_reaches[5].slug, 'H')
 
 
 class TestVertex(TestCase):
@@ -120,4 +120,4 @@ class TestVertex(TestCase):
         factories.VertexValueFactory.create(
             vertex=vertex, riversegment=riversegment, year="2100")
 
-        self.assertEquals(vertex.years, ["2050", "2100"])
+        self.assertEqual(vertex.years, ["2050", "2100"])
