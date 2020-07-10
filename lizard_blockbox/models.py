@@ -49,7 +49,6 @@ class RiverSegment(gis_models.Model):
 
     location = models.IntegerField()
     reach = models.ForeignKey(Reach, on_delete=models.CASCADE)
-    objects = gis_models.GeoManager()
 
     def __str__(self):
         return '%i (%s)' % (self.location, self.reach)
