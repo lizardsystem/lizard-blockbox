@@ -11,7 +11,7 @@ from __future__ import division
 
 import mock
 import sys
-from StringIO import StringIO
+from io import StringIO
 
 from django.test import TestCase
 
@@ -32,12 +32,12 @@ class TestImportMeasureXls(TestCase):
         import_helpers.import_measure_row(
             measure, row, rownr=0, stdout=sys.stdout)
 
-        self.assertEquals(
+        self.assertEqual(
             models.WaterLevelDifference.objects.all().count(),
             1)
         diff = models.WaterLevelDifference.objects.all()[0]
-        self.assertEquals(diff.protection_level, "1250")
-        self.assertEquals(diff.level_difference, -1)
+        self.assertEqual(diff.protection_level, "1250")
+        self.assertEqual(diff.level_difference, -1)
 
     def test_row_with_six_values_saves_correct_difference(self):
         measure = factories.MeasureFactory.create()
@@ -49,17 +49,17 @@ class TestImportMeasureXls(TestCase):
         import_helpers.import_measure_row(
             measure, row, rownr=0, stdout=sys.stdout)
 
-        self.assertEquals(
+        self.assertEqual(
             models.WaterLevelDifference.objects.all().count(),
             2)
 
         diff_1250 = models.WaterLevelDifference.objects.filter(
             protection_level="1250")[0]
-        self.assertEquals(diff_1250.level_difference, -3)
+        self.assertEqual(diff_1250.level_difference, -3)
 
         diff_250 = models.WaterLevelDifference.objects.filter(
             protection_level="250")[0]
-        self.assertEquals(diff_250.level_difference, -4)
+        self.assertEqual(diff_250.level_difference, -4)
 
 
 class TestBuildVertexDict(TestCase):
@@ -68,39 +68,39 @@ class TestBuildVertexDict(TestCase):
 
         import_helpers.build_vertex_dict(row_values)
 
-        self.assertEquals(models.Vertex.objects.count(), 2)
+        self.assertEqual(models.Vertex.objects.count(), 2)
 
     def test_header_no_columns_works_correctly(self):
         row_values = ["Some name"]
         vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
-        self.assertEquals(vertex.header, '')
-        self.assertEquals(vertex.name, 'Some name')
-        self.assertEquals(vertex.year, '2100')
+        self.assertEqual(vertex.header, '')
+        self.assertEqual(vertex.name, 'Some name')
+        self.assertEqual(vertex.year, '2100')
 
     def test_header_only_year_works_correctly(self):
         row_values = ["2050: Some name"]
         vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
-        self.assertEquals(vertex.header, '')
-        self.assertEquals(vertex.name, 'Some name')
-        self.assertEquals(vertex.year, '2050')
+        self.assertEqual(vertex.header, '')
+        self.assertEqual(vertex.name, 'Some name')
+        self.assertEqual(vertex.year, '2050')
 
     def test_header_only_header_works_correctly(self):
         row_values = ["Whee: Some name"]
         vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
-        self.assertEquals(vertex.header, 'Whee')
-        self.assertEquals(vertex.name, 'Some name')
-        self.assertEquals(vertex.year, '2100')
+        self.assertEqual(vertex.header, 'Whee')
+        self.assertEqual(vertex.name, 'Some name')
+        self.assertEqual(vertex.year, '2100')
 
     def test_header_year_and_header_works_correctly(self):
         row_values = ["2050: Whee: Some name"]
         vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
-        self.assertEquals(vertex.header, 'Whee')
-        self.assertEquals(vertex.name, 'Some name')
-        self.assertEquals(vertex.year, '2050')
+        self.assertEqual(vertex.header, 'Whee')
+        self.assertEqual(vertex.name, 'Some name')
+        self.assertEqual(vertex.year, '2050')
 
 
 class TestImportVertexXls(TestCase):
@@ -121,7 +121,7 @@ class TestImportVertexXls(TestCase):
             vertex=vertex,
             year="2050")
 
-        self.assertEquals(vertex_value.value, 5)
+        self.assertEqual(vertex_value.value, 5)
 
     def test_saves_column_after_empty_column(self):
         vertex1 = factories.VertexFactory.create()
@@ -141,8 +141,8 @@ class TestImportVertexXls(TestCase):
             riversegment=riversegment, vertex=vertex1, year="2050")
         value2 = models.VertexValue.objects.get(
             riversegment=riversegment, vertex=vertex2, year="2050")
-        self.assertEquals(value1.value, 1.0)
-        self.assertEquals(value2.value, 2.0)
+        self.assertEqual(value1.value, 1.0)
+        self.assertEqual(value2.value, 2.0)
 
 
 class TestMapOverSheets(TestCase):
@@ -172,9 +172,9 @@ class TestMapOverSheets(TestCase):
                 # We shouldn't get here, so this fails if we do
                 self.assertRaises(Exception, lambda: None)
             except import_helpers.ExcelException as ee:
-                self.assertEquals(ee.path, path)
-                self.assertEquals(ee.sheet, "sheetname")
-                self.assertEquals(ee.rownr, None)
-                self.assertEquals(ee.error, "some error")
+                self.assertEqual(ee.path, path)
+                self.assertEqual(ee.sheet, "sheetname")
+                self.assertEqual(ee.rownr, None)
+                self.assertEqual(ee.error, "some error")
 
             patched_open.assert_called_with(path)

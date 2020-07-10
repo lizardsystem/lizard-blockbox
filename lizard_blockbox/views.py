@@ -14,8 +14,8 @@ import urllib
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.core.cache import cache
-from django.core.urlresolvers import NoReverseMatch
-from django.core.urlresolvers import reverse
+from django.urls import NoReverseMatch
+from django.urls import reverse
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
