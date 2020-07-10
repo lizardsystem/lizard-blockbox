@@ -1,7 +1,8 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from collections import defaultdict
 from hashlib import md5
-import StringIO
+from io import BytesIO
+from functools import reduce
 import csv
 import json
 import logging
@@ -13,7 +14,6 @@ import urllib
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.core.cache import cache
-from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import NoReverseMatch
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
@@ -30,16 +30,12 @@ from lizard_map.views import MapView
 from lizard_ui.layout import Action
 from lizard_ui.views import UiView
 
-from lizard_management_command_runner.views import run_command
-from lizard_management_command_runner.models import CommandRun
-from lizard_management_command_runner.models import ManagementCommand
-
 from lizard_blockbox import models
-from lizard_blockbox.management.commands.import_measure_xls import list_xls
 from lizard_blockbox.utils import UnicodeWriter
 from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
 
 
+DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/blockbox')
 SELECTED_MEASURES_KEY = 'selected_measures_key'
 SELECTED_RIVER = 'river'
 SELECTED_VERTEX = 'vertex'
@@ -50,11 +46,9 @@ logger = logging.getLogger(__name__)
 
 
 def download_data(request, *args, **kwargs):
-    f = os.path.join(
-        settings.BUILDOUT_DIR, 'deltaportaal', 'data', *kwargs['file']
-    )
+    f = os.path.join(DATA_DIR, *kwargs['file'])
     with open(f, "rb") as ff:
-        result = StringIO.StringIO(ff.read())
+        result = BytesIO(ff.read())
     mime_type_guess = mimetypes.guess_type(f)
     response = HttpResponse(content_type=mime_type_guess[0])
     response['Content-Disposition'] = 'filename=%s' % os.path.basename(f)
@@ -378,15 +372,6 @@ class BlockboxView(MapView):
             klass='toggle_map_and_table')
         actions.insert(0, switch_map_and_table)
 
-        if self.request.user.has_perm(
-            'lizard_management_command_runner.execute_managementcommand'):
-            actions.insert(0, Action(
-                    name=_("Import data"),
-                    description=_(
-                        "Page for automatically importing the blockbox data"),
-                    icon='icon-download-alt',
-                    url=reverse('lizard_blockbox.automatic_import')))
-
         return actions
 
     @cached_property
@@ -451,8 +436,8 @@ class BlockboxView(MapView):
             if measure.reach:
                 try:
                     trajectory = measure.reach.trajectory_set.get()
-                except measure.reach.DoesNotExist, \
-                        measure.reach.MultipleObjectsReturned:
+                except (measure.reach.DoesNotExist,
+                        measure.reach.MultipleObjectsReturned):
                     reach_name = measure.reach.slug
                 else:
                     reach_name = trajectory.name
@@ -489,7 +474,7 @@ class BlockboxView(MapView):
             measure = {}
             measure['fields'] = measure_obj.pretty()
             measure['selected'] = measure_obj.short_name in selected_measures
-            measure['name'] = unicode(measure_obj)
+            measure['name'] = str(measure_obj)
             measure['short_name'] = measure_obj.short_name
             if measure_obj.short_name in available_factsheets:
                 try:
@@ -558,15 +543,7 @@ class BlockboxView(MapView):
 
     def version(self):
         "Return date of last successfull load_blockbox_data run."
-        try:
-            obj = CommandRun.objects.filter(
-                management_command__command="load_blockbox_data",
-                finished=True,
-                success=True
-            ).order_by("-start_time")[0]
-            return obj.start_time
-        except IndexError:
-            pass
+        return  # We do it on the command line now.
 
     @cached_property
     def breadcrumbs(self):
@@ -689,7 +666,7 @@ def fetch_factsheet(request, measure):
         # In short, we just do these ourselves...
         # XXX
         filepath = os.path.join(
-            settings.BUILDOUT_DIR, 'deltaportaal', 'data', 'factsheets',
+            DATA_DIR, 'factsheets',
             '{measure}.pdf'.format(measure=measure))
         return serve(request, filepath, '/')
 
@@ -754,7 +731,7 @@ def _water_levels(request):
     cache_key = (str(selected_river) + str(selected_vertex.id) +
                  selected_year + selected_protection_level +
                  ''.join(selected_measures))
-    cache_key = md5(cache_key).hexdigest()
+    cache_key = md5(cache_key.encode('utf-8')).hexdigest()
     water_levels = cache.get(cache_key)
     if not water_levels:
         logger.info("Cache miss for _water_levels")
@@ -956,46 +933,3 @@ def _list_measures_json(request):
         measure['show'] = measure['short_name'] in measures_selected_river
 
     return list(measures)
-
-
-class AutomaticImportPage(BlockboxView):
-    template_name = "lizard_blockbox/automatic_import.html"
-    page_title = "Automatische import"
-
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.has_perm(
-            'lizard_management_command_runner.execute_managementcommand'):
-            raise PermissionDenied()
-        return super(
-            AutomaticImportPage, self).dispatch(request, *args, **kwargs)
-
-    def post(self, request, command):
-        """Posting to this URL starts the background task."""
-        try:
-            management_command = ManagementCommand.objects.get(command=command)
-        except ManagementCommand.DoesNotExist:
-            return
-
-        # Management command checks the user's rights
-        return run_command(request, management_command.pk)
-
-    @cached_property
-    def content_actions(self):
-        return []
-
-    @cached_property
-    def breadcrumbs(self):
-        return [Action(name='Home',
-                       url=reverse('deltaportaal.portalhomepage')),
-                Action(name='Blokkendoos',
-                       url=reverse('lizard_blockbox.home')),
-                Action(name=self.page_title,
-                       url=reverse('lizard_blockbox.automatic_import'))]
-
-    @cached_property
-    def measure_versions(self):
-        d = os.path.join(
-            settings.BUILDOUT_DIR, 'deltaportaal', 'data', 'excelsheets',
-            'maatregelen')
-        versions = sorted([os.path.basename(f) for f in list_xls(d)])
-        return versions

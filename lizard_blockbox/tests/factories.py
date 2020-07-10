@@ -18,32 +18,37 @@ from lizard_blockbox import models
 
 
 class ReachFactory(factory.Factory):
-    FACTORY_FOR = models.Reach
+    class Meta:
+        model = models.Reach
 
     slug = "SL"
 
 
 class TrajectoryFactory(factory.Factory):
-    FACTORY_FOR = models.Trajectory
+    class Meta:
+        model = models.Trajectory
 
     name = "trajectorynaam"
 
 
 class RiverSegmentFactory(factory.Factory):
-    FACTORY_FOR = models.RiverSegment
+    class Meta:
+        model = models.RiverSegment
 
     location = 0.0
     reach = factory.SubFactory(ReachFactory)
 
 
 class NamedReachFactory(factory.Factory):
-    FACTORY_FOR = models.NamedReach
+    class Meta:
+        model = models.NamedReach
 
     name = "Some named reach"
 
 
 class SubsetReachFactory(factory.Factory):
-    FACTORY_FOR = models.SubsetReach
+    class Meta:
+        model = models.SubsetReach
 
     reach = factory.SubFactory(ReachFactory)
     named_reach = factory.SubFactory(NamedReachFactory)
@@ -52,7 +57,8 @@ class SubsetReachFactory(factory.Factory):
 
 
 class MeasureFactory(factory.Factory):
-    FACTORY_FOR = models.Measure
+    class Meta:
+        model = models.Measure
 
     name = "Some measure"
     short_name = "mesur"
@@ -69,7 +75,8 @@ class MeasureFactory(factory.Factory):
 
 
 class WaterLevelDifferenceFactory(factory.Factory):
-    FACTORY_FOR = models.WaterLevelDifference
+    class Meta:
+        model = models.WaterLevelDifference
 
     riversegment = factory.SubFactory(RiverSegmentFactory)
     measure = factory.SubFactory(MeasureFactory)
@@ -78,14 +85,16 @@ class WaterLevelDifferenceFactory(factory.Factory):
 
 
 class VertexFactory(factory.Factory):
-    FACTORY_FOR = models.Vertex
+    class Meta:
+        model = models.Vertex
 
     name = "Some vertex"
     header = "Some header"
 
 
 class VertexValueFactory(factory.Factory):
-    FACTORY_FOR = models.VertexValue
+    class Meta:
+        model = models.VertexValue
 
     vertex = factory.SubFactory(VertexFactory)
     riversegment = factory.SubFactory(RiverSegmentFactory)

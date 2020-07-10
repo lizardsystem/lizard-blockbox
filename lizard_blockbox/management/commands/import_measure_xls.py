@@ -1,6 +1,5 @@
 import logging
 import os
-import re
 import sys
 
 from django.core.management.base import BaseCommand
@@ -33,7 +32,7 @@ class Command(BaseCommand):
         args = options.get('directory_or_excelfile', [])
         if len(args) == 0:
             if not flush:
-                print "Pass a directory as argument."
+                print("Pass a directory as argument.")
                 sys.exit(1)
             sys.exit(0)
 

@@ -1,7 +1,8 @@
 import operator
 import csv
 import codecs
-import cStringIO
+from functools import reduce
+from io import StringIO
 
 from lizard_blockbox import models
 
@@ -16,7 +17,7 @@ def namedreach2riversegments(river):
             location__range=(element.km_from, element.km_to))
         for element in subset_reaches)
 
-        # Join the querysets in segments_join into one.
+    # Join the querysets in segments_join into one.
     riversegments = reduce(operator.or_, segments_join)
     return riversegments.distinct().order_by('location')
 
@@ -66,7 +67,7 @@ class UnicodeReader:
 
     def next(self):
         row = self.reader.next()
-        return [unicode(s, "utf-8") for s in row]
+        return [str(s, "utf-8") for s in row]
 
     def __iter__(self):
         return self
@@ -80,13 +81,13 @@ class UnicodeWriter:
 
     def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
         # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
+        self.queue = StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()
 
     def writerow(self, row):
-        unicode_row = (unicode(s) for s in row)
+        unicode_row = (str(s) for s in row)
         self.writer.writerow([s.encode("utf-8") for s in unicode_row])
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
