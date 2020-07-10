@@ -13,7 +13,7 @@ SETTINGS_DIR = os.path.dirname(os.path.realpath(__file__))
 # BUILDOUT_DIR is for access to the "surrounding" buildout, for instance for
 # BUILDOUT_DIR/var/static files to give django-staticfiles a proper place
 # to place all collected static files.
-BUILDOUT_DIR = os.path.abspath(os.path.join(SETTINGS_DIR, '..'))
+BUILDOUT_DIR = os.path.abspath(os.path.join(SETTINGS_DIR, ".."))
 LOGGING = setup_logging(BUILDOUT_DIR)
 
 # ENGINE: 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
@@ -28,56 +28,56 @@ DATABASES = {
     # solution. Jenkins can only run the tests of the current application when
     # the specified database exists. When the tests cannot run, Jenkins sees
     # that as an error.
-    'default': {
-        'NAME': os.path.join(BUILDOUT_DIR, 'var', 'sqlite', 'test.db'),
-        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',  # empty string for localhost.
-        'PORT': '',  # empty string for default.
-        }
+    "default": {
+        "NAME": os.path.join(BUILDOUT_DIR, "var", "sqlite", "test.db"),
+        "ENGINE": "django.contrib.gis.db.backends.spatialite",
+        "USER": "",
+        "PASSWORD": "",
+        "HOST": "",  # empty string for localhost.
+        "PORT": "",  # empty string for default.
     }
+}
 SITE_ID = 1
 INSTALLED_APPS = [
-    'lizard_ui',
-    'lizard_map',
-    'lizard_blockbox',
-    'lizard_security',
-    'staticfiles',
-    'compressor',
-    'south',
-    'django_nose',
-    'django_extensions',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.gis',
-    'django.contrib.sites',
-    ]
-ROOT_URLCONF = 'lizard_blockbox.urls'
+    "lizard_ui",
+    "lizard_map",
+    "lizard_blockbox",
+    "lizard_security",
+    "staticfiles",
+    "compressor",
+    "south",
+    "django_nose",
+    "django_extensions",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.gis",
+    "django.contrib.sites",
+]
+ROOT_URLCONF = "lizard_blockbox.urls"
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     # Uncomment this one if you use lizard-map.
-    'lizard_map.context_processors.processor.processor',
+    "lizard_map.context_processors.processor.processor",
     # Default django 1.3 processors.
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.static",
-    "django.contrib.messages.context_processors.messages"
-    )
+    "django.contrib.messages.context_processors.messages",
+)
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 SOUTH_TESTS_MIGRATE = False
 
 # Used for django-staticfiles (and for media files
-STATIC_URL = '/static_media/'
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
-MEDIA_URL = '/media/'
-STATIC_ROOT = os.path.join(BUILDOUT_DIR, 'var', 'static')
-MEDIA_ROOT = os.path.join(BUILDOUT_DIR, 'var', 'media')
+STATIC_URL = "/static_media/"
+ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"
+MEDIA_URL = "/media/"
+STATIC_ROOT = os.path.join(BUILDOUT_DIR, "var", "static")
+MEDIA_ROOT = os.path.join(BUILDOUT_DIR, "var", "media")
 STATICFILES_FINDERS = STATICFILES_FINDERS
 
 

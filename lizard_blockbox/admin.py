@@ -4,8 +4,8 @@ from lizard_blockbox import models
 
 
 class WaterLevelDifferenceAdmin(admin.ModelAdmin):
-    list_display = ('riversegment', 'measure', 'level_difference')
-    list_filter = ('measure',)
+    list_display = ("riversegment", "measure", "level_difference")
+    list_filter = ("measure",)
 
 
 class VertexValueInline(admin.TabularInline):
@@ -13,12 +13,12 @@ class VertexValueInline(admin.TabularInline):
 
 
 class VertexAdmin(admin.ModelAdmin):
-    list_display = ('id', 'header', 'name', 'named_reaches_string')
+    list_display = ("id", "header", "name", "named_reaches_string")
 
 
 class VertexValueAdmin(admin.ModelAdmin):
-    list_display = ('id', 'vertex', 'riversegment', 'value')
-    list_filter = ('vertex',)
+    list_display = ("id", "vertex", "riversegment", "value")
+    list_filter = ("vertex",)
 
 
 admin.site.register(models.Reach)

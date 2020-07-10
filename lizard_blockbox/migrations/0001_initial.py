@@ -11,127 +11,380 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='CityLocation',
+            name="CityLocation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('city', models.CharField(max_length=100)),
-                ('km', models.IntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("city", models.CharField(max_length=100)),
+                ("km", models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='Measure',
+            name="Measure",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=200, null=True, verbose_name=b'Titel')),
-                ('short_name', models.CharField(blank=True, max_length=100, null=True, verbose_name=b'Code')),
-                ('measure_type', models.CharField(blank=True, max_length=100, null=True, verbose_name=b'Type')),
-                ('km_from', models.IntegerField(blank=True, null=True, verbose_name=b'Km van')),
-                ('km_to', models.IntegerField(blank=True, null=True, verbose_name=b'Km tot')),
-                ('riverpart', models.CharField(blank=True, max_length=100, null=True, verbose_name=b'Rivierdeel')),
-                ('mhw_profit_cm', lizard_blockbox.fields.EmptyStringFloatField(blank=True, null=True, verbose_name=b'MHW winst cm')),
-                ('mhw_profit_m2', lizard_blockbox.fields.EmptyStringFloatField(blank=True, null=True, verbose_name=b'MHW winst m2')),
-                ('minimal_investment_costs', lizard_blockbox.fields.EmptyStringUnknownFloatField(blank=True, null=True, verbose_name=b'Minimale investeringskosten (ME)')),
-                ('investment_costs', lizard_blockbox.fields.EmptyStringUnknownFloatField(blank=True, null=True, verbose_name=b'Investeringskosten (ME)')),
-                ('maximal_investment_costs', lizard_blockbox.fields.EmptyStringUnknownFloatField(blank=True, null=True, verbose_name=b'Maximale investeringskosten (ME)')),
-                ('efficiency', models.CharField(blank=True, max_length=255, null=True, verbose_name=b'Kosteneffectiviteit (m2 MHW verruiming/M euro)')),
-                ('natuur', models.CharField(blank=True, max_length=255, null=True, verbose_name=b'Natuur (ha)')),
-                ('grondverzet', models.CharField(blank=True, max_length=255, null=True, verbose_name=b'Grondverzet m3')),
-                ('exclude', models.ManyToManyField(blank=True, related_name='_measure_exclude_+', to='lizard_blockbox.Measure')),
-                ('include', models.ManyToManyField(blank=True, related_name='_measure_include_+', to='lizard_blockbox.Measure')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True, max_length=200, null=True, verbose_name=b"Titel"
+                    ),
+                ),
+                (
+                    "short_name",
+                    models.CharField(
+                        blank=True, max_length=100, null=True, verbose_name=b"Code"
+                    ),
+                ),
+                (
+                    "measure_type",
+                    models.CharField(
+                        blank=True, max_length=100, null=True, verbose_name=b"Type"
+                    ),
+                ),
+                (
+                    "km_from",
+                    models.IntegerField(blank=True, null=True, verbose_name=b"Km van"),
+                ),
+                (
+                    "km_to",
+                    models.IntegerField(blank=True, null=True, verbose_name=b"Km tot"),
+                ),
+                (
+                    "riverpart",
+                    models.CharField(
+                        blank=True,
+                        max_length=100,
+                        null=True,
+                        verbose_name=b"Rivierdeel",
+                    ),
+                ),
+                (
+                    "mhw_profit_cm",
+                    lizard_blockbox.fields.EmptyStringFloatField(
+                        blank=True, null=True, verbose_name=b"MHW winst cm"
+                    ),
+                ),
+                (
+                    "mhw_profit_m2",
+                    lizard_blockbox.fields.EmptyStringFloatField(
+                        blank=True, null=True, verbose_name=b"MHW winst m2"
+                    ),
+                ),
+                (
+                    "minimal_investment_costs",
+                    lizard_blockbox.fields.EmptyStringUnknownFloatField(
+                        blank=True,
+                        null=True,
+                        verbose_name=b"Minimale investeringskosten (ME)",
+                    ),
+                ),
+                (
+                    "investment_costs",
+                    lizard_blockbox.fields.EmptyStringUnknownFloatField(
+                        blank=True, null=True, verbose_name=b"Investeringskosten (ME)"
+                    ),
+                ),
+                (
+                    "maximal_investment_costs",
+                    lizard_blockbox.fields.EmptyStringUnknownFloatField(
+                        blank=True,
+                        null=True,
+                        verbose_name=b"Maximale investeringskosten (ME)",
+                    ),
+                ),
+                (
+                    "efficiency",
+                    models.CharField(
+                        blank=True,
+                        max_length=255,
+                        null=True,
+                        verbose_name=b"Kosteneffectiviteit (m2 MHW verruiming/M euro)",
+                    ),
+                ),
+                (
+                    "natuur",
+                    models.CharField(
+                        blank=True,
+                        max_length=255,
+                        null=True,
+                        verbose_name=b"Natuur (ha)",
+                    ),
+                ),
+                (
+                    "grondverzet",
+                    models.CharField(
+                        blank=True,
+                        max_length=255,
+                        null=True,
+                        verbose_name=b"Grondverzet m3",
+                    ),
+                ),
+                (
+                    "exclude",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="_measure_exclude_+",
+                        to="lizard_blockbox.Measure",
+                    ),
+                ),
+                (
+                    "include",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="_measure_include_+",
+                        to="lizard_blockbox.Measure",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('km_from',),
-                'permissions': (('can_view_blockbox', 'Can view blockbox'),),
+                "ordering": ("km_from",),
+                "permissions": (("can_view_blockbox", "Can view blockbox"),),
             },
         ),
         migrations.CreateModel(
-            name='NamedReach',
+            name="NamedReach",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Reach',
+            name="Reach",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('slug', models.SlugField(help_text='Slug.')),
-                ('number', models.IntegerField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("slug", models.SlugField(help_text="Slug.")),
+                ("number", models.IntegerField(blank=True, null=True)),
             ],
             options={
-                'ordering': ('number',),
-                'verbose_name': 'reach',
-                'verbose_name_plural': 'reaches',
+                "ordering": ("number",),
+                "verbose_name": "reach",
+                "verbose_name_plural": "reaches",
             },
         ),
         migrations.CreateModel(
-            name='RiverSegment',
+            name="RiverSegment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('location', models.IntegerField()),
-                ('reach', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lizard_blockbox.Reach')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("location", models.IntegerField()),
+                (
+                    "reach",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="lizard_blockbox.Reach",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='SubsetReach',
+            name="SubsetReach",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('km_from', models.IntegerField()),
-                ('km_to', models.IntegerField()),
-                ('named_reach', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lizard_blockbox.NamedReach')),
-                ('reach', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lizard_blockbox.Reach')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("km_from", models.IntegerField()),
+                ("km_to", models.IntegerField()),
+                (
+                    "named_reach",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="lizard_blockbox.NamedReach",
+                    ),
+                ),
+                (
+                    "reach",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="lizard_blockbox.Reach",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Trajectory',
+            name="Trajectory",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField(help_text='The name of the trajectory.')),
-                ('reach', models.ManyToManyField(blank=True, to='lizard_blockbox.Reach')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField(help_text="The name of the trajectory.")),
+                (
+                    "reach",
+                    models.ManyToManyField(blank=True, to="lizard_blockbox.Reach"),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Vertex',
+            name="Vertex",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('header', models.CharField(max_length=100)),
-                ('name', models.CharField(max_length=100)),
-                ('named_reaches', models.ManyToManyField(blank=True, to='lizard_blockbox.NamedReach')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("header", models.CharField(max_length=100)),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "named_reaches",
+                    models.ManyToManyField(blank=True, to="lizard_blockbox.NamedReach"),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='VertexValue',
+            name="VertexValue",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('year', models.CharField(choices=[(b'2015', b'2015 (oud)'), (b'2050', b'2050 (oud)'), (b'2100', b'2100 (oud)'), (b'n025', b'2025 (nieuw)'), (b'n050', b'2050 (nieuw)'), (b'n075', b'2075 (nieuw)'), (b'n100', b'2100 (nieuw)')], default=b'2100', max_length=4)),
-                ('value', models.FloatField()),
-                ('riversegment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lizard_blockbox.RiverSegment')),
-                ('vertex', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lizard_blockbox.Vertex')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "year",
+                    models.CharField(
+                        choices=[
+                            (b"2015", b"2015 (oud)"),
+                            (b"2050", b"2050 (oud)"),
+                            (b"2100", b"2100 (oud)"),
+                            (b"n025", b"2025 (nieuw)"),
+                            (b"n050", b"2050 (nieuw)"),
+                            (b"n075", b"2075 (nieuw)"),
+                            (b"n100", b"2100 (nieuw)"),
+                        ],
+                        default=b"2100",
+                        max_length=4,
+                    ),
+                ),
+                ("value", models.FloatField()),
+                (
+                    "riversegment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="lizard_blockbox.RiverSegment",
+                    ),
+                ),
+                (
+                    "vertex",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="lizard_blockbox.Vertex",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='WaterLevelDifference',
+            name="WaterLevelDifference",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('protection_level', models.CharField(choices=[(b'250', b'1 / 250'), (b'1250', b'1 / 1250')], default=b'1250', max_length=4)),
-                ('level_difference', models.FloatField()),
-                ('measure', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lizard_blockbox.Measure')),
-                ('riversegment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lizard_blockbox.RiverSegment')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "protection_level",
+                    models.CharField(
+                        choices=[(b"250", b"1 / 250"), (b"1250", b"1 / 1250")],
+                        default=b"1250",
+                        max_length=4,
+                    ),
+                ),
+                ("level_difference", models.FloatField()),
+                (
+                    "measure",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="lizard_blockbox.Measure",
+                    ),
+                ),
+                (
+                    "riversegment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="lizard_blockbox.RiverSegment",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='measure',
-            name='reach',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='lizard_blockbox.Reach', verbose_name='reach'),
+            model_name="measure",
+            name="reach",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="lizard_blockbox.Reach",
+                verbose_name="reach",
+            ),
         ),
         migrations.AddField(
-            model_name='citylocation',
-            name='reach',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lizard_blockbox.Reach'),
+            model_name="citylocation",
+            name="reach",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="lizard_blockbox.Reach"
+            ),
         ),
     ]

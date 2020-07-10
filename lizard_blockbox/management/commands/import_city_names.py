@@ -6,16 +6,18 @@ from lizard_blockbox import import_helpers
 
 
 class Command(BaseCommand):
-    help = ("Imports the city excelfile, "
-            "To flush use the management command: import_measure_xls --flush")
+    help = (
+        "Imports the city excelfile, "
+        "To flush use the management command: import_measure_xls --flush"
+    )
 
     def add_arguments(self, parser):
-        parser.add_argument('excelfile', nargs='+')
+        parser.add_argument("excelfile", nargs="+")
 
     def handle(self, *args, **options):
-        if not options.get('excelfile', None):
+        if not options.get("excelfile", None):
             print("Pass excel files as arguments.")
             sys.exit(1)
 
-        for excelpath in options['excelfile']:
+        for excelpath in options["excelfile"]:
             import_helpers.import_city_names(excelpath, self.stdout)

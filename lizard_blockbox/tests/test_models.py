@@ -20,18 +20,19 @@ class TestNamedReach(TestCase):
         reach = factories.ReachFactory.create()
 
         factories.SubsetReachFactory.create(
-            reach=reach, named_reach=namedreach,
-            km_from=1, km_to=100)
+            reach=reach, named_reach=namedreach, km_from=1, km_to=100
+        )
 
-        segment = factories.RiverSegmentFactory(
-            location=50, reach=reach)
+        segment = factories.RiverSegmentFactory(location=50, reach=reach)
 
         measure = factories.MeasureFactory.create()
 
         factories.WaterLevelDifferenceFactory.create(
-            riversegment=segment, measure=measure, protection_level="1250")
+            riversegment=segment, measure=measure, protection_level="1250"
+        )
         factories.WaterLevelDifferenceFactory.create(
-            riversegment=segment, measure=measure, protection_level="250")
+            riversegment=segment, measure=measure, protection_level="250"
+        )
 
         self.assertEqual(namedreach.protection_levels, ["250", "1250"])
 
@@ -40,16 +41,16 @@ class TestNamedReach(TestCase):
         reach = factories.ReachFactory.create()
 
         factories.SubsetReachFactory.create(
-            reach=reach, named_reach=namedreach,
-            km_from=1, km_to=100)
+            reach=reach, named_reach=namedreach, km_from=1, km_to=100
+        )
 
-        segment = factories.RiverSegmentFactory(
-            location=50, reach=reach)
+        segment = factories.RiverSegmentFactory(location=50, reach=reach)
 
         measure = factories.MeasureFactory.create()
 
         factories.WaterLevelDifferenceFactory.create(
-            riversegment=segment, measure=measure, protection_level="1250")
+            riversegment=segment, measure=measure, protection_level="1250"
+        )
 
         self.assertEqual(namedreach.protection_levels, ["1250"])
 
@@ -58,18 +59,19 @@ class TestNamedReach(TestCase):
         reach = factories.ReachFactory.create()
 
         factories.SubsetReachFactory.create(
-            reach=reach, named_reach=namedreach,
-            km_from=1, km_to=100)
+            reach=reach, named_reach=namedreach, km_from=1, km_to=100
+        )
 
-        segment = factories.RiverSegmentFactory(
-            location=150, reach=reach)
+        segment = factories.RiverSegmentFactory(location=150, reach=reach)
 
         measure = factories.MeasureFactory.create()
 
         factories.WaterLevelDifferenceFactory.create(
-            riversegment=segment, measure=measure, protection_level="1250")
+            riversegment=segment, measure=measure, protection_level="1250"
+        )
         factories.WaterLevelDifferenceFactory.create(
-            riversegment=segment, measure=measure, protection_level="250")
+            riversegment=segment, measure=measure, protection_level="250"
+        )
 
         self.assertEqual(namedreach.protection_levels, ["1250"])
 
@@ -79,9 +81,7 @@ class TestNamedReach(TestCase):
         trajectory1 = factories.TrajectoryFactory.create(name=1)
         trajectory2 = factories.TrajectoryFactory.create(name=2)
 
-        reaches = {
-            c: factories.ReachFactory.create(slug=c)
-            for c in "ABCDEFGH"}
+        reaches = {c: factories.ReachFactory.create(slug=c) for c in "ABCDEFGH"}
         for i, c in enumerate("ABCD"):
             reaches[c].number = i
             reaches[c].save()
@@ -94,18 +94,20 @@ class TestNamedReach(TestCase):
         river = factories.NamedReachFactory.create(name="test")
 
         factories.SubsetReachFactory.create(
-            reach=reaches['C'], named_reach=river, km_from=100, km_to=200)
+            reach=reaches["C"], named_reach=river, km_from=100, km_to=200
+        )
         factories.SubsetReachFactory.create(
-            reach=reaches['F'], named_reach=river, km_from=201, km_to=300)
+            reach=reaches["F"], named_reach=river, km_from=201, km_to=300
+        )
 
         expanded_reaches = river.expanded_reaches()
         self.assertEqual(len(expanded_reaches), 6)
-        self.assertEqual(expanded_reaches[0].slug, 'A')
-        self.assertEqual(expanded_reaches[1].slug, 'B')
-        self.assertEqual(expanded_reaches[2].slug, 'C')
-        self.assertEqual(expanded_reaches[3].slug, 'F')
-        self.assertEqual(expanded_reaches[4].slug, 'G')
-        self.assertEqual(expanded_reaches[5].slug, 'H')
+        self.assertEqual(expanded_reaches[0].slug, "A")
+        self.assertEqual(expanded_reaches[1].slug, "B")
+        self.assertEqual(expanded_reaches[2].slug, "C")
+        self.assertEqual(expanded_reaches[3].slug, "F")
+        self.assertEqual(expanded_reaches[4].slug, "G")
+        self.assertEqual(expanded_reaches[5].slug, "H")
 
 
 class TestVertex(TestCase):
@@ -114,10 +116,13 @@ class TestVertex(TestCase):
         riversegment = factories.RiverSegmentFactory.create()
 
         factories.VertexValueFactory.create(
-            vertex=vertex, riversegment=riversegment, year="2050")
+            vertex=vertex, riversegment=riversegment, year="2050"
+        )
         factories.VertexValueFactory.create(
-            vertex=vertex, riversegment=riversegment, year="2050")
+            vertex=vertex, riversegment=riversegment, year="2050"
+        )
         factories.VertexValueFactory.create(
-            vertex=vertex, riversegment=riversegment, year="2100")
+            vertex=vertex, riversegment=riversegment, year="2100"
+        )
 
         self.assertEqual(vertex.years, ["2050", "2100"])

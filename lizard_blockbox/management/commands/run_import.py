@@ -4,7 +4,7 @@ from lizard_blockbox import import_helpers
 
 
 class Command(BaseCommand):
-    help = ("Run a data import using fab.")
+    help = "Run a data import using fab."
 
     def handle(self, *args, **kwargs):
         """Run subcommands"""

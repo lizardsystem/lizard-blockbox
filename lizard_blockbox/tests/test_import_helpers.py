@@ -29,12 +29,9 @@ class TestImportMeasureXls(TestCase):
 
         row = [1.0, 55.0, None, -1, "reach_slug"]
 
-        import_helpers.import_measure_row(
-            measure, row, rownr=0, stdout=sys.stdout)
+        import_helpers.import_measure_row(measure, row, rownr=0, stdout=sys.stdout)
 
-        self.assertEqual(
-            models.WaterLevelDifference.objects.all().count(),
-            1)
+        self.assertEqual(models.WaterLevelDifference.objects.all().count(), 1)
         diff = models.WaterLevelDifference.objects.all()[0]
         self.assertEqual(diff.protection_level, "1250")
         self.assertEqual(diff.level_difference, -1)
@@ -46,19 +43,16 @@ class TestImportMeasureXls(TestCase):
 
         row = [1.0, 55.0, None, -3, "reach_slug", -4]
 
-        import_helpers.import_measure_row(
-            measure, row, rownr=0, stdout=sys.stdout)
+        import_helpers.import_measure_row(measure, row, rownr=0, stdout=sys.stdout)
 
-        self.assertEqual(
-            models.WaterLevelDifference.objects.all().count(),
-            2)
+        self.assertEqual(models.WaterLevelDifference.objects.all().count(), 2)
 
-        diff_1250 = models.WaterLevelDifference.objects.filter(
-            protection_level="1250")[0]
+        diff_1250 = models.WaterLevelDifference.objects.filter(protection_level="1250")[
+            0
+        ]
         self.assertEqual(diff_1250.level_difference, -3)
 
-        diff_250 = models.WaterLevelDifference.objects.filter(
-            protection_level="250")[0]
+        diff_250 = models.WaterLevelDifference.objects.filter(protection_level="250")[0]
         self.assertEqual(diff_250.level_difference, -4)
 
 
@@ -74,33 +68,33 @@ class TestBuildVertexDict(TestCase):
         row_values = ["Some name"]
         vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
-        self.assertEqual(vertex.header, '')
-        self.assertEqual(vertex.name, 'Some name')
-        self.assertEqual(vertex.year, '2100')
+        self.assertEqual(vertex.header, "")
+        self.assertEqual(vertex.name, "Some name")
+        self.assertEqual(vertex.year, "2100")
 
     def test_header_only_year_works_correctly(self):
         row_values = ["2050: Some name"]
         vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
-        self.assertEqual(vertex.header, '')
-        self.assertEqual(vertex.name, 'Some name')
-        self.assertEqual(vertex.year, '2050')
+        self.assertEqual(vertex.header, "")
+        self.assertEqual(vertex.name, "Some name")
+        self.assertEqual(vertex.year, "2050")
 
     def test_header_only_header_works_correctly(self):
         row_values = ["Whee: Some name"]
         vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
-        self.assertEqual(vertex.header, 'Whee')
-        self.assertEqual(vertex.name, 'Some name')
-        self.assertEqual(vertex.year, '2100')
+        self.assertEqual(vertex.header, "Whee")
+        self.assertEqual(vertex.name, "Some name")
+        self.assertEqual(vertex.year, "2100")
 
     def test_header_year_and_header_works_correctly(self):
         row_values = ["2050: Whee: Some name"]
         vertices = import_helpers.build_vertex_dict(row_values)
         vertex = vertices[2]
-        self.assertEqual(vertex.header, 'Whee')
-        self.assertEqual(vertex.name, 'Some name')
-        self.assertEqual(vertex.year, '2050')
+        self.assertEqual(vertex.header, "Whee")
+        self.assertEqual(vertex.name, "Some name")
+        self.assertEqual(vertex.year, "2050")
 
 
 class TestImportVertexXls(TestCase):
@@ -111,15 +105,13 @@ class TestImportVertexXls(TestCase):
         vertices = {2: vertex}
 
         reach = factories.ReachFactory.create(slug="MA")
-        riversegment = factories.RiverSegmentFactory(
-            location=1, reach=reach)
+        riversegment = factories.RiverSegmentFactory(location=1, reach=reach)
 
         import_helpers.import_vertex_row(vertices, [1.0, "MA", 5])
 
         vertex_value = models.VertexValue.objects.get(
-            riversegment=riversegment,
-            vertex=vertex,
-            year="2050")
+            riversegment=riversegment, vertex=vertex, year="2050"
+        )
 
         self.assertEqual(vertex_value.value, 5)
 
@@ -132,15 +124,16 @@ class TestImportVertexXls(TestCase):
         vertices = {2: vertex1, 3: vertex1, 4: vertex2}
 
         reach = factories.ReachFactory.create(slug="MA")
-        riversegment = factories.RiverSegmentFactory(
-            location=1, reach=reach)
+        riversegment = factories.RiverSegmentFactory(location=1, reach=reach)
 
-        import_helpers.import_vertex_row(vertices, [1.0, 'MA', 1.0, '', 2.0])
+        import_helpers.import_vertex_row(vertices, [1.0, "MA", 1.0, "", 2.0])
 
         value1 = models.VertexValue.objects.get(
-            riversegment=riversegment, vertex=vertex1, year="2050")
+            riversegment=riversegment, vertex=vertex1, year="2050"
+        )
         value2 = models.VertexValue.objects.get(
-            riversegment=riversegment, vertex=vertex2, year="2050")
+            riversegment=riversegment, vertex=vertex2, year="2050"
+        )
         self.assertEqual(value1.value, 1.0)
         self.assertEqual(value2.value, 2.0)
 
@@ -160,14 +153,11 @@ class TestMapOverSheets(TestCase):
         def called_function(sheet, stdout):
             self.assertTrue(sheet is mocked_sheet)
             self.assertTrue(stdout is fake_stdout)
-            raise import_helpers.ExcelException(
-                error="some error")
+            raise import_helpers.ExcelException(error="some error")
 
-        with mock.patch(
-            'xlrd.open_workbook', return_value=workbook) as patched_open:
+        with mock.patch("xlrd.open_workbook", return_value=workbook) as patched_open:
             try:
-                import_helpers.map_over_sheets(
-                    path, called_function, fake_stdout)
+                import_helpers.map_over_sheets(path, called_function, fake_stdout)
 
                 # We shouldn't get here, so this fails if we do
                 self.assertRaises(Exception, lambda: None)

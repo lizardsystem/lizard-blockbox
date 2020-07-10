@@ -9,88 +9,131 @@ import lizard_blockbox.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lizard_blockbox', '0002_fixtures'),
+        ("lizard_blockbox", "0002_fixtures"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='measure',
-            name='efficiency',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='Kosteneffectiviteit (m2 MHW verruiming/M euro)'),
+            model_name="measure",
+            name="efficiency",
+            field=models.CharField(
+                blank=True,
+                max_length=255,
+                null=True,
+                verbose_name="Kosteneffectiviteit (m2 MHW verruiming/M euro)",
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='grondverzet',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='Grondverzet m3'),
+            model_name="measure",
+            name="grondverzet",
+            field=models.CharField(
+                blank=True, max_length=255, null=True, verbose_name="Grondverzet m3"
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='investment_costs',
-            field=lizard_blockbox.fields.EmptyStringUnknownFloatField(blank=True, null=True, verbose_name='Investeringskosten (ME)'),
+            model_name="measure",
+            name="investment_costs",
+            field=lizard_blockbox.fields.EmptyStringUnknownFloatField(
+                blank=True, null=True, verbose_name="Investeringskosten (ME)"
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='km_from',
-            field=models.IntegerField(blank=True, null=True, verbose_name='Km van'),
+            model_name="measure",
+            name="km_from",
+            field=models.IntegerField(blank=True, null=True, verbose_name="Km van"),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='km_to',
-            field=models.IntegerField(blank=True, null=True, verbose_name='Km tot'),
+            model_name="measure",
+            name="km_to",
+            field=models.IntegerField(blank=True, null=True, verbose_name="Km tot"),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='maximal_investment_costs',
-            field=lizard_blockbox.fields.EmptyStringUnknownFloatField(blank=True, null=True, verbose_name='Maximale investeringskosten (ME)'),
+            model_name="measure",
+            name="maximal_investment_costs",
+            field=lizard_blockbox.fields.EmptyStringUnknownFloatField(
+                blank=True, null=True, verbose_name="Maximale investeringskosten (ME)"
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='measure_type',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Type'),
+            model_name="measure",
+            name="measure_type",
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name="Type"
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='mhw_profit_cm',
-            field=lizard_blockbox.fields.EmptyStringFloatField(blank=True, null=True, verbose_name='MHW winst cm'),
+            model_name="measure",
+            name="mhw_profit_cm",
+            field=lizard_blockbox.fields.EmptyStringFloatField(
+                blank=True, null=True, verbose_name="MHW winst cm"
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='mhw_profit_m2',
-            field=lizard_blockbox.fields.EmptyStringFloatField(blank=True, null=True, verbose_name='MHW winst m2'),
+            model_name="measure",
+            name="mhw_profit_m2",
+            field=lizard_blockbox.fields.EmptyStringFloatField(
+                blank=True, null=True, verbose_name="MHW winst m2"
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='minimal_investment_costs',
-            field=lizard_blockbox.fields.EmptyStringUnknownFloatField(blank=True, null=True, verbose_name='Minimale investeringskosten (ME)'),
+            model_name="measure",
+            name="minimal_investment_costs",
+            field=lizard_blockbox.fields.EmptyStringUnknownFloatField(
+                blank=True, null=True, verbose_name="Minimale investeringskosten (ME)"
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='name',
-            field=models.CharField(blank=True, max_length=200, null=True, verbose_name='Titel'),
+            model_name="measure",
+            name="name",
+            field=models.CharField(
+                blank=True, max_length=200, null=True, verbose_name="Titel"
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='natuur',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='Natuur (ha)'),
+            model_name="measure",
+            name="natuur",
+            field=models.CharField(
+                blank=True, max_length=255, null=True, verbose_name="Natuur (ha)"
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='riverpart',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Rivierdeel'),
+            model_name="measure",
+            name="riverpart",
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name="Rivierdeel"
+            ),
         ),
         migrations.AlterField(
-            model_name='measure',
-            name='short_name',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Code'),
+            model_name="measure",
+            name="short_name",
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name="Code"
+            ),
         ),
         migrations.AlterField(
-            model_name='vertexvalue',
-            name='year',
-            field=models.CharField(choices=[('2015', '2015 (oud)'), ('2050', '2050 (oud)'), ('2100', '2100 (oud)'), ('n025', '2025 (nieuw)'), ('n050', '2050 (nieuw)'), ('n075', '2075 (nieuw)'), ('n100', '2100 (nieuw)')], default='2100', max_length=4),
+            model_name="vertexvalue",
+            name="year",
+            field=models.CharField(
+                choices=[
+                    ("2015", "2015 (oud)"),
+                    ("2050", "2050 (oud)"),
+                    ("2100", "2100 (oud)"),
+                    ("n025", "2025 (nieuw)"),
+                    ("n050", "2050 (nieuw)"),
+                    ("n075", "2075 (nieuw)"),
+                    ("n100", "2100 (nieuw)"),
+                ],
+                default="2100",
+                max_length=4,
+            ),
         ),
         migrations.AlterField(
-            model_name='waterleveldifference',
-            name='protection_level',
-            field=models.CharField(choices=[('250', '1 / 250'), ('1250', '1 / 1250')], default='1250', max_length=4),
+            model_name="waterleveldifference",
+            name="protection_level",
+            field=models.CharField(
+                choices=[("250", "1 / 250"), ("1250", "1 / 1250")],
+                default="1250",
+                max_length=4,
+            ),
         ),
     ]

@@ -13,9 +13,8 @@ class Reach(models.Model):
     Dutch: *riviertak*.
 
     """
-    slug = models.SlugField(
-        blank=False,
-        help_text=u"Slug.")
+
+    slug = models.SlugField(blank=False, help_text=u"Slug.")
 
     # The number is needed to reconstruct the order in which the reaches
     # occur in the hoofdtrajecten.xls file
@@ -25,16 +24,15 @@ class Reach(models.Model):
         return self.slug
 
     class Meta:
-        ordering = ('number',)
-        verbose_name = _('reach')
-        verbose_name_plural = _('reaches')
+        ordering = ("number",)
+        verbose_name = _("reach")
+        verbose_name_plural = _("reaches")
 
 
 class Trajectory(models.Model):
     """A trajectory reach name."""
 
-    name = models.TextField(blank=False,
-                            help_text=u"The name of the trajectory.")
+    name = models.TextField(blank=False, help_text=u"The name of the trajectory.")
     reach = models.ManyToManyField(Reach, blank=True)
 
     def __str__(self):
@@ -51,7 +49,7 @@ class RiverSegment(gis_models.Model):
     reach = models.ForeignKey(Reach, on_delete=models.CASCADE)
 
     def __str__(self):
-        return '%i (%s)' % (self.location, self.reach)
+        return "%i (%s)" % (self.location, self.reach)
 
 
 class NamedReach(models.Model):
@@ -59,6 +57,7 @@ class NamedReach(models.Model):
 
     Dutch: *riviertak*.
     """
+
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -76,11 +75,12 @@ class NamedReach(models.Model):
 
         # I can't do this in one query, sorry.
         for subsetreach in self.subsetreach_set.all():
-            if (WaterLevelDifference.objects.filter(
+            if WaterLevelDifference.objects.filter(
                 protection_level="250",
                 riversegment__reach__subsetreach=subsetreach,
                 riversegment__location__lte=subsetreach.km_to,
-                riversegment__location__gte=subsetreach.km_from).exists()):
+                riversegment__location__gte=subsetreach.km_from,
+            ).exists():
                 return ["250", "1250"]
 
         return ["1250"]
@@ -93,8 +93,8 @@ class NamedReach(models.Model):
         do the same for the end reach."""
         reaches = [
             subsetreach.reach
-            for subsetreach in
-            self.subsetreach_set.all().order_by('km_from')]
+            for subsetreach in self.subsetreach_set.all().order_by("km_from")
+        ]
 
         if not reaches:
             return []
@@ -110,7 +110,7 @@ class NamedReach(models.Model):
         trajectory = reaches[-1].trajectory_set.get()
         trajectory_reaches = list(trajectory.reach.all())  # Ordered by number
         location = trajectory_reaches.index(reaches[-1])
-        reaches = reaches + trajectory_reaches[location + 1:]
+        reaches = reaches + trajectory_reaches[location + 1 :]
 
         return reaches
 
@@ -127,9 +127,9 @@ class SubsetReach(models.Model):
     km_to = models.IntegerField()
 
     def __str__(self):
-        return 'Subset reach {reach} of {named}'.format(
-            reach=self.reach.slug,
-            named=self.named_reach.name)
+        return "Subset reach {reach} of {named}".format(
+            reach=self.reach.slug, named=self.named_reach.name
+        )
 
 
 class CityLocation(models.Model):
@@ -140,7 +140,7 @@ class CityLocation(models.Model):
     km = models.IntegerField()
 
     def __str__(self):
-        return 'city: {city}, km: {km}'.format(**self.__dict__)
+        return "city: {city}, km: {km}".format(**self.__dict__)
 
 
 class Measure(models.Model):
@@ -151,65 +151,51 @@ class Measure(models.Model):
 
     """
 
-    name = models.CharField(
-        'Titel',
-        max_length=200,
-        blank=True,
-        null=True)
-    short_name = models.CharField(
-        'Code',
-        max_length=100,
-        blank=True,
-        null=True)
-    measure_type = models.CharField(
-        'Type',
-        max_length=100,
-        blank=True,
-        null=True)
-    km_from = models.IntegerField(
-        'Km van',
-        null=True,
-        blank=True)
-    km_to = models.IntegerField(
-        'Km tot',
-        null=True,
-        blank=True)
+    name = models.CharField("Titel", max_length=200, blank=True, null=True)
+    short_name = models.CharField("Code", max_length=100, blank=True, null=True)
+    measure_type = models.CharField("Type", max_length=100, blank=True, null=True)
+    km_from = models.IntegerField("Km van", null=True, blank=True)
+    km_to = models.IntegerField("Km tot", null=True, blank=True)
 
     reach = models.ForeignKey(
-        Reach, blank=True, null=True, verbose_name=_('reach'),
-        on_delete=models.CASCADE)
-    riverpart = models.CharField(
-        'Rivierdeel', max_length=100, blank=True, null=True)
-    mhw_profit_cm = EmptyStringFloatField(
-        'MHW winst cm', blank=True, null=True)
-    mhw_profit_m2 = EmptyStringFloatField(
-        'MHW winst m2', blank=True, null=True)
+        Reach, blank=True, null=True, verbose_name=_("reach"), on_delete=models.CASCADE
+    )
+    riverpart = models.CharField("Rivierdeel", max_length=100, blank=True, null=True)
+    mhw_profit_cm = EmptyStringFloatField("MHW winst cm", blank=True, null=True)
+    mhw_profit_m2 = EmptyStringFloatField("MHW winst m2", blank=True, null=True)
     minimal_investment_costs = EmptyStringUnknownFloatField(
-        'Minimale investeringskosten (ME)', blank=True, null=True)
+        "Minimale investeringskosten (ME)", blank=True, null=True
+    )
     investment_costs = EmptyStringUnknownFloatField(
-        'Investeringskosten (ME)', blank=True, null=True)
+        "Investeringskosten (ME)", blank=True, null=True
+    )
     maximal_investment_costs = EmptyStringUnknownFloatField(
-        'Maximale investeringskosten (ME)', blank=True, null=True)
+        "Maximale investeringskosten (ME)", blank=True, null=True
+    )
 
     efficiency = models.CharField(
-        'Kosteneffectiviteit (m2 MHW verruiming/M euro)', max_length=255, blank=True, null=True)
-    natuur = models.CharField(
-        'Natuur (ha)', max_length=255, blank=True, null=True)
+        "Kosteneffectiviteit (m2 MHW verruiming/M euro)",
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    natuur = models.CharField("Natuur (ha)", max_length=255, blank=True, null=True)
     grondverzet = models.CharField(
-        'Grondverzet m3', max_length=255, blank=True, null=True)
+        "Grondverzet m3", max_length=255, blank=True, null=True
+    )
 
-    exclude = models.ManyToManyField('self', blank=True)
+    exclude = models.ManyToManyField("self", blank=True)
 
-    include = models.ManyToManyField('self', blank=True)
+    include = models.ManyToManyField("self", blank=True)
 
     def __str__(self):
         name = self.name or self.short_name
-        return '%s' % name
+        return "%s" % name
 
     def pretty(self):
         """Return list with verbose name + value for every field for the view.
         """
-        ignore = ['id', 'name', 'exclude']
+        ignore = ["id", "name", "exclude"]
         result = []
         for field in self._meta.fields:
             if field.name in ignore:
@@ -217,19 +203,20 @@ class Measure(models.Model):
 
             value = getattr(self, field.name)
             if isinstance(value, float) and (
-                    ('costs' in field.name) or ('profit' in field.name)):
+                ("costs" in field.name) or ("profit" in field.name)
+            ):
                 value = round(value, 1)
 
-            result.append({'label': field.verbose_name,
-                           'name': field.name,
-                           'value': value})
+            result.append(
+                {"label": field.verbose_name, "name": field.name, "value": value}
+            )
         return result
 
     class Meta:
         permissions = (("can_view_blockbox", "Can view blockbox"),)
         # ^^^ Note: just a generic blockbox permission. Just needs to be on a
         # model, not specifically *this* model.
-        ordering = ('km_from',)
+        ordering = ("km_from",)
 
 
 class WaterLevelDifference(models.Model):
@@ -245,11 +232,8 @@ class WaterLevelDifference(models.Model):
     measure = models.ForeignKey(Measure, on_delete=models.CASCADE)
 
     protection_level = models.CharField(
-        max_length=4,
-        choices=(
-            ("250", "1 / 250"),
-            ("1250", "1 / 1250")),
-        default="1250")
+        max_length=4, choices=(("250", "1 / 250"), ("1250", "1 / 1250")), default="1250"
+    )
 
     level_difference = models.FloatField()
 
@@ -266,15 +250,18 @@ class Vertex(models.Model):
 
     def named_reaches_string(self):
         # For the admin.
-        return ', '.join(
-            self.named_reaches.all().values_list('name', flat=True))
+        return ", ".join(self.named_reaches.all().values_list("name", flat=True))
 
     @property
     def years(self):
         """Return sorted list of years that are present in this
         vertex' values."""
-        return list(sorted(value['year'] for value in
-                self.vertexvalue_set.values('year').distinct()))
+        return list(
+            sorted(
+                value["year"]
+                for value in self.vertexvalue_set.values("year").distinct()
+            )
+        )
 
     def __str__(self):
         return self.name
@@ -282,24 +269,22 @@ class Vertex(models.Model):
 
 class VertexValue(models.Model):
     """Vertex Value for a specific location."""
+
     CHOICES = [
         # Old
-        ('2015', '2015 (oud)'),  # Unused, but needed for the UI
-        ('2050', '2050 (oud)'),
-        ('2100', '2100 (oud)'),
+        ("2015", "2015 (oud)"),  # Unused, but needed for the UI
+        ("2050", "2050 (oud)"),
+        ("2100", "2100 (oud)"),
         # New (2016)
-        ('n025', '2025 (nieuw)'),
-        ('n050', '2050 (nieuw)'),
-        ('n075', '2075 (nieuw)'),
-        ('n100', '2100 (nieuw)'),
+        ("n025", "2025 (nieuw)"),
+        ("n050", "2050 (nieuw)"),
+        ("n075", "2075 (nieuw)"),
+        ("n100", "2100 (nieuw)"),
     ]
 
     YEARS = [choice[0] for choice in CHOICES]
 
     vertex = models.ForeignKey(Vertex, on_delete=models.CASCADE)
     riversegment = models.ForeignKey(RiverSegment, on_delete=models.CASCADE)
-    year = models.CharField(
-        max_length=4,
-        choices=CHOICES,
-        default='2100')
+    year = models.CharField(max_length=4, choices=CHOICES, default="2100")
     value = models.FloatField()

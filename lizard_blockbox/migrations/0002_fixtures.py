@@ -7,15 +7,14 @@ import os
 from django.db import migrations
 from django.core import serializers
 
-fixture_path = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '../fixtures'))
+fixture_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../fixtures"))
 
 
 def load_map_fixtures(apps, schema_editor):
-    filename = os.path.join(fixture_path, 'lizard_map.json')
+    filename = os.path.join(fixture_path, "lizard_map.json")
 
-    with open(filename, 'rb') as fixture:
-        for obj in serializers.deserialize('json', fixture):
+    with open(filename, "rb") as fixture:
+        for obj in serializers.deserialize("json", fixture):
             obj.save()
 
 
@@ -30,8 +29,8 @@ def remove_maps(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lizard_blockbox', '0001_initial'),
-        ('lizard_map', '0001_initial'),
+        ("lizard_blockbox", "0001_initial"),
+        ("lizard_map", "0001_initial"),
     ]
 
     operations = [

@@ -5,11 +5,11 @@ from django.conf import settings
 
 from lizard_blockbox import import_helpers
 
-DATA_DIR = os.path.join(settings.BUILDOUT_DIR, 'var/blockbox')
+DATA_DIR = os.path.join(settings.BUILDOUT_DIR, "var/blockbox")
 
 
 class Command(BaseCommand):
-    help = ("Run a data import using fab.")
+    help = "Run a data import using fab."
 
     def handle(self, *args, **kwargs):
         """Import the data for lizard_blockbox from the source."""
@@ -17,54 +17,56 @@ class Command(BaseCommand):
         import_helpers.flush_database(self.stdout)
 
         import_helpers.parse_trajectory_classification_excelfile(
-            os.path.join(
-                DATA_DIR,
-                'excelsheets/trajectindeling/Trajectindeling.xls'),
-            self.stdout)
+            os.path.join(DATA_DIR, "excelsheets/trajectindeling/Trajectindeling.xls"),
+            self.stdout,
+        )
 
         import_helpers.import_city_names(
-            os.path.join(
-                DATA_DIR,
-                'excelsheets/gidslocaties/Gidslocaties.xls'),
-            self.stdout)
+            os.path.join(DATA_DIR, "excelsheets/gidslocaties/Gidslocaties.xls"),
+            self.stdout,
+        )
 
         import_helpers.import_vertex_xls(
             os.path.join(
                 DATA_DIR,
-              'excelsheets/waterstandsopgave/'
-              'Verzamelsheet Wateropgave DPR_17_Blokkendoos_geenFiguren.xls'),
-            self.stdout)
+                "excelsheets/waterstandsopgave/"
+                "Verzamelsheet Wateropgave DPR_17_Blokkendoos_geenFiguren.xls",
+            ),
+            self.stdout,
+        )
         import_helpers.link_vertices_with_namedreaches()
 
-        maatregeldir = os.path.join(DATA_DIR, 'excelsheets/maatregelen')
+        maatregeldir = os.path.join(DATA_DIR, "excelsheets/maatregelen")
         for maatregelxls in os.listdir(maatregeldir):
             if maatregelxls.lower().endswith(".xls"):
                 import_helpers.import_measure_xls(
-                    os.path.join(maatregeldir, maatregelxls),
-                    self.stdout)
+                    os.path.join(maatregeldir, maatregelxls), self.stdout
+                )
 
         import_helpers.import_measure_table_xls(
             os.path.join(
-                DATA_DIR,
-                'excelsheets/eigenschappen/tabel_met_eigenschappen.xls'),
-            self.stdout)
+                DATA_DIR, "excelsheets/eigenschappen/tabel_met_eigenschappen.xls"
+            ),
+            self.stdout,
+        )
 
         import_helpers.import_excluding_measures_xls(
             os.path.join(
                 DATA_DIR,
-                'excelsheets/elkaar uitsluitende maatregelen',
-                'Maatregelen die elkaar uitsluiten.xls'),
-            self.stdout)
+                "excelsheets/elkaar uitsluitende maatregelen",
+                "Maatregelen die elkaar uitsluiten.xls",
+            ),
+            self.stdout,
+        )
 
         import_helpers.import_including_measures_xls(
             os.path.join(
-                DATA_DIR,
-                'excelsheets/elkaar uitsluitende maatregelen',
-                'pakketten.xls'),
-            self.stdout)
+                DATA_DIR, "excelsheets/elkaar uitsluitende maatregelen", "pakketten.xls"
+            ),
+            self.stdout,
+        )
 
         import_helpers.import_trajectory_names_xls(
-            os.path.join(
-                DATA_DIR,
-                'excelsheets/trajectindeling/hoofdtrajecten.xls'),
-            self.stdout)
+            os.path.join(DATA_DIR, "excelsheets/trajectindeling/hoofdtrajecten.xls"),
+            self.stdout,
+        )

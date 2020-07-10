@@ -13,13 +13,14 @@ def namedreach2riversegments(river):
 
     segments_join = (
         models.RiverSegment.objects.filter(
-            reach=element.reach,
-            location__range=(element.km_from, element.km_to))
-        for element in subset_reaches)
+            reach=element.reach, location__range=(element.km_from, element.km_to)
+        )
+        for element in subset_reaches
+    )
 
     # Join the querysets in segments_join into one.
     riversegments = reduce(operator.or_, segments_join)
-    return riversegments.distinct().order_by('location')
+    return riversegments.distinct().order_by("location")
 
 
 def namedreach2measures(river):
@@ -28,14 +29,15 @@ def namedreach2measures(river):
 
     segments_join = (
         models.Measure.objects.filter(
-            reach=element.reach,
-            km_from__range=(element.km_from, element.km_to))
-        for element in subset_reaches)
+            reach=element.reach, km_from__range=(element.km_from, element.km_to)
+        )
+        for element in subset_reaches
+    )
 
     # Join the querysets in segments_join into one.
     measures = reduce(operator.or_, segments_join)
-    return measures.distinct().order_by('km_from').values_list('short_name',
-                                                               flat=True)
+    return measures.distinct().order_by("km_from").values_list("short_name", flat=True)
+
 
 # Taken from http://docs.python.org/2/library/csv.html
 # Fixes writes/reads for unicode.
@@ -45,6 +47,7 @@ class UTF8Recoder:
     """
     Iterator that reads an encoded stream and reencodes the input to UTF-8
     """
+
     def __init__(self, f, encoding):
         self.reader = codecs.getreader(encoding)(f)
 

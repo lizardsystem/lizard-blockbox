@@ -10,26 +10,25 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = ("Imports measure excelfiles, "
-            "use --flush to flush the previous imports.")
+    help = "Imports measure excelfiles, " "use --flush to flush the previous imports."
 
     def add_arguments(self, parser):
-        parser.add_argument('directory_or_excelfile', nargs='+')
+        parser.add_argument("directory_or_excelfile", nargs="+")
 
         parser.add_argument(
-            '--flush',
-            action='store_true',
-            dest='flush',
+            "--flush",
+            action="store_true",
+            dest="flush",
             default=False,
-            help='Flush all blockbox models for a clean import',
+            help="Flush all blockbox models for a clean import",
         )
 
     def handle(self, *args, **options):
-        flush = options['flush']
+        flush = options["flush"]
         if flush:
             import_helpers.flush_database(self.stdout)
 
-        args = options.get('directory_or_excelfile', [])
+        args = options.get("directory_or_excelfile", [])
         if len(args) == 0:
             if not flush:
                 print("Pass a directory as argument.")
@@ -49,4 +48,4 @@ def list_xls(d):
     """ Return a list of all xls files in a directory """
     if not os.path.isdir(d):
         return []
-    return [f for f in os.listdir(d) if os.path.splitext(f)[-1] in ('.xls', '.xlsx')]
+    return [f for f in os.listdir(d) if os.path.splitext(f)[-1] in (".xls", ".xlsx")]
