@@ -48,7 +48,7 @@ class RiverSegment(gis_models.Model):
     """
 
     location = models.IntegerField()
-    reach = models.ForeignKey(Reach)
+    reach = models.ForeignKey(Reach, on_delete=models.CASCADE)
     objects = gis_models.GeoManager()
 
     def __str__(self):
@@ -122,8 +122,8 @@ class SubsetReach(models.Model):
     a definition of start, end kilometers and the Reach name.
     """
 
-    reach = models.ForeignKey(Reach)
-    named_reach = models.ForeignKey(NamedReach)
+    reach = models.ForeignKey(Reach, on_delete=models.CASCADE)
+    named_reach = models.ForeignKey(NamedReach, on_delete=models.CASCADE)
     km_from = models.IntegerField()
     km_to = models.IntegerField()
 
@@ -136,7 +136,7 @@ class SubsetReach(models.Model):
 class CityLocation(models.Model):
     """River City locations."""
 
-    reach = models.ForeignKey(Reach)
+    reach = models.ForeignKey(Reach, on_delete=models.CASCADE)
     city = models.CharField(max_length=100)
     km = models.IntegerField()
 
@@ -177,7 +177,8 @@ class Measure(models.Model):
         blank=True)
 
     reach = models.ForeignKey(
-        Reach, blank=True, null=True, verbose_name=_('reach'))
+        Reach, blank=True, null=True, verbose_name=_('reach'),
+        on_delete=models.CASCADE)
     riverpart = models.CharField(
         'Rivierdeel', max_length=100, blank=True, null=True)
     mhw_profit_cm = EmptyStringFloatField(
@@ -241,8 +242,8 @@ class WaterLevelDifference(models.Model):
 
     """
 
-    riversegment = models.ForeignKey(RiverSegment)
-    measure = models.ForeignKey(Measure)
+    riversegment = models.ForeignKey(RiverSegment, on_delete=models.CASCADE)
+    measure = models.ForeignKey(Measure, on_delete=models.CASCADE)
 
     protection_level = models.CharField(
         max_length=4,
@@ -296,8 +297,8 @@ class VertexValue(models.Model):
 
     YEARS = [choice[0] for choice in CHOICES]
 
-    vertex = models.ForeignKey(Vertex)
-    riversegment = models.ForeignKey(RiverSegment)
+    vertex = models.ForeignKey(Vertex, on_delete=models.CASCADE)
+    riversegment = models.ForeignKey(RiverSegment, on_delete=models.CASCADE)
     year = models.CharField(
         max_length=4,
         choices=CHOICES,
