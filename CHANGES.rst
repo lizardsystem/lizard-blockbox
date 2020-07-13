@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-1.4 (unreleased)
+1.4 (2020-07-13)
 ----------------
 
 - Python3 fixes. xrange/range, unicode/string, basestring/str,
