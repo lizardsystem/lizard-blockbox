@@ -9,35 +9,82 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='BackgroundMap',
+            name="BackgroundMap",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=20)),
-                ('index', models.IntegerField(default=100)),
-                ('default', models.BooleanField(default=False)),
-                ('active', models.BooleanField(default=True)),
-                ('is_base_layer', models.BooleanField(default=True)),
-                ('is_single_tile', models.BooleanField(default=False)),
-                ('layer_type', models.IntegerField(choices=[(1, b'GOOGLE'), (2, b'OSM'), (3, b'WMS'), (4, b'TMS')])),
-                ('google_type', models.IntegerField(blank=True, choices=[(1, b'google default'), (2, b'google physical'), (3, b'google hybrid'), (4, b'google satellite')], help_text=b'Choose map type in case of GOOGLE maps.', null=True)),
-                ('layer_url', models.CharField(blank=True, default=b'http://tile.openstreetmap.nl/tiles/${z}/${x}/${y}.png', help_text=b'Tile url for use with OSM or WMS or TMS', max_length=200, null=True)),
-                ('layer_names', models.TextField(blank=True, help_text=b'Fill in layer names in case of WMS or TMS', null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=20)),
+                ("index", models.IntegerField(default=100)),
+                ("default", models.BooleanField(default=False)),
+                ("active", models.BooleanField(default=True)),
+                ("is_base_layer", models.BooleanField(default=True)),
+                ("is_single_tile", models.BooleanField(default=False)),
+                (
+                    "layer_type",
+                    models.IntegerField(
+                        choices=[(1, b"GOOGLE"), (2, b"OSM"), (3, b"WMS"), (4, b"TMS")]
+                    ),
+                ),
+                (
+                    "google_type",
+                    models.IntegerField(
+                        blank=True,
+                        choices=[
+                            (1, b"google default"),
+                            (2, b"google physical"),
+                            (3, b"google hybrid"),
+                            (4, b"google satellite"),
+                        ],
+                        help_text=b"Choose map type in case of GOOGLE maps.",
+                        null=True,
+                    ),
+                ),
+                (
+                    "layer_url",
+                    models.CharField(
+                        blank=True,
+                        default=b"http://tile.openstreetmap.nl/tiles/${z}/${x}/${y}.png",
+                        help_text=b"Tile url for use with OSM or WMS or TMS",
+                        max_length=200,
+                        null=True,
+                    ),
+                ),
+                (
+                    "layer_names",
+                    models.TextField(
+                        blank=True,
+                        help_text=b"Fill in layer names in case of WMS or TMS",
+                        null=True,
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('index',),
-            },
+            options={"ordering": ("index",),},
         ),
         migrations.CreateModel(
-            name='Setting',
+            name="Setting",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('key', models.CharField(max_length=40, unique=True)),
-                ('value', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("key", models.CharField(max_length=40, unique=True)),
+                ("value", models.CharField(max_length=200)),
             ],
         ),
     ]

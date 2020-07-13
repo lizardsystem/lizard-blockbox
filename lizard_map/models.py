@@ -12,17 +12,18 @@ class BackgroundMap(models.Model):
     """
     Defines background maps.
     """
+
     LAYER_TYPE_GOOGLE = 1
     LAYER_TYPE_OSM = 2
     LAYER_TYPE_WMS = 3
     LAYER_TYPE_TMS = 4
 
     LAYER_TYPE_CHOICES = (
-        (LAYER_TYPE_GOOGLE, 'GOOGLE'),
-        (LAYER_TYPE_OSM, 'OSM'),
-        (LAYER_TYPE_WMS, 'WMS'),
-        (LAYER_TYPE_TMS, 'TMS'),
-        )
+        (LAYER_TYPE_GOOGLE, "GOOGLE"),
+        (LAYER_TYPE_OSM, "OSM"),
+        (LAYER_TYPE_WMS, "WMS"),
+        (LAYER_TYPE_TMS, "TMS"),
+    )
 
     GOOGLE_TYPE_DEFAULT = 1
     GOOGLE_TYPE_PHYSICAL = 2
@@ -30,11 +31,11 @@ class BackgroundMap(models.Model):
     GOOGLE_TYPE_SATELLITE = 4
 
     GOOGLE_TYPE_CHOICES = (
-        (GOOGLE_TYPE_DEFAULT, 'google default'),
-        (GOOGLE_TYPE_PHYSICAL, 'google physical'),
-        (GOOGLE_TYPE_HYBRID, 'google hybrid'),
-        (GOOGLE_TYPE_SATELLITE, 'google satellite'),
-        )
+        (GOOGLE_TYPE_DEFAULT, "google default"),
+        (GOOGLE_TYPE_PHYSICAL, "google physical"),
+        (GOOGLE_TYPE_HYBRID, "google hybrid"),
+        (GOOGLE_TYPE_SATELLITE, "google satellite"),
+    )
 
     name = models.CharField(max_length=20)
     index = models.IntegerField(default=100)
@@ -46,22 +47,26 @@ class BackgroundMap(models.Model):
     layer_type = models.IntegerField(choices=LAYER_TYPE_CHOICES)
     google_type = models.IntegerField(
         choices=GOOGLE_TYPE_CHOICES,
-        null=True, blank=True,
-        help_text='Choose map type in case of GOOGLE maps.')
+        null=True,
+        blank=True,
+        help_text="Choose map type in case of GOOGLE maps.",
+    )
     layer_url = models.CharField(
         max_length=200,
-        null=True, blank=True,
-        help_text='Tile url for use with OSM or WMS or TMS',
-        default='http://tile.openstreetmap.nl/tiles/${z}/${x}/${y}.png')
+        null=True,
+        blank=True,
+        help_text="Tile url for use with OSM or WMS or TMS",
+        default="http://tile.openstreetmap.nl/tiles/${z}/${x}/${y}.png",
+    )
     layer_names = models.TextField(
-        null=True, blank=True,
-        help_text='Fill in layer names in case of WMS or TMS')
+        null=True, blank=True, help_text="Fill in layer names in case of WMS or TMS"
+    )
 
     class Meta:
-        ordering = ('index', )
+        ordering = ("index",)
 
     def __unicode__(self):
-        return '%s' % self.name
+        return "%s" % self.name
 
 
 class Setting(models.Model):
@@ -73,13 +78,14 @@ class Setting(models.Model):
     display_projection 'EPSG:4326'
     googlemaps_api_key
     """
-    CACHE_KEY = 'lizard-map.Setting'
+
+    CACHE_KEY = "lizard-map.Setting"
 
     key = models.CharField(max_length=40, unique=True)
     value = models.CharField(max_length=200)
 
     def __unicode__(self):
-        return '%s = %s' % (self.key, self.value)
+        return "%s = %s" % (self.key, self.value)
 
     @classmethod
     def get(cls, key, default=None):
@@ -103,8 +109,10 @@ class Setting(models.Model):
             if default is not None:
                 # Only warn if None is not a fine value: otherwise we'd warn
                 # about a setting that doesn't *need* to be set.
-                logger.warn('Setting "%s" does not exist, taking default '
-                            'value "%s"' % (key, default))
+                logger.warn(
+                    'Setting "%s" does not exist, taking default '
+                    'value "%s"' % (key, default)
+                )
             return default
 
         # Return desired result.
@@ -122,12 +130,9 @@ class Setting(models.Model):
         """ Setting in "xx0,yy0,xx1,yy1" format.
 
         TODO: test"""
-        extent_names = ['left', 'bottom', 'right', 'top']
-        extent_list = cls.get(
-            key, fallback).split(',')
-        extent = dict(
-            [(extent_names[i], s.strip())
-             for i, s in enumerate(extent_list)])
+        extent_names = ["left", "bottom", "right", "top"]
+        extent_list = cls.get(key, fallback).split(",")
+        extent = dict([(extent_names[i], s.strip()) for i, s in enumerate(extent_list)])
         return extent
 
 
@@ -138,8 +143,7 @@ def setting_post_save_delete(sender, **kwargs):
     """
     Invalidates cache after saving or deleting a setting.
     """
-    logger.debug('Changed setting. Invalidating cache for %s...' %
-                 sender.CACHE_KEY)
+    logger.debug("Changed setting. Invalidating cache for %s..." % sender.CACHE_KEY)
     cache.delete(sender.CACHE_KEY)
 
 

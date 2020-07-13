@@ -20,7 +20,7 @@ class Legend(object):
 
     """
 
-    template_name = 'lizard_map/legend_item.html'
+    template_name = "lizard_map/legend_item.html"
     name = None
     subitems = None
 
