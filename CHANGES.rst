@@ -5,7 +5,7 @@ Changelog of lizard-blockbox
 1.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Fix for incomplete 1.4 (I had to merge a bit more code).
 
 
 1.4 (2020-07-13)
