@@ -17,6 +17,8 @@ Changelog of lizard-blockbox
   some time as it means porting another app to python 3 and also configuring
   rabbitmq/celery.
 
+- Removed special python2 csv writer: we have python 3 now!
+
 
 1.3 (2018-06-15)
 ----------------
