@@ -1,8 +1,32 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from collections import defaultdict
+from django.conf import settings
+from django.contrib.auth.decorators import permission_required
+from django.core.cache import cache
+from django.db.models import Sum
+from django.http import Http404
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.urls import NoReverseMatch
+from django.urls import reverse
+from django.utils.functional import cached_property
+from django.utils.translation import ugettext as _
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST
+from django.views.generic.base import RedirectView
+from django.views.static import serve
+from functools import reduce
 from hashlib import md5
 from io import BytesIO
-from functools import reduce
+from lizard_blockbox import models
+from lizard_blockbox.utils import namedreach2measures
+from lizard_blockbox.utils import namedreach2riversegments
+from lizard_blockbox.utils import UnicodeWriter
+from lizard_map.lizard_widgets import Legend
+from lizard_map.views import MapView
+from lizard_ui.layout import Action
+from lizard_ui.views import UiView
+
 import csv
 import json
 import logging
@@ -10,29 +34,6 @@ import mimetypes
 import operator
 import os
 import urllib
-
-from django.conf import settings
-from django.contrib.auth.decorators import permission_required
-from django.core.cache import cache
-from django.urls import NoReverseMatch
-from django.urls import reverse
-from django.db.models import Sum
-from django.http import Http404, HttpResponse
-from django.shortcuts import redirect
-from django.utils.functional import cached_property
-from django.utils.translation import ugettext as _
-from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_POST
-from django.views.generic.base import RedirectView
-from django.views.static import serve
-from lizard_map.lizard_widgets import Legend
-from lizard_map.views import MapView
-from lizard_ui.layout import Action
-from lizard_ui.views import UiView
-
-from lizard_blockbox import models
-from lizard_blockbox.utils import UnicodeWriter
-from lizard_blockbox.utils import namedreach2riversegments, namedreach2measures
 
 
 DATA_DIR = os.path.join(settings.BUILDOUT_DIR, "var/blockbox")

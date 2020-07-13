@@ -1,11 +1,11 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from django.conf.urls import url
-
-from lizard_ui.urls import debugmode_urlpatterns
-from lizard_blockbox.views import BlockboxView
-from lizard_blockbox.views import SelectedMeasuresView
-from lizard_blockbox.views import BookmarkedMeasuresView
 from lizard_blockbox import views
+from lizard_blockbox.views import BlockboxView
+from lizard_blockbox.views import BookmarkedMeasuresView
+from lizard_blockbox.views import SelectedMeasuresView
+from lizard_ui.urls import debugmode_urlpatterns
+
 
 urlpatterns = [
     url(r"^$", BlockboxView.as_view(), name="lizard_blockbox.home"),

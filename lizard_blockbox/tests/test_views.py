@@ -1,9 +1,6 @@
-from django.test import TestCase
-
-
-from lizard_blockbox import views
-
 from . import factories
+from django.test import TestCase
+from lizard_blockbox import views
 
 
 class TestSelectedProtectionLevel(TestCase):

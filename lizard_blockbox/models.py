@@ -2,7 +2,6 @@
 from django.contrib.gis.db import models as gis_models
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
 from lizard_blockbox.fields import EmptyStringFloatField
 from lizard_blockbox.fields import EmptyStringUnknownFloatField
 

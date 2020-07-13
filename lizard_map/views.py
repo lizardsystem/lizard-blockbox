@@ -1,16 +1,14 @@
-import logging
-
-import json
-
-from django.urls import reverse
 from django.http import HttpResponse
-from django.utils.translation import ugettext as _
+from django.urls import reverse
 from django.utils.functional import cached_property
-from lizard_ui.views import UiView
-from lizard_ui.layout import Action
-
+from django.utils.translation import ugettext as _
 from lizard_map.models import BackgroundMap
 from lizard_map.models import Setting
+from lizard_ui.layout import Action
+from lizard_ui.views import UiView
+
+import json
+import logging
 
 
 DEFAULT_OSM_LAYER_URL = "http://tile.openstreetmap.nl/tiles/${z}/${x}/${y}.png"

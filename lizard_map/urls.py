@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from lizard_map import views
 
+
 urlpatterns = [
     # Load and save map location
     url(

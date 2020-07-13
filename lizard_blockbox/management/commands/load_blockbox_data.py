@@ -1,9 +1,9 @@
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from lizard_blockbox import import_helpers
+
 import os
 
-from django.core.management.base import BaseCommand
-from django.conf import settings
-
-from lizard_blockbox import import_helpers
 
 DATA_DIR = os.path.join(settings.BUILDOUT_DIR, "var/blockbox")
 

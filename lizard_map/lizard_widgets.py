@@ -1,7 +1,8 @@
 """Lizard Widgets"""
 
+from django.template import Context
+from django.template import loader
 from django.utils.safestring import mark_safe
-from django.template import Context, loader
 
 
 class Legend(object):

@@ -4,21 +4,18 @@
 """Tests for the import_measure_xls command"""
 
 # Python 3 is coming
-from __future__ import unicode_literals
-from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from django.test import TestCase
+from io import StringIO
+from lizard_blockbox import import_helpers
+from lizard_blockbox import models
+from lizard_blockbox.tests import factories
 
 import mock
 import sys
-from io import StringIO
-
-from django.test import TestCase
-
-from lizard_blockbox.tests import factories
-from lizard_blockbox import models
-
-from lizard_blockbox import import_helpers
 
 
 class TestImportMeasureXls(TestCase):

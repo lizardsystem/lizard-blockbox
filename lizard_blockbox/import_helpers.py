@@ -1,19 +1,17 @@
 """Helper functions used by the data import management commands."""
 
+from django.conf import settings
+from django.core.cache import cache
+from django.db import transaction
+from lizard_blockbox import models
+from lizard_blockbox import utils
+
 import json
 import logging
 import os
 import shutil
 import subprocess
-
 import xlrd
-
-from django.db import transaction
-from django.conf import settings
-from django.core.cache import cache
-
-from lizard_blockbox import models
-from lizard_blockbox import utils
 
 
 logger = logging.getLogger(__name__)

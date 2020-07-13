@@ -1,8 +1,7 @@
-import json
-
 from django.core.management.base import BaseCommand
-
 from lizard_blockbox import models
+
+import json
 
 
 class Command(BaseCommand):

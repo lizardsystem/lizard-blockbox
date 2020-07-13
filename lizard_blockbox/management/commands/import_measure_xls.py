@@ -1,10 +1,10 @@
+from django.core.management.base import BaseCommand
+from lizard_blockbox import import_helpers
+
 import logging
 import os
 import sys
 
-from django.core.management.base import BaseCommand
-
-from lizard_blockbox import import_helpers
 
 logger = logging.getLogger(__name__)
 

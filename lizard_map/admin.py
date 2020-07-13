@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from lizard_map.models import BackgroundMap
 from lizard_map.models import Setting
 

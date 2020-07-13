@@ -1,10 +1,10 @@
-import operator
-import csv
-import codecs
 from functools import reduce
 from io import StringIO
-
 from lizard_blockbox import models
+
+import codecs
+import csv
+import operator
 
 
 def namedreach2riversegments(river):

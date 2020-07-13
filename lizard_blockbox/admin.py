@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from lizard_blockbox import models
 
 
