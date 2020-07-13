@@ -21,7 +21,6 @@ from io import BytesIO
 from lizard_blockbox import models
 from lizard_blockbox.utils import namedreach2measures
 from lizard_blockbox.utils import namedreach2riversegments
-from lizard_blockbox.utils import UnicodeWriter
 from lizard_map.lizard_widgets import Legend
 from lizard_map.views import MapView
 from lizard_ui.layout import Action
@@ -60,7 +59,7 @@ def download_data(request, *args, **kwargs):
 def generate_csv(request):
     response = HttpResponse(content_type="application/csv")
     response["Content-Disposition"] = "filename=blokkendoos-report.csv"
-    writer = UnicodeWriter(
+    writer = csv.writer(
         response, dialect="excel", delimiter=";", quoting=csv.QUOTE_ALL
     )
 
