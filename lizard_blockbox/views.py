@@ -659,7 +659,7 @@ class SelectedMeasuresView(UiView):
         params["v"] = _selected_vertex(self.request).pk
         url = "{}?{}".format(
             reverse("lizard_blockbox.bookmarked_measures"),
-            urllib.urlencode(params, doseq=True),
+            urllib.parse.urlencode(params, doseq=True),
         )
         return url
 
