@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-1.6 (unreleased)
+1.6 (2020-09-21)
 ----------------
 
 - Python3 fix: urllib.parse.urlencode().
