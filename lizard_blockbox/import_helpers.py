@@ -152,16 +152,18 @@ def fetch_blockbox_data(stdout):
 
         stdout.write(run_commands_in(DATA_DIR, COMMANDS))
         stdout.write("Fetched blockbox data...\n")
+        return
     except Exception:
         logger.exception("FTP download failed, looking in var/data/ instead...")
-        DATA_SOURCE_DIR = os.path.join(settings.BUILDOUT_DIR, "var/data")
-        stdout.write("Using blockbox data from /var...\n")
-        COMMANDS = """
-        cp -a . {}
-        """.format(
-            DATA_DIR
-        )
-        stdout.write(run_commands_in(DATA_SOURCE_DIR, COMMANDS))
+
+    DATA_SOURCE_DIR = os.path.join(settings.BUILDOUT_DIR, "var/data")
+    stdout.write("Using blockbox data from /var...\n")
+    COMMANDS = """
+    cp -a . {}
+    """.format(
+        DATA_DIR
+    )
+    stdout.write(run_commands_in(DATA_SOURCE_DIR, COMMANDS))
 
 
 def set_permissions_pdf(stdout):
