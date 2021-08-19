@@ -10,7 +10,7 @@ from django.shortcuts import redirect
 from django.urls import NoReverseMatch
 from django.urls import reverse
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from django.views.generic.base import RedirectView

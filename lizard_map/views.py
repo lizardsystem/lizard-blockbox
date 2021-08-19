@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from lizard_map.models import BackgroundMap
 from lizard_map.models import Setting
 from lizard_ui.layout import Action
