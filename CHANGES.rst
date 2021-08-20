@@ -2,7 +2,7 @@ Changelog of lizard-blockbox
 ===================================================
 
 
-1.7 (unreleased)
+1.7 (2021-08-20)
 ----------------
 
 - Update for django 3.2.
